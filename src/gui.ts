@@ -33,12 +33,12 @@ export class GUIHelper {
 	private readonly down = this.basePath + "images/arrow-down.svg"
 
 	public Draw(menu: MenuManager) {
-		if (this.rating === -1) {
+		if (this.rating === -1 || !menu.IsToggled) {
 			return
 		}
 
-		const alpha = (Math.max(menu.Opacity.value, this.dragging ? 100 : 50) / 100) * 255
 		const vecPosition = this.UpdateScale(menu)
+		const alpha = (Math.max(menu.Opacity.value, this.dragging ? 100 : 50) / 100) * 255
 
 		// background
 		RendererSDK.Image(
