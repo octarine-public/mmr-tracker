@@ -1,1 +1,7 @@
-{}
+{
+	"State": "Состояние",
+	"Tracker": "Трекер",
+	"MMR Tracker": "Трекер MMR",
+	"Reset settings": "Сбросить настройки",
+	"Reset settings to default": "Сбросить настройки по умолчанию"
+}
