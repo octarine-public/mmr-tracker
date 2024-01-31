@@ -1,9 +1,10 @@
 {
 	"State": "Состояние",
+	"Key": "Клавиша",
 	"Tracker": "Трекер",
 	"MMR Tracker": "Трекер MMR",
 	"Reset settings": "Сбросить настройки",
-	"Key": "Клавиша",
+	"Opacity": "Прозрачность",
 	"Key turn on/off panel": "Клавиша вкл/выкл панели",
 	"Reset settings to default": "Сбросить настройки по умолчанию"
 }
