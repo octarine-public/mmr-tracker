@@ -191,7 +191,7 @@ export class GUIHelper {
 	}
 
 	private saveNewPosition(menu: MenuManager, newPosition?: Vector2) {
-		const position = newPosition ?? this.vecSize
+		const position = newPosition ?? this.vecPosition
 		menu.Position.Vector = position
 			.Clone()
 			.DivideScalarX(GUIInfo.GetWidthScale())
