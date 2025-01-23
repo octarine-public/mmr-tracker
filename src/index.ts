@@ -2,6 +2,7 @@ import "./translations"
 
 import {
 	DOTAGameUIState,
+	ERankType,
 	Events,
 	EventsSDK,
 	GameState,
@@ -12,10 +13,17 @@ import {
 import { GUIHelper } from "./gui"
 import { MenuManager } from "./menu"
 
-const bootstrap = new (class CMMRTraker {
+new (class CMMRTraker {
 	private oldRating = 0
 	private readonly gui = new GUIHelper()
 	private readonly menu = new MenuManager()
+
+	constructor() {
+		EventsSDK.on("Draw", this.Draw.bind(this))
+		Events.on("RankData", this.RankData.bind(this))
+		InputEventSDK.on("MouseKeyUp", this.MouseKeyUp.bind(this))
+		InputEventSDK.on("MouseKeyDown", this.MouseKeyDown.bind(this))
+	}
 
 	protected get State() {
 		return this.menu.State.value
@@ -31,11 +39,18 @@ const bootstrap = new (class CMMRTraker {
 		}
 	}
 
-	public RankData(newValue: number) {
-		if (this.oldRating !== newValue) {
+	public RankData(
+		_rankType: ERankType,
+		rankValue: number,
+		_rankData1: number,
+		_rankData2: number,
+		_rankData3: number,
+		_rankData4: number
+	) {
+		if (this.oldRating !== rankValue) {
 			const oldValue = this.oldRating
-			this.gui.SetRating(newValue, oldValue)
-			this.oldRating = newValue
+			this.gui.SetRating(rankValue, oldValue)
+			this.oldRating = rankValue
 		}
 	}
 
@@ -60,11 +75,3 @@ const bootstrap = new (class CMMRTraker {
 		return !this.InGameUIState
 	}
 })()
-
-EventsSDK.on("Draw", () => bootstrap.Draw())
-
-Events.on("RankData", (_, value) => bootstrap.RankData(value))
-
-InputEventSDK.on("MouseKeyUp", key => bootstrap.MouseKeyUp(key))
-
-InputEventSDK.on("MouseKeyDown", key => bootstrap.MouseKeyDown(key))
