@@ -1,3 +1,3 @@
 // AUTO-GENERATED - do not edit.
-// surface 02a8dd90
+// surface a4fd6a5f
 declare const SharedSdkSurfaceHash: string

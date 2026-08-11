@@ -38,6 +38,10 @@ declare const SharedSDK: {
 	readonly PathFlags: typeof PathFlags
 	readonly Polygon2D: typeof Polygon2D
 	readonly Polygon3D: typeof Polygon3D
+	readonly ProfileBegin: () => boolean
+	readonly ProfileEnd: (name: string, source: Nullable<string>, active: boolean) => void
+	readonly ProfilePause: () => number
+	readonly ProfileResume: (started: number) => void
 	readonly ProjectionInfo: typeof ProjectionInfo
 	readonly ProtoCache: typeof ProtoCache
 	readonly ProtoFieldType: typeof ProtoFieldType
@@ -50,6 +54,7 @@ declare const SharedSDK: {
 	readonly Rectangle: typeof Rectangle
 	readonly ResetEntityLump: () => void
 	readonly SetListenerPerfReporter: (reporter: Nullable<(registeredAt: string, tookMs: number) => void>) => void
+	readonly SetProfileSink: (next: Nullable<ProfileSink>) => void
 	readonly Sleeper: typeof Sleeper
 	readonly StringToUTF8: (str: string) => Uint8Array
 	readonly StringToUTF8Cb: (str: string, writeByte: (b: number) => void) => void

@@ -241,6 +241,14 @@ declare function SetEntityColor(
  * @param customEntityID (entityID << 1) or (binaryID << 1) | 1
  */
 declare function SetEntityGlow(customEntityID: number, colorU32: number): void
+/**
+ * Bounds of the entity's hitboxes in the pose it stands in right now, relative to its origin.
+ * False when it has no skeleton or no hitbox set yet - a model that is still loading.
+ *
+ * @param customEntityID (entityID << 1) or (binaryID << 1) | 1
+ * @returns mins: Vector3 to IOBuffer offset 0, maxs: Vector3 to IOBuffer offset 3
+ */
+declare function GetHitboxBounds(customEntityID: number): boolean
 declare function GetPlayerMuteFlags(steamid64: bigint): number
 /**
  * Pass location: Vector2 at IOBuffer offset 0
