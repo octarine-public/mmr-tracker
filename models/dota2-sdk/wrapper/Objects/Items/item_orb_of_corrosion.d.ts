@@ -1,0 +1,4 @@
+// AUTO-GENERATED - do not edit.
+declare class item_orb_of_corrosion extends Item {
+	public GetBaseDamageForLevel(level: number): number
+}

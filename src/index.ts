@@ -1,15 +1,5 @@
 import "./translations"
 
-import {
-	DOTAGameUIState,
-	ERankType,
-	Events,
-	EventsSDK,
-	GameState,
-	InputEventSDK,
-	VMouseKeys
-} from "github.com/octarine-public/wrapper/index"
-
 import { GUIHelper } from "./gui"
 import { MenuManager } from "./menu"
 
@@ -20,7 +10,7 @@ new (class CMMRTraker {
 
 	constructor() {
 		EventsSDK.on("Draw", this.Draw.bind(this))
-		Events.on("RankData", this.RankData.bind(this))
+		Source2SDK.NativeEvents.on("RankData", this.RankData.bind(this))
 		InputEventSDK.on("MouseKeyUp", this.MouseKeyUp.bind(this))
 		InputEventSDK.on("MouseKeyDown", this.MouseKeyDown.bind(this))
 	}

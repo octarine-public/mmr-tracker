@@ -1,0 +1,14 @@
+// AUTO-GENERATED - do not edit.
+declare const enum PathFlags {
+	LINECAP_OFFSET = 2,
+	LINE_JOIN_OFFSET = 4,
+	GRAYSCALE = 1,
+	IMAGESHADER = 2,
+	LINECAP_BITS = 12,
+	LINE_JOIN_BITS = 48,
+	FILL = 64,
+	STROKE = 128,
+	STROKE_AND_FILL = 192,
+	FILL_AA_ON = 256,
+	STROKE_AA_OFF = 512
+}

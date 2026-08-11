@@ -1,0 +1,9 @@
+// AUTO-GENERATED - do not edit.
+declare class modifier_furion_sprout_tether extends Modifier implements IDebuff, IDisable {
+	public readonly IsHidden = false
+	public readonly DebuffModifierName: string
+	public get Duration(): number
+	public IsDebuff(): this is IDebuff
+	public IsDisable(): this is IDisable
+	protected UpdateSpecialValues(): void
+}

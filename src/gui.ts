@@ -1,13 +1,3 @@
-import {
-	Color,
-	GUIInfo,
-	Input,
-	Menu,
-	Rectangle,
-	RendererSDK,
-	TextFlags,
-	Vector2
-} from "github.com/octarine-public/wrapper/index"
 
 import { MMRChangedType } from "./enum"
 import { MenuManager } from "./menu"
@@ -78,7 +68,7 @@ export class GUIHelper {
 			return true
 		}
 		const pos = this.position
-		const mouse = Input.CursorOnScreen
+		const mouse = InputManager.CursorOnScreen
 		if (!mouse.IsUnderRectangle(pos.x, pos.y, pos.Width, pos.Height)) {
 			return true
 		}
@@ -171,7 +161,7 @@ export class GUIHelper {
 			return
 		}
 		const wSize = RendererSDK.WindowSize
-		const mousePos = Input.CursorOnScreen
+		const mousePos = InputManager.CursorOnScreen
 		const toPosition = mousePos
 			.SubtractForThis(this.draggingOffset)
 			.Min(wSize.Subtract(this.position.Size))

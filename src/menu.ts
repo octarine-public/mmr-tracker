@@ -1,4 +1,3 @@
-import { Menu, Vector2 } from "github.com/octarine-public/wrapper/index"
 
 export class MenuManager {
 	public IsToggled = true
