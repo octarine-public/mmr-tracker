@@ -62,7 +62,7 @@ declare class PlayerCustomData {
 	 * @description internal only for wrapper
 	 */
 	public ItemsGold: number
-	constructor(playerID: number)
+	constructor(PlayerID: number)
 	/**
 	 * @description Returns whether the player is the local player.
 	 * @return {boolean}

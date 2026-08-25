@@ -7,6 +7,6 @@ declare class Shop extends Building {
 	 */
 	public readonly ShopType: DOTA_SHOP_TYPE
 	/** @ignore */
-	constructor(index: number, serial: number)
+	constructor(Index: number, serial: number)
 	public IsVisibleForEnemies(_seconds: number): boolean
 }

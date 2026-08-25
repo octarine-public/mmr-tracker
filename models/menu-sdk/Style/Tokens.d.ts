@@ -34,6 +34,7 @@ declare namespace MenuSDK {
 		TextDisabled: string
 		TextTooltip: string
 		SwitchOff: string
+		Knob: string
 		SliderTrack: string
 		FilterDivider: string
 		ScrollThumb: string

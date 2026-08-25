@@ -2,5 +2,5 @@
 declare class Lantern extends Building {
 	public readonly Index: number
 	/** @ignore */
-	constructor(index: number, serial: number)
+	constructor(Index: number, serial: number)
 }

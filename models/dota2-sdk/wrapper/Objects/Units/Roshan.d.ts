@@ -17,7 +17,7 @@ declare class Roshan extends Unit {
 	public readonly PredictionAngles: QAngle
 	public GoldenRoshan: boolean
 	/** @ignore */
-	constructor(index: number, serial: number)
+	constructor(Index: number, serial: number)
 	public get Angles(): QAngle
 	public get MoveSpeed(): number
 	public get RingRadius(): number

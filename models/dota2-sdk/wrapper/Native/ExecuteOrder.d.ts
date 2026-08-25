@@ -38,7 +38,7 @@ declare class ExecuteOrder {
 	 * @param position default: new Vector3(0,0,0)
 	 * @param issuer default: DOTA_ORDER_ISSUER_PASSED_UNIT_ONLY
 	 */
-	constructor(orderType: dotaunitorder_t, target: Nullable<Entity | number>, position: Vector3 | undefined, ability_: Nullable<Ability | number>, issuers: Unit[], queue?: boolean, showEffects?: boolean, isPlayerInput?: boolean)
+	constructor(OrderType: dotaunitorder_t, Target: Nullable<Entity | number>, Position: Vector3 | undefined, Ability_: Nullable<Ability | number>, Issuers: Unit[], Queue?: boolean, ShowEffects?: boolean, IsPlayerInput?: boolean)
 	public static get DisableHumanizer(): boolean
 	public static set DisableHumanizer(newVal: boolean)
 	public static PrepareOrder(order: {

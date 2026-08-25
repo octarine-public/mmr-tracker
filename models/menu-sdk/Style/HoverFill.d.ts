@@ -18,4 +18,18 @@ declare namespace MenuSDK {
 	function useHoverFill(target: {
 		current: Nullable<HTMLElement>
 	}, lit: boolean, fill: (mix: number) => RmlStyle): RmlStyle
+	/**
+	 * Two fades over one fill: the pointer being on the element, and a state of the element itself -
+	 * a card that stops inviting a click, a row that goes quiet. Both drive the same write, so
+	 * neither snaps while the other is moving, which is what a hard swap in the middle of a slide
+	 * reads as.
+	 *
+	 * @example
+	 * const surface = useFadingFill(card, hovered, inviting, (hover, state) =>
+	 * 	SdfRounded(12, Theme.ValueOf("CardBg"), 1, lerpHex(rest, accent, state * (0.6 + 0.4 * hover)))
+	 * )
+	 */
+	function useFadingFill(target: {
+		current: Nullable<HTMLElement>
+	}, hovered: boolean, lit: boolean, fill: (hover: number, state: number) => RmlStyle): RmlStyle
 }

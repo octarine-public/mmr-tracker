@@ -9,7 +9,7 @@ declare class PortalPoint {
 	public readonly CreateTime: number
 	public InternalSkipIteration: boolean
 	public InternalSkipEmitNotify: boolean
-	constructor(startPosition: Vector3, endPosition: Vector3, index: number)
+	constructor(StartPosition: Vector3, EndPosition: Vector3, index: number)
 	public get IsExpired(): boolean
 	public get Caster(): Nullable<Unit>
 	protected UpdateData(caster: Nullable<Unit>, endPosition: Vector3): void

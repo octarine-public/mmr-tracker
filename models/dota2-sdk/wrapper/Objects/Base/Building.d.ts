@@ -7,6 +7,6 @@ declare class Building extends Unit {
 	public IsWatcher: boolean
 	public IsBarrack: boolean
 	/** @ignore */
-	constructor(index: number, serial: number)
+	constructor(Index: number, serial: number)
 	public get RingRadius(): number
 }

@@ -39,12 +39,6 @@ declare const enum AnchorKind {
 	HealthBar = 0,
 	Origin = 1
 }
-/**
- * Registers how a 2D world position is lifted to 3D. Games with a height map resolve the terrain
- * under the point; without one every such position sits at z = 0.
- * @example
- * SetGroundHeightSource(position => WASM.GetPositionHeight(position))
- */
 declare const enum LineCap {
 	Butt = 1,
 	Round = 2,
@@ -96,6 +90,15 @@ declare class CRenderer {
 	 * Renderer.ImageByID(scene.TextureID, position, new Vector2(256, 256))
 	 */
 	public ImageByID(textureID: number, vecPos: Vector2, vecSize: Vector2, color?: Color): void
+	/**
+	 * Whether this path already has a texture, so a caller can hold a draw back rather than
+	 * show the frame the load lands on. A path never asked for reports `false`.
+	 * @example
+	 * if (Renderer.IsImageReady(icon)) {
+	 * 	Renderer.Image(icon, position, size)
+	 * }
+	 */
+	public IsImageReady(path: string): boolean
 	public GetImageSize(path: string): Vector2
 	public Text(text: string, vecPos?: Vector2, color?: Color, fontName?: string, fontSize?: number, weight?: number, italic?: boolean, outlined?: boolean): void
 	public TextByFlags(text: string, position: Rectangle, color?: Color, division?: number, flags?: TextFlags, width?: number, fontName?: string, fixDigits?: boolean, italic?: boolean, outlined?: boolean, filledRect?: boolean, filledRectColor?: Color): Rectangle

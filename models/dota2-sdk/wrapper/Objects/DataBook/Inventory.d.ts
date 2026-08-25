@@ -1,7 +1,7 @@
 // AUTO-GENERATED - do not edit.
 declare class Inventory {
 	public readonly Owner: Unit
-	constructor(owner: Unit)
+	constructor(Owner: Unit)
 	public get TotalItems(): Nullable<Item>[]
 	public get TPScroll(): Nullable<Item>
 	public get NeutralItem(): Nullable<Item>

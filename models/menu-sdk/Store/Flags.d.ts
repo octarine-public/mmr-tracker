@@ -6,8 +6,7 @@ declare namespace MenuSDK {
 	/**
 	 * How an entry's tooltip is presented: "bubble" floats a shadowed hint at the
 	 * cursor on hover, "inline" prints the same text under the row label, "side"
-	 * pins a panel beside the menu window level with the hovered row, "off"
-	 * shows nothing.
+	 * opens a panel beside an explicit info icon, "off" shows nothing.
 	 */
 	type TooltipStyle = "bubble" | "inline" | "side" | "off"
 	const MenuFlags: {

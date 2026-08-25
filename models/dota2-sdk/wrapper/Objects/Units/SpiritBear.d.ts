@@ -3,7 +3,7 @@ declare class SpiritBear extends Unit {
 	public readonly Index: number
 	/** @readonly */
 	public ShouldRespawn: boolean
-	constructor(index: number, serial: number)
+	constructor(Index: number, serial: number)
 	public CanMove(checkChanneling?: boolean, checkAbilityPhase?: boolean): boolean
 	public CanAttack(target?: Unit, checkChanneling?: boolean, checkAbilityPhase?: boolean, additionalRange?: number, checkAttackRange?: boolean): boolean
 	public get HealthBarSize(): Vector2

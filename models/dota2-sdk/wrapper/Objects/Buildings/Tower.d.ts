@@ -2,7 +2,7 @@
 declare class Tower extends Building {
 	public readonly Index: number
 	public TowerAttackTarget_: number
-	constructor(index: number, serial: number)
+	constructor(Index: number, serial: number)
 	public get Target(): Nullable<Unit>
 	public get TowerAttackTarget(): Nullable<Unit>
 	public get IsDeniable(): boolean

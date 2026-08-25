@@ -1,5 +1,5 @@
 // AUTO-GENERATED - do not edit.
-// surface fa01d40b
+// surface 59a8848e
 declare namespace MenuSDK {
 	const MenuSdkSurfaceHash: string
 }

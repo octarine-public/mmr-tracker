@@ -10,6 +10,13 @@ declare namespace MenuSDK {
 		color: string
 		opacity: number
 	}
+	/** The colour last copied off a picker row, or `undefined` while nothing has been copied. */
+	function CopiedColor(): Nullable<Color>
+	/**
+	 * Holds a colour for the rest of the session so any other picker row can paste it. The value is
+	 * kept as given — pass a clone when the source keeps mutating its own.
+	 */
+	function SetCopiedColor(color: Color): void
 	function SavedColorsList(): readonly SavedColor[]
 	function SetSavedColorsList(next: SavedColor[]): void
 	function SerializeSavedColors(): SavedColor[]

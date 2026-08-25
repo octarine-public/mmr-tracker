@@ -1,6 +1,11 @@
 // AUTO-GENERATED - do not edit.
 declare namespace MenuSDK {
 	type LayoutMode = "side" | "top"
+	interface WindowSizePreset {
+		name: string
+		w: number
+		h: number
+	}
 	interface WindowState {
 		x: number
 		y: number
@@ -10,13 +15,16 @@ declare namespace MenuSDK {
 		sub: number
 		collapsed: boolean
 		layout: LayoutMode
+		confirmTabReset: boolean
+		sizePresets: WindowSizePreset[]
 		opened: boolean
 	}
 	const MinWidth = 560
 	const MinHeight = 600
 	const DefaultWidth = 1104
 	const DefaultHeight = 704
-	const WindowMargin = 24
+	/** The corner the window is carved with, which its clip, its glow and its edges follow. */
+	const FrameRadius = 10
 	const RailMin = 48
 	const RailDefault = 176
 	const RailMax = 280
@@ -30,7 +38,23 @@ declare namespace MenuSDK {
 	const CollapseRowH = 40
 	const ControlsRowH = 64
 	const ControlsRowVerticalH = 156
+	const MaxWindowSizePresets = 12
+	const MaxWindowSizePresetName = 40
 	function WindowSnapshot(): WindowState
+	/** The window's own element, which a drag writes its place straight onto. */
+	function SetWindowFrame(element: Nullable<HTMLElement>): void
+	/**
+	 * Moves the window while it is being carried: the place lands in the state and on the frame, and
+	 * the window's own tree is not told. Telling it is what a drag cannot afford - its render walks
+	 * the rail, the page and every card on it, and a drag asks for a new place every frame. What
+	 * reads the window between frames - the glass clip, a hit test - reads the state and so follows
+	 * along, what is placed against it renders off {@link SubscribeWindowDrag}, and
+	 * {@link NotifyWindow} settles the rest on the drop.
+	 *
+	 * @example
+	 * BeginDrag((x, y) => DragWindow(originX + DpToPx(x) - startX, originY + DpToPx(y) - startY))
+	 */
+	function DragWindow(x: number, y: number): void
 	/**
 	 * Places an absolutely positioned overlay element centered over the menu
 	 * window, falling back to the screen center while the window is closed,
@@ -39,9 +63,29 @@ declare namespace MenuSDK {
 	 */
 	function CenterOverWindow(element: HTMLElement): boolean
 	function WindowVersion(): number
+	/**
+	 * How many times the window has been moved by a hand on it. A drag writes the window's place
+	 * straight onto its frame and leaves {@link WindowVersion} alone, so the window's own tree is not
+	 * built again for a move it has already made - and whatever is placed against the window instead
+	 * of inside it would stand still while the window walks out from under it. This is what tells
+	 * those, and it costs a render of them alone.
+	 */
+	function WindowDragVersion(): number
+	/**
+	 * Follows the window while it is carried. It is not the whole of the window's story - a settle, a
+	 * resize, a preset all come through {@link SubscribeWindow} - so something laid out from where the
+	 * window stands takes both.
+	 *
+	 * @example
+	 * React.useSyncExternalStore(SubscribeWindow, WindowVersion)
+	 * React.useSyncExternalStore(SubscribeWindowDrag, WindowDragVersion)
+	 */
+	function SubscribeWindowDrag(onChange: () => void): () => void
 	function SubscribeWindow(onChange: () => void): () => void
 	function UpdateWindow(patch: Partial<WindowState>): void
 	function SaveWindowState(): void
+	function SaveWindowSizePreset(name: string): void
+	function RemoveWindowSizePreset(name: string): void
 	function NotifyWindow(): void
 	function ClampWindow(patch?: Partial<WindowState>): void
 	/**

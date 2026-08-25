@@ -58,7 +58,12 @@ interface NetworkedParticle {
 	/** What the modifiers of this particle hang off. */
 	readonly ModifiersAttached: Nullable<Unit | FakeUnit>
 	/** Control-point entities, as Dota's own union. */
-	readonly ControlPointsUnits: Map<number, [Unit | FakeUnit, number, number, boolean]>
+	readonly ControlPointsUnits: Map<number, [
+		Unit | FakeUnit,
+		number,
+		number,
+		boolean
+	]>
 	/** Entity index of the ability this particle belongs to, when one could be resolved. */
 	AbilityIndex: Nullable<number>
 	/** Entity index of the caster. */

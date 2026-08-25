@@ -25,10 +25,10 @@ declare namespace MenuSDK {
 		commitTextUpdate(instance: TextInstance, _prev: string, next: string): void
 		finalizeInitialChildren(): boolean
 		shouldSetTextContent(): boolean
-		getRootHostContext(): Nullable<object>
+		getRootHostContext(rootContainer: Container): Nullable<object>
 		getChildHostContext(parentContext: Nullable<object>): Nullable<object>
 		getPublicInstance(instance: Instance): Instance
-		prepareForCommit(): Nullable<object>
+		prepareForCommit(containerInfo: Container): Nullable<object>
 		resetAfterCommit(): void
 		preparePortalMount(): void
 		clearContainer(container: Container): void

@@ -182,6 +182,4 @@ declare interface Math {
 
 declare const __OCT_PACKAGE_ROOT__: string
 declare function LoadFont(path: string, isFallback: boolean, weight?: number): boolean
-declare function SetRMLPerf(enabled: boolean): void
-declare function GetRMLPerf(): string
 declare function SendListenerPerf(line: string, took: number, gameSecond: number): void

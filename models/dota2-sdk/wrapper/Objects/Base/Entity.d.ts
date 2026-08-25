@@ -1,5 +1,6 @@
 // AUTO-GENERATED - do not edit.
-declare function SetLatestTickDelta(delta: number): void
+declare var LocalPlayer: Nullable<Player>
+declare let GameRules: Nullable<CGameRules>
 declare class Entity implements INativeEntity {
 	public readonly Index: number
 	public CreateTime: number
@@ -79,7 +80,7 @@ declare class Entity implements INativeEntity {
 	public FieldHandlers_: Nullable<Map<number, FieldHandler>>
 	/** @private NOTE: this is internal field */
 	public Properties_: EntityPropertiesNode
-	constructor(index: number, serial: number)
+	constructor(Index: number, serial: number)
 	/**
 	 * @deprecated use IsHideWorldHud
 	 */

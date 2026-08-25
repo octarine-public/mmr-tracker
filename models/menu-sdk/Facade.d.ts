@@ -33,6 +33,18 @@ declare namespace MenuSDK {
 		 */
 		public get RevealTarget(): Nullable<AnyHandle>
 		public set RevealTarget(value: Nullable<AnyHandle>)
+		/**
+		 * Rows of your own under the ones this entry's context menu builds for itself — the menu its
+		 * row opens, and for a tab of a page whose children are tabs, the menu a right click on the
+		 * tab opens. Asked for every time the menu opens, so a row can say what is true right then.
+		 *
+		 * @example
+		 * page.ContextItems = () => [
+		 * 	{ icon: "menu/ui/copy.svg", label: "Take style", disabled: false, run: take }
+		 * ]
+		 */
+		public get ContextItems(): Nullable<() => readonly ContextMenuItem[]>
+		public set ContextItems(value: Nullable<() => readonly ContextMenuItem[]>)
 		public get tooltip(): string
 		public set tooltip(value: string)
 		public IsDefault(): boolean
@@ -51,15 +63,17 @@ declare namespace MenuSDK {
 		public get SaveConfig(): boolean
 		public set SaveConfig(value: boolean)
 	}
+	/** A driven value as a script hands it over: whatever kind the owning entry carries. */
+	type DrivenValue = boolean | number | string | string[]
 	/**
 	 * One hotkey riding an entry — the object the row's context menu edits. All
 	 * setters persist to the config and repaint the menu. `T` is the driven
 	 * value: boolean for a toggle, number for a slider, an option's value string
 	 * for a dropdown, or option values for a multiselect.
 	 */
-	class HotkeyHandle<T extends boolean | number | string | string[]> {
+	class HotkeyHandle<T extends DrivenValue> {
 		public readonly hotkey: EntryHotkey<T>
-		constructor(owner: HotkeyHolder, hotkey: EntryHotkey<T>)
+		constructor(owner: DriverHolder, hotkey: EntryHotkey<T>)
 		/** Packed bind code, 0 while unbound. */
 		public get Bind(): number
 		public set Bind(value: number)
@@ -91,6 +105,40 @@ declare namespace MenuSDK {
 		/** Whether the hotkey is currently driving the entry to its value. */
 		public get IsActive(): boolean
 		/** Removes the hotkey from its entry. */
+		public Remove(): void
+	}
+	/**
+	 * One logic rule riding an entry — the object the row's context menu edits. The rule holds its
+	 * entry at {@link LogicHandle.Value} while the match clock stands on its side of the threshold,
+	 * and puts back what the entry held before as soon as it does not, so every match arms it
+	 * again. All setters persist to the config and repaint the menu.
+	 */
+	class LogicHandle<T extends DrivenValue> {
+		public readonly rule: EntryLogic<T>
+		constructor(owner: DriverHolder, rule: EntryLogic<T>)
+		/** Whether the rule holds its value after its threshold or before it. */
+		public get When(): LogicWhen
+		public set When(value: LogicWhen)
+		/** Threshold on the match clock, in seconds. */
+		public get At(): number
+		public set At(value: number)
+		/** The threshold as the menu writes it: `"5:00"`, `"12:30"`. */
+		public get AtName(): string
+		/**
+		 * Value the rule holds the entry at while its condition does. A slider's value is clamped
+		 * and rounded like the slider itself; dropdown and multiselect values must name existing
+		 * options or the assignment is ignored.
+		 */
+		public get Value(): T
+		public set Value(value: T)
+		/**
+		 * The held value as the menu writes it: empty for a toggle, the number with the slider's
+		 * precision and suffix, the option of a dropdown, or the multiselect summary.
+		 */
+		public get ValueName(): string
+		/** Whether the rule is holding the entry at its value right now. */
+		public get IsActive(): boolean
+		/** Removes the rule, putting back what the entry held before it engaged. */
 		public Remove(): void
 	}
 	class Toggle extends Handle<ToggleEntry> {
@@ -128,6 +176,18 @@ declare namespace MenuSDK {
 		public AddHotkey(defaultKey?: string, mode?: HotkeyMode): HotkeyHandle<boolean>
 		/** The hotkeys riding this toggle, in creation order. */
 		public get Hotkeys(): HotkeyHandle<boolean>[]
+		/**
+		 * Adds a logic rule driving this toggle, exactly like "New logic" in the
+		 * row's context menu; it captures the switch's current state until edited.
+		 * Rules persist in the config, so call it on a user action rather than on
+		 * every script load — each call adds another rule.
+		 * @example
+		 * const lateGame = state.AddLogic("after", 5 * 60)
+		 * lateGame.Value = false
+		 */
+		public AddLogic(when?: LogicWhen, at?: number): LogicHandle<boolean>
+		/** The logic rules riding this toggle, in creation order. */
+		public get Logic(): LogicHandle<boolean>[]
 	}
 	class Slider extends Handle<SliderEntry> {
 		public IsDefault(): boolean
@@ -179,6 +239,18 @@ declare namespace MenuSDK {
 		public AddHotkey(defaultKey?: string, mode?: HotkeyMode): HotkeyHandle<number>
 		/** The hotkeys riding this slider, in creation order. */
 		public get Hotkeys(): HotkeyHandle<number>[]
+		/**
+		 * Adds a logic rule driving this slider, exactly like "New logic" in the
+		 * row's context menu; it captures the slider's current value until edited.
+		 * Rules persist in the config, so call it on a user action rather than on
+		 * every script load — each call adds another rule.
+		 * @example
+		 * const earlyGame = fov.AddLogic("before", 5 * 60)
+		 * earlyGame.Value = 120
+		 */
+		public AddLogic(when?: LogicWhen, at?: number): LogicHandle<number>
+		/** The logic rules riding this slider, in creation order. */
+		public get Logic(): LogicHandle<number>[]
 	}
 	class Dropdown extends Handle<DropdownEntry> {
 		public KeepArrowGap: boolean
@@ -191,6 +263,13 @@ declare namespace MenuSDK {
 		public get values(): string[]
 		/** @deprecated the options are {@link values} */
 		public get ValuesNames(): string[]
+		/**
+		 * Replaces the options offered, for a list discovered at runtime rather than declared.
+		 * The selection stays on the option it was on where that option survives.
+		 * @example
+		 * players.SetOptions(["Automatic", ...sources])
+		 */
+		public SetOptions(values: string[]): Dropdown
 		public OnValue(callback: (caller: Dropdown) => void): Dropdown
 		/** Runs the value listeners without a value having changed. */
 		public TriggerOnValueChangedCBs(): Dropdown
@@ -217,6 +296,18 @@ declare namespace MenuSDK {
 		public AddHotkey(defaultKey?: string, mode?: HotkeyMode): HotkeyHandle<string>
 		/** The hotkeys riding this dropdown, in creation order. */
 		public get Hotkeys(): HotkeyHandle<string>[]
+		/**
+		 * Adds a logic rule driving this dropdown, exactly like "New logic" in the
+		 * row's context menu; it captures the selected option until edited. Rules
+		 * persist in the config, so call it on a user action rather than on every
+		 * script load — each call adds another rule.
+		 * @example
+		 * const lateGame = mode.AddLogic("after", 10 * 60)
+		 * lateGame.Value = "Legit"
+		 */
+		public AddLogic(when?: LogicWhen, at?: number): LogicHandle<string>
+		/** The logic rules riding this dropdown, in creation order. */
+		public get Logic(): LogicHandle<string>[]
 	}
 	class MultiSelect extends Handle<MultiSelectEntry> {
 		public KeepArrowGap: boolean
@@ -230,6 +321,14 @@ declare namespace MenuSDK {
 		public get SelectedIDs(): number[]
 		public get SelectedNames(): string[]
 		public set SelectedNames(next: string[])
+		/**
+		 * Replaces the options offered, for a list discovered at runtime rather than declared.
+		 * The ticks stay on the names they were on, including names that have just gone away,
+		 * so an option that comes back comes back chosen.
+		 * @example
+		 * players.SetOptions(sources)
+		 */
+		public SetOptions(values: string[]): MultiSelect
 		public IsSelected(id: number): boolean
 		public Select(id: number, selected: boolean): void
 		public OnValue(callback: (caller: MultiSelect) => void): MultiSelect
@@ -238,7 +337,7 @@ declare namespace MenuSDK {
 		/**
 		 * Adds a hotkey driving this multiselect, exactly like "New Hotkey" in the
 		 * row's context menu; it captures the currently selected options until
-		 * edited. A toggle-mode hotkey swaps the selection with the previous one
+		 * edited. A toggle-mode hotkey swaps the selection with the previous one;
 		 * a hold-mode one restores the previous selection on release.
 		 * @example
 		 * const enemies = audience.AddHotkey("F3", "hold")
@@ -247,6 +346,16 @@ declare namespace MenuSDK {
 		public AddHotkey(defaultKey?: string, mode?: HotkeyMode): HotkeyHandle<string[]>
 		/** The hotkeys riding this multiselect, in creation order. */
 		public get Hotkeys(): HotkeyHandle<string[]>[]
+		/**
+		 * Adds a logic rule driving this multiselect, exactly like "New logic" in
+		 * the row's context menu; it captures the selected options until edited.
+		 * @example
+		 * const lateGame = audience.AddLogic("after", 5 * 60)
+		 * lateGame.Value = ["Enemies"]
+		 */
+		public AddLogic(when?: LogicWhen, at?: number): LogicHandle<string[]>
+		/** The logic rules riding this multiselect, in creation order. */
+		public get Logic(): LogicHandle<string[]>[]
 		/**
 		 * Rides colour pickers on one option's row, which is where a per-option colour belongs
 		 * instead of in a row of its own further down the node.
@@ -266,6 +375,17 @@ declare namespace MenuSDK {
 		public ResetToDefault(): void
 		public get ActivatesInMenu(): boolean
 		public set ActivatesInMenu(value: boolean)
+		/**
+		 * Whether a press this bind answers is taken from the game. On by default: a bind is
+		 * usually put on a key precisely so the game stops seeing it. Turn it off for a bind that
+		 * shadows one of the game's own, so both act on the same press.
+		 * @example
+		 * // a scoreboard on Tab, alongside the game's
+		 * this.HoldKey = tree.AddKeybind("Hold Key", "Tab")
+		 * this.HoldKey.ClaimsKey = false
+		 */
+		public get ClaimsKey(): boolean
+		public set ClaimsKey(value: boolean)
 		public get defaultKey(): string
 		public set defaultKey(value: string)
 		public get defaultKeyIdx(): number
@@ -279,7 +399,7 @@ declare namespace MenuSDK {
 		public set assignedKeyStr(value: string)
 		/**
 		 * Shows the capture popup affordance that assigns the left mouse button.
-		 * Off by default.
+		 * On by default; turn it off where a click is not a sensible trigger.
 		 */
 		public get AllowLeftMouse(): boolean
 		public set AllowLeftMouse(value: boolean)
@@ -314,10 +434,26 @@ declare namespace MenuSDK {
 	class ColorPicker extends Handle<ColorEntry> {
 		public IsDefault(): boolean
 		public ResetToDefault(): void
+		/** The colour this picker stands for: its own, or the one it {@link Follows} while untouched. */
 		public get SelectedColor(): Color
 		public set SelectedColor(next: Color)
 		/** The colour this picker was declared with. {@link ResetToDefault} puts it back. */
 		public get defaultColor(): Color
+		/**
+		 * Points this picker at a live colour for as long as nobody has touched it: the swatch shows
+		 * `ink` and {@link SelectedColor} answers with it, so a card that draws in the theme's own ink
+		 * until it is given a colour of its own says as much on its row.
+		 *
+		 * The declared default stays the literal it was declared with — it is what a config is
+		 * compared against, and one that moved with the theme would make the same config read
+		 * differently on two machines.
+		 *
+		 * @example
+		 * node.AddColorPicker("Color", HudColorOf(DefaultPalette.TextDisabled)).Follows(
+		 *     () => HudColors.faint
+		 * )
+		 */
+		public Follows(ink: () => Color): ColorPicker
 		public SetColor(color: Color): ColorPicker
 		public OnValue(callback: (caller: ColorPicker) => void): ColorPicker
 		/** Runs the value listeners without a value having changed. */
@@ -350,6 +486,16 @@ declare namespace MenuSDK {
 		public get enabledValues(): Map<string, boolean>
 		/** Replaces the whole selection, for a script restoring one it saved itself. */
 		public set enabledValues(next: Map<string, boolean> | [string, boolean][])
+		/**
+		 * The sections the picker's browse modal lists. Handing a catalogue over turns the row into
+		 * the chosen tiles and a button that opens the modal, which is what keeps a picker with a
+		 * whole shop behind it one row tall. Setting it lays every value out as a tile and keeps
+		 * whatever is already chosen.
+		 * @example
+		 * picker.Catalogue = [{ title: "Weapon", accent: "#e0a44b", values: weaponItems }]
+		 */
+		public get Catalogue(): readonly CatalogueSection[]
+		public set Catalogue(next: readonly CatalogueSection[])
 		/** The selection as the config carries it. Same state as {@link enabledValues}. */
 		public get ConfigValue(): Map<string, boolean>
 		public set ConfigValue(next: Map<string, boolean> | [string, boolean][])
@@ -369,7 +515,8 @@ declare namespace MenuSDK {
 		/**
 		 * Runs the callback whenever any control under this node changes - for a script that rebuilds
 		 * the same thing no matter which setting moved. Covers the controls the node holds when it is
-		 * called, so declare the page first and hang this off the end.
+		 * called, so declare the page first and hang this off the end. Fires once on subscription
+		 * itself rather than once per covered control.
 		 * @example
 		 * const page = tree.AddNode("Panel")
 		 * page.AddToggle("State", true)
@@ -379,6 +526,9 @@ declare namespace MenuSDK {
 		public get IsOpen(): boolean
 		public set IsOpen(value: boolean)
 		public get IsOpenStored(): boolean
+		/** Whether this node's card can be folded by clicking its header. */
+		public get Collapsible(): boolean
+		public set Collapsible(value: boolean)
 		/**
 		 * Whether the menu is showing this node's page right now. A panel that belongs to a page —
 		 * a preview of what it configures — has no business on screen while another page is open.
@@ -415,6 +565,16 @@ declare namespace MenuSDK {
 		public set SearchPlaceholder(value: string)
 		public get FilterGroups(): MenuFilterGroup[]
 		public set FilterGroups(value: MenuFilterGroup[])
+		/**
+		 * Lists this node's pages under one heading per {@link FilterGroups} entry, in the
+		 * order the groups are declared, instead of as one flat list. A heading reads the
+		 * group's tooltip; pages of no declared group stay on top under the node's own name.
+		 * @example
+		 * heroes.FilterGroups = [{ id: EHeroType.Gunner, icon, tooltip: "Gunner" }]
+		 * heroes.GroupHeadings = true
+		 */
+		public get GroupHeadings(): boolean
+		public set GroupHeadings(value: boolean)
 		public get FilterGroup(): Nullable<number>
 		public set FilterGroup(value: Nullable<number>)
 		public get IconTint(): boolean
@@ -455,6 +615,26 @@ declare namespace MenuSDK {
 		public get CustomPage(): Nullable<() => React.ReactNode>
 		public set CustomPage(value: Nullable<() => React.ReactNode>)
 		public AddSubSettings(host: AnyHandle): Node
+		/**
+		 * A settings row of this node's own: the row carries its name and the button that opens it,
+		 * and everything added to the node it returns lives in the popover the button opens — the
+		 * panel {@link AddSubSettings} opens for a row, titled with the name given here.
+		 *
+		 * For a block of settings that belongs to no single row of the card — the typography of a
+		 * label, the timings of a feature — where a fold would spend the card's height on rows read
+		 * once and left alone. Colours ride the row itself through {@link Node.PairColors}.
+		 * @example
+		 * const text = card.AddSettings("Text settings", "images/icons/text.svg")
+		 * text.AddSlider("Font size", 13, 10, 24)
+		 * text.PairColors(text.AddColorPicker("Text color", Color.White))
+		 */
+		public AddSettings(name: string, iconPath?: string, tooltip?: string): Node
+		/**
+		 * Rides colour pickers on this node's settings row: swatches beside the button open their
+		 * palettes and the pickers lose rows of their own, inside the popover as well as outside it.
+		 * What each one stands for is read from its name on hover.
+		 */
+		public PairColors(...pickers: ColorPicker[]): Node
 		public AddSectionHeader(name: string, iconPath?: string): ShortDescription
 		public AddShortDescription(name: string, tooltip?: string, priority?: number, iconPath?: string, iconRound?: number): ShortDescription
 		public AddNode(name: string, iconPath?: string, tooltip?: string, iconRound?: number, priority?: number): Node
@@ -515,7 +695,9 @@ declare namespace MenuSDK {
 	}
 	type AnyHandle = Node | Toggle | Slider | Dropdown | MultiSelect | Keybind | Button | ColorPicker | TextInput | ImageSelector | ShortDescription
 	/** A hotkey of any entry, whatever kind of value it drives. */
-	type AnyHotkey = HotkeyHandle<boolean | number | string | string[]>
+	type AnyHotkey = HotkeyHandle<DrivenValue>
+	/** A logic rule of any entry, whatever kind of value it drives. */
+	type AnyLogic = LogicHandle<DrivenValue>
 	function WrapEntry(entry: Entry): AnyHandle
 	const Menu: Node
 }

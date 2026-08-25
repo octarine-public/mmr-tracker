@@ -123,6 +123,8 @@ declare namespace MenuSDK {
 		icon: string
 		label: string
 		disabled?: boolean
+		color?: string
+		danger?: boolean
 		run: () => void
 	}
 	/** Opens the shared context menu under an anchor, right edges aligned. */
@@ -130,8 +132,8 @@ declare namespace MenuSDK {
 	/** Opens the shared context menu at the event's cursor position. */
 	function OpenActionsAtCursor(event: Event, actions: CfgAction[]): void
 	/**
-	 * Grows or folds its children when `show` flips, with the same height tween the
-	 * settings rows use. Children stay mounted in both states.
+	 * Grows or folds its children when `show` flips, on the shared collapse motion
+	 * the settings cards and rows use. Children stay mounted in both states.
 	 */
 	function RevealBox(props: {
 		show: boolean

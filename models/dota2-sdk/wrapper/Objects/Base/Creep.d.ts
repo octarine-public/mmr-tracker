@@ -4,7 +4,7 @@ declare class Creep extends Unit {
 	public Lane: MapArea
 	public PredictedIsWaitingToSpawn: boolean
 	public readonly BaseHPRegen: number
-	constructor(index: number, serial: number)
+	constructor(Index: number, serial: number)
 	public get HPRegen(): number
 	public get IsEidolon(): boolean
 	public get IsLaneCreep(): boolean

@@ -11,7 +11,7 @@ declare class AABB {
 	 * @example
 	 * const box = new AABB(pos, new Vector3(-50, -50), new Vector3(50, 50))
 	 */
-	constructor(base?: Vector3, minOffset?: Vector3, maxOffset?: Vector3, deltaZ?: number)
+	constructor(Base?: Vector3, MinOffset?: Vector3, MaxOffset?: Vector3, DeltaZ?: number)
 	/** Absolute Z of the top of the box (`Base.z + MaxOffset.z + DeltaZ`). @example const top = box.MaxZ */
 	public get MaxZ(): number
 	/** Minimum corner as a new Vector3 (`Base + MinOffset`, shifted by `DeltaZ`). @example const lo = box.Min */

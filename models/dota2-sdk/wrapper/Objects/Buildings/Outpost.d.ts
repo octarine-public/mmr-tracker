@@ -7,7 +7,7 @@ declare class Outpost extends Building {
 	 */
 	public OutpostName: string
 	/** @ignore */
-	constructor(index: number, serial: number)
+	constructor(Index: number, serial: number)
 	public get RingRadius(): number
 	public IsVisibleForEnemies(_seconds: number): boolean
 }

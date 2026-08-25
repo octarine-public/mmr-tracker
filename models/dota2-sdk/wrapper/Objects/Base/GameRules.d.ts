@@ -39,7 +39,7 @@ declare class CGameRules extends Entity {
 	public StockInfo: StockInfo[]
 	public BannedHeroesIDs: number[]
 	public NeutralSpawnBoxes: NeutralSpawnBox[]
-	constructor(index: number, serial: number)
+	constructor(Index: number, serial: number)
 	public get NetTimeOfDayNormilize(): number
 	public get GameTime(): number
 	public get GlyphCooldownRadiant(): number

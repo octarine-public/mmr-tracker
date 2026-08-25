@@ -48,111 +48,14 @@ declare const Dota2SDK: {
 	readonly DOTATeam: typeof DOTATeam
 	readonly DOTAUnitAttackCapability: typeof DOTAUnitAttackCapability
 	readonly DOTAUnitMoveCapability: typeof DOTAUnitMoveCapability
-	readonly DOTA_ABILITY_BEHAVIOR: {
-	DOTA_ABILITY_BEHAVIOR_NONE: bigint
-	DOTA_ABILITY_BEHAVIOR_HIDDEN: bigint
-	DOTA_ABILITY_BEHAVIOR_PASSIVE: bigint
-	DOTA_ABILITY_BEHAVIOR_NO_TARGET: bigint
-	DOTA_ABILITY_BEHAVIOR_UNIT_TARGET: bigint
-	DOTA_ABILITY_BEHAVIOR_POINT: bigint
-	DOTA_ABILITY_BEHAVIOR_AOE: bigint
-	DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE: bigint
-	DOTA_ABILITY_BEHAVIOR_CHANNELLED: bigint
-	DOTA_ABILITY_BEHAVIOR_ITEM: bigint
-	DOTA_ABILITY_BEHAVIOR_TOGGLE: bigint
-	DOTA_ABILITY_BEHAVIOR_DIRECTIONAL: bigint
-	DOTA_ABILITY_BEHAVIOR_IMMEDIATE: bigint
-	DOTA_ABILITY_BEHAVIOR_AUTOCAST: bigint
-	DOTA_ABILITY_BEHAVIOR_OPTIONAL_UNIT_TARGET: bigint
-	DOTA_ABILITY_BEHAVIOR_OPTIONAL_POINT: bigint
-	DOTA_ABILITY_BEHAVIOR_OPTIONAL_NO_TARGET: bigint
-	DOTA_ABILITY_BEHAVIOR_AURA: bigint
-	DOTA_ABILITY_BEHAVIOR_ATTACK: bigint
-	DOTA_ABILITY_BEHAVIOR_DONT_RESUME_MOVEMENT: bigint
-	DOTA_ABILITY_BEHAVIOR_ROOT_DISABLES: bigint
-	DOTA_ABILITY_BEHAVIOR_UNRESTRICTED: bigint
-	DOTA_ABILITY_BEHAVIOR_IGNORE_PSEUDO_QUEUE: bigint
-	DOTA_ABILITY_BEHAVIOR_IGNORE_CHANNEL: bigint
-	DOTA_ABILITY_BEHAVIOR_DONT_CANCEL_MOVEMENT: bigint
-	DOTA_ABILITY_BEHAVIOR_DONT_ALERT_TARGET: bigint
-	DOTA_ABILITY_BEHAVIOR_DONT_RESUME_ATTACK: bigint
-	DOTA_ABILITY_BEHAVIOR_NORMAL_WHEN_STOLEN: bigint
-	DOTA_ABILITY_BEHAVIOR_IGNORE_BACKSWING: bigint
-	DOTA_ABILITY_BEHAVIOR_RUNE_TARGET: bigint
-	DOTA_ABILITY_BEHAVIOR_DONT_CANCEL_CHANNEL: bigint
-	DOTA_ABILITY_BEHAVIOR_VECTOR_TARGETING: bigint
-	DOTA_ABILITY_BEHAVIOR_LAST_RESORT_POINT: bigint
-	DOTA_ABILITY_BEHAVIOR_CAN_SELF_CAST: bigint
-	DOTA_ABILITY_BEHAVIOR_SHOW_IN_GUIDES: bigint
-	DOTA_ABILITY_BEHAVIOR_UNLOCKED_BY_EFFECT_INDEX: bigint
-	DOTA_ABILITY_BEHAVIOR_SUPPRESS_ASSOCIATED_CONSUMABLE: bigint
-	DOTA_ABILITY_BEHAVIOR_FREE_DRAW_TARGETING: bigint
-	DOTA_ABILITY_BEHAVIOR_IGNORE_SILENCE: bigint
-	DOTA_ABILITY_BEHAVIOR_OVERSHOOT: bigint
-	DOTA_ABILITY_BEHAVIOR_IGNORE_MUTED: bigint
-	DOTA_ABILITY_BEHAVIOR_ALT_CASTABLE: bigint
-	DOTA_ABILITY_BEHAVIOR_SKIP_FOR_KEYBINDS: bigint
-	DOTA_ABILITY_BEHAVIOR_INNATE_UI: bigint
-	DOTA_ABILITY_BEHAVIOR_UNSWAPPABLE: bigint
-	DOTA_ABILITY_BEHAVIOR_DONT_PROC_OTHER_ABILITIES: bigint
-	DOTA_ABILITY_BEHAVIOR_IGNORE_INVISIBLE: bigint
-	DOTA_ABILITY_BEHAVIOR_AFFECTED_BY_MUTE: bigint
-	DOTA_ABILITY_BEHAVIOR_IS_FAKE_ITEM: bigint
-	DOTA_ABILITY_BEHAVIOR_FORCE_NO_INNATE_UI: bigint
-	DOTA_ABILITY_BEHAVIOR_FORCE_KEYBIND: bigint
-	DOTA_ABILITY_BEHAVIOR_ITEM_IMBUE: bigint
-	DOTA_ABILITY_BEHAVIOR_HAS_DETAILS_UI: bigint
-}
+	readonly DOTA_ABILITY_BEHAVIOR: typeof DOTA_ABILITY_BEHAVIOR
 	readonly DOTA_CHAT_MESSAGE: typeof DOTA_CHAT_MESSAGE
 	readonly DOTA_ITEM_DISASSEMBLE: typeof DOTA_ITEM_DISASSEMBLE
 	readonly DOTA_RUNES: typeof DOTA_RUNES
 	readonly DOTA_SHOP_TYPE: typeof DOTA_SHOP_TYPE
-	readonly DOTA_UNIT_TARGET_FLAGS: {
-	DOTA_UNIT_TARGET_FLAG_NONE: bigint
-	DOTA_UNIT_TARGET_FLAG_RANGED_ONLY: bigint
-	DOTA_UNIT_TARGET_FLAG_MELEE_ONLY: bigint
-	DOTA_UNIT_TARGET_FLAG_DEAD: bigint
-	DOTA_UNIT_TARGET_FLAG_MAGIC_IMMUNE_ENEMIES: bigint
-	DOTA_UNIT_TARGET_FLAG_NOT_MAGIC_IMMUNE_ALLIES: bigint
-	DOTA_UNIT_TARGET_FLAG_INVULNERABLE: bigint
-	DOTA_UNIT_TARGET_FLAG_FOW_VISIBLE: bigint
-	DOTA_UNIT_TARGET_FLAG_NO_INVIS: bigint
-	DOTA_UNIT_TARGET_FLAG_CAN_BE_SEEN: bigint
-	DOTA_UNIT_TARGET_FLAG_NOT_ANCIENTS: bigint
-	DOTA_UNIT_TARGET_FLAG_PLAYER_CONTROLLED: bigint
-	DOTA_UNIT_TARGET_FLAG_NOT_DOMINATED: bigint
-	DOTA_UNIT_TARGET_FLAG_NOT_SUMMONED: bigint
-	DOTA_UNIT_TARGET_FLAG_NOT_ILLUSIONS: bigint
-	DOTA_UNIT_TARGET_FLAG_NOT_ATTACK_IMMUNE: bigint
-	DOTA_UNIT_TARGET_FLAG_MANA_ONLY: bigint
-	DOTA_UNIT_TARGET_FLAG_CHECK_DISABLE_HELP: bigint
-	DOTA_UNIT_TARGET_FLAG_NOT_CREEP_HERO: bigint
-	DOTA_UNIT_TARGET_FLAG_OUT_OF_WORLD: bigint
-	DOTA_UNIT_TARGET_FLAG_NOT_NIGHTMARED: bigint
-	DOTA_UNIT_TARGET_FLAG_PREFER_ENEMIES: bigint
-	DOTA_UNIT_TARGET_FLAG_RESPECT_OBSTRUCTIONS: bigint
-}
-	readonly DOTA_UNIT_TARGET_TEAM: {
-	DOTA_UNIT_TARGET_TEAM_NONE: bigint
-	DOTA_UNIT_TARGET_TEAM_FRIENDLY: bigint
-	DOTA_UNIT_TARGET_TEAM_ENEMY: bigint
-	DOTA_UNIT_TARGET_TEAM_BOTH: bigint
-	DOTA_UNIT_TARGET_TEAM_CUSTOM: bigint
-}
-	readonly DOTA_UNIT_TARGET_TYPE: {
-	DOTA_UNIT_TARGET_NONE: bigint
-	DOTA_UNIT_TARGET_HERO: bigint
-	DOTA_UNIT_TARGET_CREEP: bigint
-	DOTA_UNIT_TARGET_BUILDING: bigint
-	DOTA_UNIT_TARGET_COURIER: bigint
-	DOTA_UNIT_TARGET_HEROES_AND_CREEPS: bigint
-	DOTA_UNIT_TARGET_OTHER: bigint
-	DOTA_UNIT_TARGET_ALL: bigint
-	DOTA_UNIT_TARGET_TREE: bigint
-	DOTA_UNIT_TARGET_CUSTOM: bigint
-	DOTA_UNIT_TARGET_SELF: bigint
-	DOTA_UNIT_TARGET_BASIC: bigint
-}
+	readonly DOTA_UNIT_TARGET_FLAGS: typeof DOTA_UNIT_TARGET_FLAGS
+	readonly DOTA_UNIT_TARGET_TEAM: typeof DOTA_UNIT_TARGET_TEAM
+	readonly DOTA_UNIT_TARGET_TYPE: typeof DOTA_UNIT_TARGET_TYPE
 	readonly DataTeamPlayer: typeof DataTeamPlayer
 	readonly DeathProphetExorcismSpirit: typeof DeathProphetExorcismSpirit
 	readonly DotaMap: typeof DotaMap
@@ -193,7 +96,7 @@ declare const Dota2SDK: {
 	readonly GameData: typeof GameData
 	readonly GameManager: Nullable<CGameManager>
 	readonly GameMode: Nullable<DOTABaseGameMode>
-	readonly GameRules: Nullable<CGameRules>
+	readonly GameRules: typeof GameRules
 	readonly GameSleeper: typeof GameSleeper
 	readonly GameState: typeof GameState
 	readonly GetPositionHeight: (loc: Vector2 | Vector3) => number
@@ -216,7 +119,7 @@ declare const Dota2SDK: {
 	readonly Lantern: typeof Lantern
 	readonly LifeState: typeof LifeState
 	readonly LinearProjectile: typeof LinearProjectile
-	readonly LocalPlayer: Nullable<Player>
+	readonly LocalPlayer: typeof LocalPlayer
 	readonly LotusPool: typeof LotusPool
 	readonly MangoTree: typeof MangoTree
 	readonly MapArea: typeof MapArea
@@ -253,7 +156,7 @@ declare const Dota2SDK: {
 	readonly PlayerData: typeof PlayerData
 	readonly PlayerEventData: typeof PlayerEventData
 	readonly PlayerPawn: typeof PlayerPawn
-	readonly PlayerResource: Nullable<CPlayerResource>
+	readonly PlayerResource: typeof PlayerResource
 	readonly PlayerTeamData: typeof PlayerTeamData
 	readonly PowerTreadsAttribute: typeof PowerTreadsAttribute
 	readonly ProjectileManager: typeof ProjectileManager
@@ -261,7 +164,6 @@ declare const Dota2SDK: {
 	readonly RagdollManager: typeof RagdollManager
 	readonly RenderMode: typeof RenderMode
 	readonly RendererSDK: typeof RendererSDK
-	readonly ResetSettingsUpdated: typeof ResetSettingsUpdated
 	readonly Roshan: typeof Roshan
 	readonly RoshanLocation1: typeof RoshanLocation1
 	readonly RoshanLocation2: typeof RoshanLocation2

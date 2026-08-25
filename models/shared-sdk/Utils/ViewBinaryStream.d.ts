@@ -245,7 +245,8 @@ declare class ViewBinaryStream {
 	 */
 	public ReadNullTerminatedUtf16String(): string
 	/**
-	 * Reads a uint32 offset then the NUL-terminated UTF-8 string it points to; the cursor is restored to just after the offset. A zero offset yields "".
+	 * Reads a uint32 offset (relative to its own position) then the NUL-terminated UTF-8 string it
+	 * points to; the cursor is restored to just after the offset. A zero offset yields "".
 	 * @example
 	 * const name = stream.ReadOffsetString()
 	 */

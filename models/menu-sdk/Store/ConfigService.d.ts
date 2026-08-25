@@ -36,7 +36,6 @@ declare namespace MenuSDK {
 	}
 	const MaxConfigs = 10
 	const BadgeNames: string[]
-	const MineSortNames: string[]
 	const GallerySortNames: string[]
 	class CConfigService {
 		public Items: IConfigItem[]
@@ -66,7 +65,11 @@ declare namespace MenuSDK {
 		public LoadPresets(): Promise<void>
 		public Activate(item: IConfigItem): Promise<void>
 		public Create(name: string): Promise<void>
-		public AddByCode(code: string): Promise<void>
+		/**
+		 * Adds a shared config by its share code. Resolves to whether the config was actually added,
+		 * so the page can keep a rejected code in the field for correction instead of wiping it.
+		 */
+		public AddByCode(code: string): Promise<boolean>
 		public Delete(item: IConfigItem): Promise<void>
 		public TogglePublic(item: IConfigItem): Promise<void>
 		public SaveInfo(item: IConfigItem, name: string, description: string, badge: number): Promise<void>

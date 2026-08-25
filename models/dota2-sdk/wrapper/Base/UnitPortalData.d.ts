@@ -7,7 +7,7 @@ declare class UnitPortalData {
 	public AbilityName: string
 	public readonly EndPosition: Vector3
 	public readonly StartPosition: Vector3
-	constructor(casterIndex: number)
+	constructor(CasterIndex: number)
 	public get Caster(): Nullable<Unit>
 	public get Target(): Nullable<Unit>
 	public get RemainingTime(): number

@@ -1,10 +1,17 @@
 // AUTO-GENERATED - do not edit.
 declare namespace MenuSDK {
 	class ScrollController {
-		constructor(root: HTMLElement, content: HTMLElement, thumb: HTMLElement, thumbFill: HTMLElement)
+		constructor(root: HTMLElement, content: HTMLElement, lead: HTMLElement, tail: HTMLElement, thumb: HTMLElement, thumbFill: HTMLElement, fadeTop?: HTMLElement, fadeBottom?: HTMLElement)
 		public get Offset(): number
 		public ScrollBy(deltaPx: number): void
 		public ScrollTo(offsetPx: number): void
+		/**
+		 * Puts the offset back where an area was left, as soon as there is content to scroll
+		 * through: a freshly mounted area has not been laid out yet, so placing it right away
+		 * would clamp it to the top. The attempt gives up once the content settles shorter than
+		 * the offset asked for, and a scroll of the area's own cancels it outright.
+		 */
+		public RestoreOffset(offsetPx: number): void
 		public ScrollToDescendant(target: HTMLElement): void
 		public ScrollToChild(child: HTMLElement): void
 		public OnWheel(event: Event): void
@@ -14,14 +21,24 @@ declare namespace MenuSDK {
 		public Tick(now: number): void
 		public Sync(): void
 	}
+	/**
+	 * Hands the content area over to a controller, which takes back the offset the area was left
+	 * at. The window mounts a new one every time it opens - a closed menu drops its whole body -
+	 * so the offset is kept here rather than in the controller that measured it.
+	 */
 	function SetContentScroll(controller: Nullable<ScrollController>): void
+	/**
+	 * Names the page the content area is showing. A page it is already on keeps the offset it was
+	 * left at, so reopening the menu lands where it was; any other page starts at the top.
+	 */
+	function SetContentPage(page: string): void
 	function ContentScroll(): Nullable<ScrollController>
 	function RequestScrollTo(entry: object): void
-	function HasPendingScroll(): boolean
 	function TickScrollAreas(now: number): void
 	function ResetScrollAreas(): void
 	function Scroll(props: {
 		style?: RmlStyle
+		fade?: boolean
 		controller?: (controller: Nullable<ScrollController>) => void
 		rootRef?: (element: Nullable<HTMLElement>) => void
 		children?: React.ReactNode

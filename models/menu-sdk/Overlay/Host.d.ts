@@ -18,7 +18,13 @@ declare namespace MenuSDK {
 	 */
 	function CursorOverOverlays(): boolean
 	function CloseOverlays(): void
-	function CloseOverlaysAbove(order: number): void
+	/**
+	 * Closes what a new overlay replaces, keeping the one it is opened from: a panel carrying the row
+	 * a popup hangs off has to outlive the click that opens the popup, or the settings of an element
+	 * would close the preview panel they were asked for on. Modal-order overlays stay as they stay
+	 * for {@link CloseOverlays}.
+	 */
+	function CloseOverlaysExcept(anchor: Nullable<HTMLElement>): void
 	function TickOverlays(): void
 	function ResetOverlays(): void
 }

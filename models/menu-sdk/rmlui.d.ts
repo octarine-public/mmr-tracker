@@ -97,6 +97,24 @@ declare class HTMLElement {
 	public querySelector(selector: string): Nullable<HTMLElement>
 	public querySelectorAll(selector: string): HTMLElement[]
 	public scrollIntoView(alignWithTop: boolean): void
+	/** Per-element write cache; owned by menu-sdk `World/Write.ts`. The expando beats a WeakMap
+	 * on the hottest per-frame path, where the map lookup was the single biggest cost left. */
+	public worldSlots_?: Map<string, number | string>
+	/** The element's native style proxy, fetched once; owned by `World/Write.ts`. */
+	public worldStyle_?: RmlStyleDeclaration
+	/** The string the element's text node holds; owned by `World/Write.ts`. */
+	public worldText_?: string
+	public hudSource_?: string
+	/** The live text node inside the element; owned by `World/Write.ts`. */
+	public worldTextNode_?: HTMLElement
+	/**
+	 * Sets one px-valued property from a number, skipping the style string parser. The ordinal
+	 * indexes the host's fixed table: 0 left, 1 top, 2 width, 3 height, 4 margin-left,
+	 * 5 margin-right, 6 margin-top, 7 margin-bottom, 8 font-size.
+	 */
+	public setPropertyPx(id: number, value: number): void
+	/** Sets `transform: translate(x, y) rotate(angle)` in px and degrees, skipping the parser. */
+	public setPlacement(x: number, y: number, angleDeg: number): void
 	public destroy(): void
 }
 
@@ -107,6 +125,13 @@ declare class HTMLDocument extends HTMLElement {
 	public createElement(tagName: string): HTMLElement
 	public createTextNode(text: string): HTMLElementText
 	public setStyleSheet(source: string): void
+	/**
+	 * A fresh full-screen document over the same skeleton, for one UI layer. Layout dirt is per
+	 * document, so a layer that moves every frame stops reformatting the layers that do not.
+	 */
+	public createLayerDocument(): HTMLDocument
+	/** Unloads this document; the host refuses to close its base one. */
+	public close(): void
 }
 
 declare class HTMLElementImage extends HTMLElement {
@@ -194,3 +219,64 @@ declare function SetRMLAnalyticClip(
  * Also the capability marker for native-scaled layout: without it MenuScale() is 1.
  */
 declare function SetRMLDpScale(scale: number): void
+
+/**
+ * Uploads one slot of segment data for the `capsules` SDF decorator. Layout of `data`:
+ * 40 vec4s of quad-local px endpoints (x1, y1, x2, y2 per segment) at 0…159, then one
+ * chain id per segment at 160…199; `count` is the segment count. Runs of equal chain id
+ * are unioned into one field and shaded together, and later runs are laid painter-style
+ * over earlier ones — all ids equal collapses to a single union. The decorator string only
+ * names the slot — the geometry rides here, so the string stays stable across frames and
+ * never grows RmlUi's decorator cache. Raw px throughout; dp scaling never touches it.
+ * Also the capability marker for the capsules shader.
+ */
+declare function SetRMLShaderVectors(
+	slot: number,
+	data: Float32Array,
+	count: number
+): void
+
+/**
+ * How many capsule vector slots the host carries. Hosts predating the function carry 16;
+ * feature-detect before calling.
+ */
+declare function RMLShaderSlotCount(): number
+
+/**
+ * Mints an image source for bytes a script holds — cover art it fetched, a chart it built — so an
+ * element can name something that was never a file. The answer goes straight into `src`.
+ *
+ * Returns `""` when the bytes are unusable or over the size cap.
+ * @example
+ * const src = RegisterImageBlob(await (await SharedSDK.fetch(url)).arrayBuffer())
+ * element.setAttribute("src", src)
+ */
+declare function RegisterImageBlob(data: ArrayBuffer | ArrayBufferView): string
+/**
+ * Drops the bytes behind a source minted by {@link RegisterImageBlob}. A texture already built
+ * from them stays valid — the bytes are only read while it loads — so the moment to free one is
+ * when its replacement is registered.
+ */
+declare function FreeImageBlob(source: string): void
+
+/**
+ * Mints an image source naming a file and the pixel size it will be drawn at, so the decode
+ * resamples straight to that size in one filter pass. Mip selection can only land on a
+ * power-of-two level and rounds toward the smaller one, so art drawn at a size the chain does not
+ * hold reads soft — for a grid of tiles laid out in dp, this is the difference between sharp and
+ * blurred. Feature-detect: hosts predating it have no such function.
+ *
+ * Sizes are in whole screen pixels. The same file at the same size answers with the same source
+ * however many elements ask, and the host counts the holders, so each caller frees its own.
+ *
+ * Returns `""` when the path is empty or the size is unusable.
+ * @example
+ * const src = RegisterSizedImage(path, DpToPx(width), DpToPx(height))
+ * element.setAttribute("src", src)
+ */
+declare function RegisterSizedImage(path: string, width: number, height: number): string
+/**
+ * Drops one hold on a source minted by {@link RegisterSizedImage}. A texture already built from it
+ * stays valid, so the moment to free one is when its replacement is registered.
+ */
+declare function FreeSizedImage(source: string): void

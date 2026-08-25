@@ -28,6 +28,7 @@ declare const Source2SDK: {
 	readonly Events: typeof Events
 	readonly FieldHandlers: typeof FieldHandlers
 	readonly GetConstructorByName: (className: string, constructorNameHint?: string) => Nullable<Constructor<INativeEntity>>
+	readonly GetNameByConstructor: (constructor: Constructor<INativeEntity>) => Nullable<string>
 	readonly IgnoreUnmappedClass: (className: string) => void
 	readonly InputManager: CInputManager
 	readonly InputMessage: typeof InputMessage
@@ -55,10 +56,10 @@ declare const Source2SDK: {
 	readonly SDKClasses: typeof SDKClasses
 	readonly SetBaseEntityClass: (next: Constructor<INativeEntity>) => void
 	readonly SetCellWidth: (next: number) => void
+	readonly SetEntityFieldsApplied: <T extends INativeEntity>(handler: (entity: T) => void) => void
 	readonly SetEntitySymbolMapper: (next: (symbol: string) => string) => void
 	readonly SetEntityVisualHasVelocity: (next: boolean) => void
 	readonly SetGameRulesSink: (next: (entity: Nullable<INativeGameRules>) => void) => void
-	readonly SetGameTimeUpdater: (next: () => void) => void
 	readonly SetGroundHeightSource: (next: (position: Vector2) => number) => void
 	readonly SetLatestTickDelta: (delta: number) => void
 	readonly SetLocalPlayerSink: (next: (entity: Nullable<INativeEntity>) => void) => void

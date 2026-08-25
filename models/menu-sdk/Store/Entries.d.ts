@@ -50,6 +50,18 @@ declare namespace MenuSDK {
 	}
 	function IsEntryVisible(entry: EntryCommon): boolean
 	/**
+	 * Whether this entry's rows live in a floating window rather than on a page or in a popover:
+	 * some ancestor is a hosted node that is not a popover — the combination only a window's page
+	 * carries. Such a row offers no context menu; the window itself answers the right button.
+	 */
+	function IsWindowHosted(entry: EntryCommon): boolean
+	/**
+	 * Whether this node is a page of its own, rather than a row of the one holding it. A node that
+	 * opens in a popover is a row wherever rows are listed and a page nowhere: the extra settings of
+	 * another row, or a settings row of its own.
+	 */
+	function IsPageNode(entry: Entry): entry is NodeEntry
+	/**
 	 * Whether the entry sits under a switch that is off — a page's {@link NodeEntry.gate} or the
 	 * header control of a card above it. Nothing is locked and no value is lost; the accent goes
 	 * muted so the block reads as set up but not running, and stays as easy to read and to change
@@ -71,18 +83,26 @@ declare namespace MenuSDK {
 		readonly kind: "node"
 		readonly children: Entry[]
 		expanded: boolean
+		collapsible?: boolean
 		sortNodes: boolean
 		iconTint: boolean
 		filterGroup: Nullable<number>
 		filterGroups: MenuFilterGroup[]
 		filtersOff: Set<number>
+		groupHeadings?: boolean
 		saveUnusedConfigs: boolean
 		stored?: Record<string, unknown>
 		pinnedName?: string
 		pinnedLabel?: string
 		subLabel?: string
 		searchPlaceholder?: string
+		/**
+		 * Whether this node opens in a popover instead of on the page: the extra settings of a row,
+		 * or a settings row of its own carrying nothing but its name, its swatches and the button.
+		 */
 		popover?: boolean
+		/** Colour pickers riding this node's settings row, which lose rows of their own. */
+		swatches?: ColorEntry[]
 		textColor?: Color
 		iconGrayScale?: boolean
 		tabbedChildren?: boolean
@@ -102,23 +122,43 @@ declare namespace MenuSDK {
 	/** When a bound hotkey appears in the on-screen hotkeys panel. */
 	type HotkeyVisibility = "hidden" | "active" | "always"
 	/**
-	 * A key bound to an entry from its row's context menu. While the hotkey is active it drives
-	 * the entry to {@link value}; a hold-mode hotkey reverts on release, a toggle-mode one
-	 * applies on every press.
+	 * What holds an entry at a stored value: a hotkey while its key is engaged, a logic rule while
+	 * its condition holds. Both drive the entry and let it go the same way — only what turns them
+	 * on differs.
 	 */
-	interface EntryHotkey<T = unknown> {
+	interface EntryDriver<T = unknown> {
+		/** Value the driver holds the entry at while it is active. */
+		value: T
+		/** Whether the driver is currently holding the entry at its value; not persisted. */
+		active: boolean
+		/** Value the entry held before the driver engaged, restored on release; not persisted. */
+		restore?: T
+	}
+	/**
+	 * A key bound to an entry from its row's context menu. While the hotkey is active it drives
+	 * the entry to {@link EntryDriver.value}; a hold-mode hotkey reverts on release, a toggle-mode
+	 * one applies on every press.
+	 */
+	interface EntryHotkey<T = unknown> extends EntryDriver<T> {
 		/** Packed bind code (`PackBind` in Store/Bind), 0 while unbound. */
 		bind: number
 		/** "toggle" applies the value on every press, "hold" drives it only while the key is down. */
 		mode: HotkeyMode
-		/** Value the hotkey drives the entry to while active. */
-		value: T
 		/** When this hotkey appears in the on-screen hotkeys panel. */
 		visibility: HotkeyVisibility
-		/** Whether the hotkey is currently driving the entry to its value; not persisted. */
-		active: boolean
-		/** Value the entry held before the hotkey engaged, restored on release; not persisted. */
-		restore?: T
+	}
+	/** Which side of its threshold a logic rule holds its value on. */
+	type LogicWhen = "after" | "before"
+	/**
+	 * A condition bound to an entry from its row's context menu. While the match clock stands on the
+	 * {@link when} side of {@link at} the rule drives the entry to its value, and puts back whatever
+	 * the entry held before as soon as it does not — so the next match arms the rule again.
+	 */
+	interface EntryLogic<T = unknown> extends EntryDriver<T> {
+		/** Whether the rule holds its value after the threshold or before it. */
+		when: LogicWhen
+		/** Threshold on the match clock, in seconds. */
+		at: number
 	}
 	/** Hotkey of a toggle: a press flips the switch or drives it to the stored state. */
 	type ToggleHotkey = EntryHotkey<boolean>
@@ -132,6 +172,17 @@ declare namespace MenuSDK {
 	type DropdownHotkey = EntryHotkey<string>
 	/** Hotkey of a multiselect: the option values selected while the hotkey is active. */
 	type MultiSelectHotkey = EntryHotkey<string[]>
+	/** Logic rule of a toggle: while its condition holds the switch sits at the stored state. */
+	type ToggleLogic = EntryLogic<boolean>
+	/** Logic rule of a slider: while its condition holds the slider sits at the stored number. */
+	type SliderLogic = EntryLogic<number>
+	/**
+	 * Logic rule of a dropdown: while its condition holds the stored option is selected. Keyed by
+	 * the option's value for the same reason a dropdown hotkey is.
+	 */
+	type DropdownLogic = EntryLogic<string>
+	/** Logic rule of a multiselect: the option values selected while its condition holds. */
+	type MultiSelectLogic = EntryLogic<string[]>
 	interface ToggleEntry extends EntryCommon {
 		readonly kind: "toggle"
 		readonly defaultValue: boolean
@@ -140,6 +191,8 @@ declare namespace MenuSDK {
 		swatches?: ColorEntry[]
 		/** Keys bound to this toggle from its context menu, in creation order. */
 		hotkeys: ToggleHotkey[]
+		/** Conditions bound to this toggle from its context menu, in creation order. */
+		logic: ToggleLogic[]
 		listeners: ((entry: ToggleEntry) => void)[]
 	}
 	interface SliderEntry extends EntryCommon {
@@ -157,6 +210,8 @@ declare namespace MenuSDK {
 		callOnRelease: boolean
 		/** Keys bound to this slider from its context menu, in creation order. */
 		hotkeys: SliderHotkey[]
+		/** Conditions bound to this slider from its context menu, in creation order. */
+		logic: SliderLogic[]
 		listeners: ((entry: SliderEntry) => void)[]
 		finishListeners: ((entry: SliderEntry) => void)[]
 	}
@@ -168,6 +223,8 @@ declare namespace MenuSDK {
 		swatches?: OptionSwatches
 		/** Keys bound to this dropdown from its context menu, in creation order. */
 		hotkeys: DropdownHotkey[]
+		/** Conditions bound to this dropdown from its context menu, in creation order. */
+		logic: DropdownLogic[]
 		listeners: ((entry: DropdownEntry) => void)[]
 	}
 	/**
@@ -187,6 +244,8 @@ declare namespace MenuSDK {
 		swatches?: OptionSwatches
 		/** Keys bound to this multiselect from its context menu, in creation order. */
 		hotkeys: MultiSelectHotkey[]
+		/** Conditions bound to this multiselect from its context menu, in creation order. */
+		logic: MultiSelectLogic[]
 		listeners: ((entry: MultiSelectEntry) => void)[]
 	}
 	interface KeybindEntry extends EntryCommon {
@@ -196,6 +255,12 @@ declare namespace MenuSDK {
 		assignedKey: number
 		active: boolean
 		activatesInMenu: boolean
+		/**
+		 * Whether a press this bind answers is taken from the game. On by default: a bind is
+		 * usually put on a key precisely so the game stops seeing it. A bind that shadows one of
+		 * the game's own - a scoreboard on Tab - turns it off, and both act on the same press.
+		 */
+		claimsKey: boolean
 		allowLeftMouse: boolean
 		allowCombinations: boolean
 		listeners: ((entry: KeybindEntry) => void)[]
@@ -214,6 +279,16 @@ declare namespace MenuSDK {
 		readonly kind: "color"
 		readonly defaultColor: Color
 		color: Color
+		/**
+		 * The colour this picker stands for while nobody has touched it, read every render. A default
+		 * that follows the theme rather than a literal, for a swatch whose owner draws in the theme's
+		 * own ink until it is given a colour of its own.
+		 *
+		 * {@link defaultColor} stays the literal it was declared with: it is what a config is compared
+		 * against, and one that moved with the theme would make the same config read differently on
+		 * two machines.
+		 */
+		follows?: () => Color
 		listeners: ((entry: ColorEntry) => void)[]
 	}
 	interface TextEntry extends EntryCommon {
@@ -223,6 +298,22 @@ declare namespace MenuSDK {
 		listeners: ((entry: TextEntry) => void)[]
 	}
 	type ImageVariant = "square" | "item" | "hero" | "circle"
+	/** One value a catalogue offers, as the picker's browse modal lists it. */
+	interface CatalogueValue {
+		/** The value itself, which is also what the tile's image is resolved from. */
+		readonly value: string
+		/** What the tile is called, localized before it is shown. */
+		readonly label: string
+		/** Words the modal's search matches besides the label, such as what the value does. */
+		readonly keywords?: string
+	}
+	/** A titled run of values in the browse modal, such as one shop category. */
+	interface CatalogueSection {
+		readonly title: string
+		readonly values: readonly CatalogueValue[]
+		/** Colour the heading and a chosen tile's edge wear, in place of the theme's accent. */
+		readonly accent?: string
+	}
 	interface ImagesEntry extends EntryCommon {
 		readonly kind: "images"
 		variant?: ImageVariant
@@ -233,18 +324,21 @@ declare namespace MenuSDK {
 		ordered: boolean
 		/** Lets the user rearrange the grid by dragging tiles. */
 		draggable: boolean
-		rawPaths: boolean
 		createdDefault: boolean
 		defaultPairs: string
+		/**
+		 * What the row's own tiles are chosen from. A picker with a catalogue keeps the chosen tiles
+		 * in the row and hands the rest to a modal, so a hundred-value picker stays one row tall.
+		 */
+		catalogue: readonly CatalogueSection[]
 		listeners: ((entry: ImagesEntry) => void)[]
 	}
 	type ValueEntry = ToggleEntry | SliderEntry | DropdownEntry | MultiSelectEntry | KeybindEntry | ButtonEntry | ColorEntry | TextEntry | ImagesEntry | DescriptionEntry
 	type Entry = NodeEntry | ValueEntry
-	/** Entries whose rows carry hotkeys from the context menu. */
-	type HotkeyHolder = ToggleEntry | SliderEntry | DropdownEntry | MultiSelectEntry
+	/** Entries whose rows carry hotkeys and logic rules from the context menu. */
+	type DriverHolder = ToggleEntry | SliderEntry | DropdownEntry | MultiSelectEntry
 	/**
-	 * Whether the entry's row offers hotkeys in its context menu.
+	 * Whether the entry's row offers hotkeys and logic rules in its context menu.
 	 */
-	function IsHotkeyHolder(entry: Entry): entry is HotkeyHolder
-	function EntryPath(entry: Entry): string
+	function IsDriverHolder(entry: Entry): entry is DriverHolder
 }

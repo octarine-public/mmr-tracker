@@ -6,7 +6,7 @@ declare class Courier extends Unit {
 	public readonly State: CourierState
 	public readonly StateHero_: number
 	/** @ignore */
-	constructor(index: number, serial: number)
+	constructor(Index: number, serial: number)
 	public get StateHero(): Nullable<Hero>
 	public get ShouldUnifyOrders(): boolean
 	public get HealthBarSize(): Vector2

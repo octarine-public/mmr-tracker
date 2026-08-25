@@ -11,7 +11,7 @@ declare class FakeUnit {
 	public PredictionMoveSpeed: number
 	public LastPredictedPositionUpdate: number
 	public LastRealPredictedPositionUpdate: number
-	constructor(index: number, serial: number)
+	constructor(Index: number, serial: number)
 	public get Angles(): Vector3
 	public get PlayerCustomData(): Nullable<PlayerCustomData>
 	public get BaseAttackRange(): number

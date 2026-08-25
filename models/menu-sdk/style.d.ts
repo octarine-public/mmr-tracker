@@ -7,6 +7,7 @@ interface ThemeTokenRef {
 
 interface RmlStyle {
 	display?: "flex" | "block" | "inline" | "inline-block" | "none"
+	visibility?: "visible" | "hidden"
 	position?: "absolute" | "relative" | "fixed"
 	overflow?: "visible" | "hidden" | "auto" | "scroll"
 	pointerEvents?: "auto" | "none"

@@ -17,6 +17,11 @@ declare class CDotaGameState extends CGameState {
 	public get IOLag(): number
 	public get InputLag(): number
 	public get IsDemo(): boolean
+	/**
+	 * Whether a screen overlay would land on the game world right now: connected, with the match
+	 * UI up rather than the dashboard or another full-screen panorama page.
+	 */
+	public get CanDrawOverlays(): boolean
 	public GetLatency(flow?: Flow): number
 	public GetAvgLatency(flow?: Flow): number
 	public GetInputLag(latency: number): number

@@ -6,6 +6,23 @@ declare namespace MenuSDK {
 	function HasVisibleControls(node: NodeEntry): boolean
 	function NodeIsOpen(node: NodeEntry): boolean
 	function SetOpenRaw(node: NodeEntry, value: boolean): void
+	/**
+	 * Whether the fold a node takes as a card is already settled. A page decides it for its cards the
+	 * first time it draws them, from their header control; an explicit open settles it too, so a node
+	 * opened before its page was ever drawn - which is what revealing a search hit does - keeps the
+	 * state the reveal gave it.
+	 */
+	function CardFoldDecided(node: NodeEntry): boolean
+	function DecideCardFold(node: NodeEntry, open: boolean): void
+	/**
+	 * Whether the card carrying a page's own controls - the one standing above its sections - is
+	 * folded open. It is kept apart from the node's own `expanded`, which says which page is being
+	 * shown rather than how the first card on it is folded, and a page whose card nobody has touched
+	 * stands open.
+	 */
+	function PageCardOpen(node: NodeEntry): boolean
+	/** Folds a page's own controls open or shut. */
+	function OpenPageCard(node: NodeEntry, value: boolean): void
 	function OpenNode(node: NodeEntry, value: boolean): void
 	function ActiveTab(): Nullable<NodeEntry>
 	/**

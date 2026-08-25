@@ -24,13 +24,6 @@ declare class NetworkedParticle {
 	public ShouldDraw: boolean
 	public FrozenAt: number
 	public Text: string
-	constructor(index: number, path: string, particleSystemHandle: bigint, attach: number, attachedTo: Nullable<INativePredictionTarget>, modifiersAttachedTo: Nullable<INativePredictionTarget>)
+	constructor(Index: number, Path: string, ParticleSystemHandle: bigint, Attach: number, AttachedTo: Nullable<INativePredictionTarget>, ModifiersAttachedTo: Nullable<INativePredictionTarget>)
 	public Destroy(): void
 }
-/**
- * Registers the game's NetworkedParticle subclass, so every particle the engine reports arrives as
- * that type instead of the base one.
- * @example
- * SetNetworkedParticleClass(DotaNetworkedParticle)
- */
-/** Builds a particle through the registered game class, falling back to the base one. */

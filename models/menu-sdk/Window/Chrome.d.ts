@@ -1,5 +1,13 @@
 // AUTO-GENERATED - do not edit.
 declare namespace MenuSDK {
+	/**
+	 * Opens the context menu of a navigation tab: the hotkeys and logic rules of the switch the tab
+	 * wears in its top bar, the reset shared by every tab that owns config, and the rows the tab puts
+	 * on itself through {@link Node.ContextItems}. A tab holding none of the three - a page whose state
+	 * lives outside the entry tree and adds no rows of its own - opens nothing rather than a row that
+	 * can never be pressed.
+	 */
+	function OpenTabContextMenu(event: Event, node: NodeEntry): void
 	/** Side of a tab icon in the rail, in dp — what the General «Icon size» setting picks. */
 	function RailIconSize(): number
 	/**

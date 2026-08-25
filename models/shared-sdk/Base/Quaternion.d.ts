@@ -203,6 +203,15 @@ declare class Quaternion {
 	 */
 	public Slerp(quat: Quaternion, amount: number): Quaternion
 	/**
+	 * Rotates vec by this quaternion, writing the result into out; MUTATES and returns out.
+	 *
+	 * Takes a destination rather than returning a new vector because rotating model-space
+	 * geometry runs per bone per frame, where an allocation per corner is the cost that matters.
+	 * @example
+	 * const world = boneRotation.RotateVector(localCorner, new Vector3())
+	 */
+	public RotateVector(vec: Vector3, out: Vector3): Vector3
+	/**
 	 * Returns a NEW independent copy with identical components.
 	 * @example
 	 * const copy = q.Clone() // mutating copy leaves q untouched

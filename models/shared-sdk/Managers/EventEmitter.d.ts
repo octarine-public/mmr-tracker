@@ -2,13 +2,6 @@
 type EventListener<M extends Record<keyof M, unknown[]>, K extends keyof M> = (...args: M[K]) => false | unknown
 type StoredListener = (...args: never[]) => unknown
 type StoredEntry = [StoredListener, number]
-/**
- * Installs the sink every emitter reports slow listeners to. Without one no timing is taken at
- * all, so an SDK that does not care pays nothing. `registeredAt` is the stack frame of the
- * `on`/`after` call that registered the listener.
- * @example
- * SetListenerPerfReporter((line, took) => SendListenerPerf(line, took, GameState.RawGameTime))
- */
 declare class EventEmitter<M extends Record<keyof M, unknown[]> = EventsMap> {
 	protected readonly events: Map<string, StoredEntry[]>
 	protected readonly eventsAfter: Map<string, StoredEntry[]>

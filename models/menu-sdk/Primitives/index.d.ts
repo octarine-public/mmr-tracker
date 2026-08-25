@@ -1,5 +1,7 @@
 // AUTO-GENERATED - do not edit.
 declare namespace MenuSDK {
+	/** The corner every plain surface is carved with, and the one its glow follows. */
+	const SurfaceRadius = 8
 	const surfaceStyle: StyledFactory<{
 		elevation: {
 			flat: {}
@@ -31,8 +33,28 @@ declare namespace MenuSDK {
 			}
 		}
 	}>
+	/**
+	 * The theme's glow as the element it is drawn through, for a surface that hosts one: nothing at
+	 * all while the theme asks for no glow. It goes first among the surface's children, and the
+	 * surface carries {@link SdfGlowHost}.
+	 *
+	 * @example
+	 * <div style={{ ...SdfGlowHost, ...card }}>
+	 * 	<GlowLayer radius={12} />
+	 * 	{children}
+	 * </div>
+	 */
+	function GlowLayer(props: {
+		radius: number
+	}): React.ReactElement | null
+	/**
+	 * A card of the theme's own material. `glow` lights it with the theme's glow, which a surface
+	 * standing on its own wants and one in a list of them does not - the glow says "this is a thing
+	 * of its own", and a column of glowing cards says nothing at all.
+	 */
 	function Surface(props: {
 		elevation?: "flat" | "raised"
+		glow?: boolean
 		style?: RmlStyle
 		children?: React.ReactNode
 	}): React.ReactElement

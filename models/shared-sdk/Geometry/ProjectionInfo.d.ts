@@ -9,7 +9,7 @@ declare class ProjectionInfo {
 	 * @example
 	 * const info = new ProjectionInfo(segPt, linePt)
 	 */
-	constructor(segmentPoint: Vector2, linePoint: Vector2)
+	constructor(SegmentPoint: Vector2, LinePoint: Vector2)
 	/**
 	 * True when the projection falls within the segment (i.e. clamped and line points coincide).
 	 * @example

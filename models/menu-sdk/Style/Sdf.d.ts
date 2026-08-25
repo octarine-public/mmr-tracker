@@ -23,13 +23,59 @@ declare namespace MenuSDK {
 	 */
 	function SdfShape(radius: number, fill: string, borderW?: number, borderColor?: string, inset?: number, glowW?: number, glowColor?: string): RmlStyle
 	/**
+	 * What a surface has to carry for {@link SdfGlowLayer} to land on it: the layer is placed against
+	 * the surface's own box, and the surface has to open a stacking context of its own or the halo is
+	 * painted before the surface's fill and vanishes under it. Spread it before any positioning of
+	 * the surface's own, which then wins.
+	 */
+	const SdfGlowHost: RmlStyle
+	/**
+	 * The layer a surface glows through: one quad carrying nothing but the theme's glow, so what the
+	 * surface is filled and rimmed with is left exactly as it was. `undefined` while the theme asks
+	 * for no glow, and a surface drops the element rather than drawing an empty one.
+	 *
+	 * The quad is stretched around the surface it stands in, far enough for the halo and the room its
+	 * antialiasing needs, and the shape it carves is inset by exactly as much - so the halo falls on
+	 * the surface's own edge. It stands under everything the surface holds and takes no input: it
+	 * reaches past the surface on every side, and a panel that swallowed clicks a halo's width around
+	 * itself would be bigger than it looks.
+	 *
+	 * The surface carries {@link SdfGlowHost} and must not clip its children, which would keep the
+	 * halo inside its box. A surface that does clip lights itself instead: a quad of its own placed
+	 * that far outside it, carved by {@link SdfShape} with the same glow.
+	 *
+	 * @example
+	 * const glow = SdfGlowLayer(PanelRadius)
+	 * return (
+	 * 	<div style={{ ...SdfGlowHost, ...card }}>
+	 * 		{glow !== undefined && <div style={glow} />}
+	 * 		{children}
+	 * 	</div>
+	 * )
+	 */
+	function SdfGlowLayer(radius: number, glow?: IThemeGlow, 
+	/** What the surface under the halo is painted, for a theme that lights it in its own color. */
+	fill?: string): Nullable<RmlStyle>
+	/**
+	 * A wedge of the same shape: `percent` of a whole turn, opening at `from` degrees and running
+	 * clockwise, with twelve o'clock as zero. What falls outside the wedge is not drawn at all, so
+	 * this is the fragment a dial or a cooldown drains through — a shape that empties by the turn
+	 * rather than by the edge, which no amount of resizing can express.
+	 *
+	 * The turn is cut by the shader as two half-planes through the middle of the quad, so the cut
+	 * carries the same per-pixel coverage the shape's own edge does and stays smooth wherever it
+	 * lands. A full hundred draws the shape whole.
+	 */
+	function SdfSweep(radius: number, fill: string, percent: number, from?: number, inset?: number): RmlStyle
+	/**
 	 * Style fragment for a circle rendered by the same pipeline: the radius always collapses to the
 	 * element's half-extent, so the shape stays round at any size and skips the theme's radius scale
 	 * — a ring around an avatar has to match the avatar, not the menu's corner style. `inset` grows
 	 * the quad around the circle by that many pixels, keeping the antialiased edge off the geometry
-	 * boundary, where the quad would clip it.
+	 * boundary, where the quad would clip it. `glowW` and `glowColor` light it on the terms
+	 * {@link SdfShape} states.
 	 */
-	function SdfCircle(fill: string, borderW?: number, borderColor?: string, inset?: number): RmlStyle
+	function SdfCircle(fill: string, borderW?: number, borderColor?: string, inset?: number, glowW?: number, glowColor?: string): RmlStyle
 	/** SdfRounded with live theme palette colors, resolved at call time. */
 	function SdfRoundedTheme(radius: number, fill: keyof IThemePalette, borderW?: number, borderColor?: keyof IThemePalette): RmlStyle
 }

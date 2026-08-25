@@ -126,12 +126,14 @@ declare class Vector4 {
 	 * @example
 	 * new Vector4(-1, 2, -3, 4).Abs() // (1, 2, 3, 4)
 	 */
-	public Abs(): Vector4; /**
+	public Abs(): Vector4
+	/**
 	 * Returns a NEW Vector4 with each component rounded up to `count` decimal places (default `0`, i.e. whole numbers).
 	 * @example
 	 * new Vector4(1.2, 2.5, 3.9, 4.1).Ceil() // (2, 3, 4, 5)
 	 */
-	public Ceil(count?: number): Vector4; /**
+	public Ceil(count?: number): Vector4
+	/**
 	 * MUTATES this vector, rounding each component up to `count` decimal places (default `0`), and returns `this`.
 	 * @example
 	 * v.CeilForThis(1) // rounds up in place to 1 decimal

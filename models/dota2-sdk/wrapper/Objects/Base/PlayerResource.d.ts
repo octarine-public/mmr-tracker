@@ -6,3 +6,4 @@ declare class CPlayerResource extends Entity {
 	public GetPlayerDataByPlayerID(playerID: number): Nullable<PlayerData>
 	public GetPlayerTeamDataByPlayerID(playerID: number): Nullable<PlayerTeamData>
 }
+declare let PlayerResource: Nullable<CPlayerResource>

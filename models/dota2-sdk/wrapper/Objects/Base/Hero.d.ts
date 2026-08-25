@@ -21,7 +21,7 @@ declare class Hero extends Unit {
 	/** @internal (changed by CFocusFireChanged) */
 	public FocusFireTargetIndex_: number
 	protected readonly ReplicatingOtherHeroModel_: number
-	constructor(index: number, serial: number)
+	constructor(Index: number, serial: number)
 	/** @deprecated use HeroFacetKey */
 	public get HeroFacetID(): number
 	public get BaseMoveSpeed(): number

@@ -23,7 +23,7 @@ declare class UnitModifierManager {
 	public IsFountainInvulnerable_: boolean
 	/** @private NOTE: this is internal */
 	public IsMorphlingReplicateIllusion_: boolean
-	constructor(owner: Unit)
+	constructor(Owner: Unit)
 	public get AttacksPerSecond(): number
 	public get ArmorPerAgility(): number
 	public get MagicResistPerIntellect(): number

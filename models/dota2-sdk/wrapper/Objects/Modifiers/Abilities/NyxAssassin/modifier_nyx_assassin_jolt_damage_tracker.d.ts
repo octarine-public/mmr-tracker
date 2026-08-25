@@ -2,7 +2,7 @@
 declare class DamageTracker {
 	public readonly Damage: number
 	public readonly LastDamageTime: number
-	constructor(damage: number, lastDamageTime?: number)
+	constructor(Damage: number, LastDamageTime?: number)
 	public get IsExpired(): boolean
 }
 declare class modifier_nyx_assassin_jolt_damage_tracker extends Modifier {

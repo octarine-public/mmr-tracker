@@ -19,15 +19,15 @@ declare namespace MenuSDK {
 	 * except in "hidden" — so the panel can still be found and dragged.
 	 */
 	function SetHotkeysPanelDisplay(mode: HotkeysPanelDisplay): void
-	/** When the panel lists a bind, as set from the menu settings. */
-	function HotkeysPanelDisplayMode(): HotkeysPanelDisplay
 	/**
 	 * Registers the on-screen panel listing every visible bound hotkey with the
-	 * value it drives; an active hotkey lights its key chip with the accent. A
-	 * bind that starts showing slides down into place and slides back out when it
-	 * stops, unless `MenuFlags.HotkeysPanelAnimation` is off. While the menu is
-	 * open the panel is dragged with the mouse, and the position persists in the
-	 * config.
+	 * value it drives; an active hotkey lights its key chip with the accent. A bind
+	 * that starts showing while the panel is already up slides down into place and
+	 * slides back out when it stops; the first bind and the last one carry the
+	 * panel itself, which fades and lifts as one surface — glass blur included —
+	 * and only leaves the screen once that has played out. Both are cut when
+	 * `MenuFlags.HotkeysPanelAnimation` is off. While the menu is open the panel
+	 * is dragged with the mouse, and the position persists in the config.
 	 */
 	function SetupHotkeysOverlay(): void
 	/**

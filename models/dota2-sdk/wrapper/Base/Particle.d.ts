@@ -10,7 +10,7 @@ declare class Particle {
 	public IsValid: boolean
 	public IsHidden: boolean
 	public readonly ControlPoints: Map<number, Vector3>
-	constructor(parent: ParticlesSDK, key: any, path: string, attachment: ParticleAttachment, attachedTo: Entity, ...controlPoints: ControlPointParam[])
+	constructor(Parent: ParticlesSDK, Key: any, Path: string, Attachment: ParticleAttachment, AttachedTo: Entity, ...controlPoints: ControlPointParam[])
 	public SetControlPoint(id: number, param: ControlPoint): void
 	/**
 	 * @param points rest params (index as number, point as Vector)

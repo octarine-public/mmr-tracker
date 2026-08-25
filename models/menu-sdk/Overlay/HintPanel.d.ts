@@ -2,7 +2,6 @@
 declare namespace MenuSDK {
 	function ShowHint(nextOwner: object, hint: MenuHint, anchor: ScreenRect): void
 	function PinHint(state: boolean): void
-	function IsHintPinned(): boolean
 	function IsHintOpenFor(target: object): boolean
 	function ScheduleHintClose(target: object): void
 	function CancelHintClose(): void

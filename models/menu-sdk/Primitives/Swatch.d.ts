@@ -16,6 +16,8 @@ declare namespace MenuSDK {
 	/**
 	 * A color picker riding someone else's row: the swatch opens the palette, and the picker's name
 	 * is what the hover says it stands for — a row carrying several of them has nowhere to write it.
+	 * The middle click opens the picker's own context menu rather than the host row's, so copying and
+	 * pasting a colour reaches the swatch under the pointer.
 	 */
 	function PairedSwatch(props: {
 		entry: ColorEntry

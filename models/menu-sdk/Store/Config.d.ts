@@ -9,6 +9,15 @@ declare namespace MenuSDK {
 	 * finds what was saved for it.
 	 */
 	function AdoptEntry(parent: NodeEntry, entry: Entry): void
+	type ConfigMigration = (raw: ConfigObject) => void
+	/**
+	 * Registers a reshaper for the raw stored config, run once against the full
+	 * tree before it is applied. Use it when a node moves or is renamed so a
+	 * config saved under the old path still lands on the new node. A migration
+	 * MUST be idempotent — no-op once the new path is present — because it runs on
+	 * every load, including configs already saved in the new shape.
+	 */
+	function AddConfigMigration(migration: ConfigMigration): void
 	function ApplyConfig(config: unknown, node?: NodeEntry): void
 	function IsDefaultValue(entry: ValueEntry): boolean
 	function ResetEntries(node: NodeEntry): void

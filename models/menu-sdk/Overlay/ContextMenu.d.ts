@@ -9,13 +9,18 @@ declare namespace MenuSDK {
 	interface ContextMenuTrailing {
 		readonly icon: string
 		readonly run?: () => void
+		readonly color?: string
+		readonly hoverColor?: string
 	}
 	/**
 	 * One row of the context menu. A disabled row is greyed out, keeps its hover
 	 * fill off and swallows the click. `run` runs on click and closes the menu; a
 	 * row with `flyout` instead keeps the menu open and receives the menu rect at
 	 * its own height, in screen pixels, to place a side panel against. `open`
-	 * keeps the hover fill on while the row's side panel is showing.
+	 * keeps the hover fill on while the row's side panel is showing. `danger`
+	 * paints the label, the icon and the hover fill in the theme's danger colour,
+	 * for a row that throws work away; `color` gives a non-destructive row its own
+	 * text, icon and hover tint. A disabled row stays grey either way.
 	 */
 	interface ContextMenuItem {
 		readonly icon: string
@@ -25,11 +30,33 @@ declare namespace MenuSDK {
 		readonly trailing?: ContextMenuTrailing
 		readonly flyout?: (anchor: ScreenRect) => void
 		readonly open?: boolean
+		readonly danger?: boolean
+		readonly color?: string
+		/**
+		 * Identity the row keeps while the menu rebuilds, so a list that grows a row does not slide
+		 * the ones below it out and back in. Rows without one are told apart by their position.
+		 */
+		readonly id?: string
 	}
+	/**
+	 * Rows of a script's own under the ones this entry's menu builds for itself, asked for every
+	 * time the menu opens. `undefined` takes them off again.
+	 */
+	function SetContextItems(entry: EntryCommon, build: Nullable<() => readonly ContextMenuItem[]>): void
+	/** The rows a script has put on this entry, or none. */
+	function ContextItemsOf(entry: EntryCommon): Nullable<() => readonly ContextMenuItem[]>
+	/**
+	 * The hotkey and logic rows of the switch a node wears in its header, for a menu that builds its
+	 * rows itself instead of going through {@link OpenContextMenu} — the menu of a navigation tab. A
+	 * node without such a switch gets none.
+	 */
+	function HeaderDriverItems(node: NodeEntry): readonly ContextMenuItem[]
 	/**
 	 * Opens the context menu at a screen position with rows of your own, so a
 	 * surface that is not an {@link Entry} gets the same panel and hit behaviour.
-	 * An empty list opens nothing.
+	 * An empty list opens nothing. Pass a function instead of a list for rows that
+	 * change while the menu is up — it is asked again on every rebuild, and the
+	 * rows that carry a {@link ContextMenuItem.id} keep their place.
 	 *
 	 * @example
 	 * OpenContextMenuAt(
@@ -38,7 +65,7 @@ declare namespace MenuSDK {
 	 *     Number(event.data.screenY ?? 0)
 	 * )
 	 */
-	function OpenContextMenuAt(items: readonly ContextMenuItem[], x: number, y: number): void
+	function OpenContextMenuAt(items: readonly ContextMenuItem[] | (() => readonly ContextMenuItem[]), x: number, y: number): void
 	function OpenContextMenu(entry: Entry, x: number, y: number): void
 	function CloseContextMenu(): void
 }

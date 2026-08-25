@@ -7,7 +7,7 @@ declare class CGridNav {
 	public readonly Max: Vector2
 	public readonly UnitGridPos: Map<Unit, Vector2>
 	public readonly UnitGridVisiblePos: Map<Unit, Vector2>
-	constructor(edgeSize: number, offset: Vector2, size: Vector2, min: Vector2, cellFlags: Uint8Array)
+	constructor(EdgeSize: number, Offset: Vector2, Size: Vector2, Min: Vector2, CellFlags: Uint8Array)
 	public IsInWorld(position: Vector3, buffer?: number): boolean
 	public IsTraversable(position: Vector3): boolean
 	public GetCellFlagsForPos(pos: Vector3 | Vector2): number

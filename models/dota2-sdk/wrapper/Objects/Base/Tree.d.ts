@@ -3,7 +3,7 @@ declare class Tree extends Entity {
 	public readonly Index: number
 	public static TreeActiveMask: bigint[]
 	public BinaryID: number
-	constructor(index: number, serial: number)
+	constructor(Index: number, serial: number)
 	public get IsAlive(): boolean
 	public get CustomNativeID(): number
 	public set CustomDrawColor(_: Nullable<[Color, RenderMode]>)

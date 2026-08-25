@@ -17,7 +17,7 @@ declare class NeutralSpawnerBox {
 	public TotalCreepAvgGold: number
 	protected IsInitialSpawn: boolean
 	protected IsStackMoveAttack: boolean
-	constructor(spawner: NeutralSpawner)
+	constructor(Spawner: NeutralSpawner)
 	public get IsValidSpawner(): boolean
 	public get Team(): Team
 	public get IsAlly(): boolean

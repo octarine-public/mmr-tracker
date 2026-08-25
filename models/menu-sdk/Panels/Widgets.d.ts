@@ -9,20 +9,6 @@ declare namespace MenuSDK {
 		rightTint?: StyleColor
 		badge?: boolean
 	}): React.ReactElement
-	function PanelRow(props: {
-		height?: number
-		iconPath?: string
-		iconSize?: number
-		style?: RmlStyle
-		children?: React.ReactNode
-	}): React.ReactElement
-	function PanelLabel(props: {
-		tint?: StyleColor
-		size?: number
-		bold?: boolean
-		style?: RmlStyle
-		children?: React.ReactNode
-	}): React.ReactElement
 	function Card(props: {
 		title?: string
 		children?: React.ReactNode

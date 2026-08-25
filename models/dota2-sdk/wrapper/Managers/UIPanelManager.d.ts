@@ -4,7 +4,7 @@ declare abstract class UIPanel {
 	public IsValid: boolean
 	protected Dragging: boolean
 	protected readonly DragOffset: Vector2
-	constructor(position: Rectangle)
+	constructor(Position: Rectangle)
 	public abstract get State(): boolean
 	public abstract Draw(): void
 	public abstract MouseKeyUp(): boolean

@@ -12,7 +12,7 @@ declare class Projectile {
 	public readonly OriginalSpeed: number
 	public readonly CreateTime: number
 	public readonly VisualPosition: Vector3
-	constructor(iD: number, particlePath: string, particleSystemHandle: bigint, source: Nullable<Unit | FakeUnit>, colorGemColor: Color, speed: number)
+	constructor(ID: number, ParticlePath: string, ParticleSystemHandle: bigint, Source: Nullable<Unit | FakeUnit>, ColorGemColor: Color, Speed: number)
 	public UpdateParticlePathNoEcon(): void
 	protected UpdateData(): void
 }
@@ -27,7 +27,7 @@ declare class LinearProjectile extends Projectile {
 	public readonly Position: Vector3
 	public readonly Forward: Vector3
 	public readonly TargetLoc: Vector3
-	constructor(projID: number, ent: Nullable<Unit | FakeUnit>, path: string, particleSystemHandle: bigint, maxSpeed: number, fowRadius: number, stickyFowReveal: boolean, distance: number, origin: Vector3, velocity: Vector2, acceleration: Vector2, colorgemcolor: Color)
+	constructor(projID: number, ent: Nullable<Unit | FakeUnit>, path: string, particleSystemHandle: bigint, MaxSpeed: number, FowRadius: number, StickyFowReveal: boolean, Distance: number, Origin: Vector3, Velocity: Vector2, Acceleration: Vector2, colorgemcolor: Color)
 	public get Ability(): Nullable<Ability>
 	public GetRemainingTime(start?: Vector3, end?: Vector3): number
 	protected UpdateData(): void
@@ -43,7 +43,7 @@ declare class TrackingProjectile extends Projectile {
 	public readonly TargetProjectileHandle?: number | undefined
 	public readonly Position: Vector3
 	public IsDodged: boolean
-	constructor(projID: number, source: Nullable<Unit | FakeUnit>, target: Nullable<Unit | FakeUnit>, speed: number, sourceAttachment: string, path: string, particleSystemHandle: bigint, dodgeable: boolean, isAttack: boolean, expireTime: number, maxImpactTime: Nullable<number>, launchTick: number, targetLoc: Vector3 | undefined, colorgemcolor: Color, originalMoveSpeed: number, ability?: Nullable<Ability>, targetProjectileHandle?: number | undefined)
+	constructor(projID: number, source: Nullable<Unit | FakeUnit>, Target: Nullable<Unit | FakeUnit>, speed: number, SourceAttachment: string, path: string, particleSystemHandle: bigint, dodgeable: boolean, isAttack: boolean, expireTime: number, MaxImpactTime: Nullable<number>, LaunchTick: number, TargetLoc: Vector3 | undefined, colorgemcolor: Color, OriginalMoveSpeed: number, Ability?: Nullable<Ability>, TargetProjectileHandle?: number | undefined)
 	public get IsDodgeable(): boolean
 	public get IsAttack(): boolean
 	public get ExpireTime(): number

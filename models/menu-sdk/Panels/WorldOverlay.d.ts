@@ -27,6 +27,11 @@ declare namespace MenuSDK {
 		Render(item: T, handle: IWorldOverlayHandle): React.ReactNode
 		/** Styles one item for this frame; false hides it until it returns true again. */
 		Update(item: T, handle: IWorldOverlayHandle): boolean
+		/**
+		 * Distance from the overlay's view origin in world units. When provided, nearer items cover
+		 * farther ones; distances are quantized so small movements do not re-sort the document.
+		 */
+		Distance?(item: T): number
 		/** Frame setup before any Update; false hides every item this frame. */
 		Begin?(): boolean
 	}

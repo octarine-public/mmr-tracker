@@ -9,7 +9,7 @@ declare namespace MenuSDK {
 	 * overlay visibility and removal. It draws no scrim of its own; the owner
 	 * closes it.
 	 */
-	function OpenHotkeyPanel(entry: HotkeyHolder, hotkey: EntryHotkey, anchor: ScreenRect): void
+	function OpenHotkeyPanel(entry: DriverHolder, hotkey: EntryHotkey, anchor: ScreenRect): void
 	/**
 	 * Closes the hotkey editor panel if it is open.
 	 */

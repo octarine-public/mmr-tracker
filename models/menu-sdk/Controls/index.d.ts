@@ -1,19 +1,22 @@
 // AUTO-GENERATED - do not edit.
 declare namespace MenuSDK {
 	function MarkColorOf(entry: Entry): string
-	/**
-	 * Expands rows whose height was still unknown when they mounted. A row is
-	 * clamped to zero height on mount, so it never displaces the rows below it,
-	 * but a node RmlUi has not formatted yet measures as nothing — its content
-	 * height only becomes readable one document update later, which is what this
-	 * waits for. Called once per frame from the menu tick.
-	 */
-	function TickReveals(): void
 	function VisibleRows(children: Entry[], skip?: Entry): Entry[]
 	function CloseSubSettings(): void
 	function DescriptionRow(props: {
 		entry: DescriptionEntry
 		divider: boolean
+	}): React.ReactElement
+	/**
+	 * The switch itself, detached from any entry: the same track, knob, classes and easing the
+	 * menu's toggle rows wear, driven by a plain boolean — for a surface whose state lives
+	 * somewhere no entry stands for, a floating window's sidebar being the one so far.
+	 */
+	function SwitchFace(props: {
+		on: boolean
+		inert?: boolean
+		scope?: EThemeScope
+		style?: RmlStyle
 	}): React.ReactElement
 	function ToggleTrack(props: {
 		entry: ToggleEntry
@@ -73,6 +76,12 @@ declare namespace MenuSDK {
 		 * the surroundings themselves, like the search modal's input row.
 		 */
 		bare?: boolean
+		/**
+		 * Paints the border in the danger tone while the entered value is known to be rejected —
+		 * a share code the server refused. The host derives it from the current text, so the
+		 * tint clears as soon as the value is edited.
+		 */
+		invalid?: boolean
 		autoFocus?: boolean
 		onKeyDown?: (event: Event) => boolean
 	}): React.ReactElement

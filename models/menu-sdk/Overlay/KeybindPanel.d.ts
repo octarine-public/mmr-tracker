@@ -15,10 +15,6 @@ declare namespace MenuSDK {
 	 */
 	function CloseKeybindPanel(): void
 	/**
-	 * Whether the capture popup is currently open.
-	 */
-	function IsKeybindPanelOpen(): boolean
-	/**
 	 * Keeps the popup centered over the menu window and animates the
 	 * pending-bind preview border; ticked once per frame while the menu runs.
 	 */
