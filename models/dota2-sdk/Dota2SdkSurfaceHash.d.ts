@@ -1,3 +1,3 @@
 // AUTO-GENERATED - do not edit.
-// surface 6538e9b4
+// surface ffdd6f71
 declare const Dota2SdkSurfaceHash: string

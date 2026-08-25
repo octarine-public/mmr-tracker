@@ -164,6 +164,7 @@ declare const Dota2SDK: {
 	readonly RagdollManager: typeof RagdollManager
 	readonly RenderMode: typeof RenderMode
 	readonly RendererSDK: typeof RendererSDK
+	readonly ResetSettingsUpdated: typeof ResetSettingsUpdated
 	readonly Roshan: typeof Roshan
 	readonly RoshanLocation1: typeof RoshanLocation1
 	readonly RoshanLocation2: typeof RoshanLocation2
