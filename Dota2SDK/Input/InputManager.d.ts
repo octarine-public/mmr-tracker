@@ -3,7 +3,7 @@ declare class CInputManager {
 	public get CursorOnScreen(): Vector2
 	public IsKeyDown(key: VKeys): boolean
 	public IsMouseKeyDown(key: VMouseKeys): boolean
-	public UpdateCursorOnScreen(x?: number, y?: number): void
+	public UpdateCursorOnScreen(x: number, y: number): void
 }
 declare const enum InputMessage {
 	WM_NULL = 0,

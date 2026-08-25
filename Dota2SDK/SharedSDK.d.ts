@@ -46,7 +46,6 @@ declare const SharedSDK: {
 	readonly readJSON: <T = unknown>(path: string) => T
 	readonly readMediaSession: (options?: MediaReadOptions) => Promise<MediaSessionSnapshot>
 	readonly readNowPlaying: (options?: MediaReadOptions) => Promise<Nullable<NowPlaying>>
-	readonly readPlayerLevel: (source?: string) => Promise<number>
 	readonly readPlayerVolume: (source?: string) => Promise<number>
 	readonly sendMediaCommand: (command: MediaCommand, source?: string) => Promise<Nullable<number>>
 	readonly tryFindFile: (path: string, callstackDepth?: number) => Nullable<string>

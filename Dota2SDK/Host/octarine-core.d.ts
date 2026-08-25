@@ -2,8 +2,6 @@
 /// GLOBAL TYPES
 
 /// GLOBAL OBJECTS
-declare var IOBuffer: Float32Array // 128 floats in size
-declare var IOBufferView: DataView // IOBuffer DataView
 /**
 struct CUnitOrder {
 	uint32_t order_type; // 0
@@ -43,7 +41,6 @@ struct CUserCmd {
 };
  */
 declare var LatestUserCmd: Uint8Array
-declare var CursorPosition: Int32Array // 2 ints in size
 declare var SchemaClassesInheritance: Map<string, string[]>
 
 declare var ConVars: ConVars
@@ -57,6 +54,7 @@ declare const IS_MINIMAL_CORE: boolean
 declare interface ConVars {
 	Get(convarName: string): Nullable<number | boolean | string | number[]>
 	Set(convarName: string, value: number | boolean | string | number[]): void
+	SetNetworked(convarName: string, value: number | boolean | string | number[]): void
 }
 
 declare interface CustomGameEvents {
@@ -82,11 +80,14 @@ declare interface Renderer {
 	 */
 	GetTextSize(text: string, fontID: number, size: number): void
 	/**
-	 * Returns size: Vector2 at IOBuffer offset 0
+	 * Builds a texture and answers its id, or `-1` when the image could not be decoded. Its
+	 * width and height land in `IOBuffer[0]` and `IOBuffer[1]`.
 	 *
-	 * @returns textureID
+	 * `source` is a path in the game's virtual filesystem, or the bytes of an image the script
+	 * already holds — one fetched over the network, say, which has no path because it was never
+	 * a file. Bytes are identified by their container, so svg works there too.
 	 */
-	CreateTexture(path: string): number
+	CreateTexture(source: string | ArrayBuffer | ArrayBufferView): number
 	FreeTexture(textureID: number): void
 	ExecuteCommandBuffer(buf: Uint8Array): void
 }
@@ -174,7 +175,6 @@ declare interface Camera {
 /// GLOBAL FUNCTIONS
 
 declare function SendToConsole(command: string): void
-declare function fexists(path: string): boolean
 /**
  * @param path pass empty to read from confings/../settings.json
  */
@@ -201,7 +201,6 @@ declare function PrepareUnitOrders(obj: {
 declare function GetLatency(flow?: number): number
 // flow deprecated
 declare function GetAvgLatency(flow?: number): number
-declare function StartFindingMatch(): void
 declare function SendGCPingResponse(): void
 declare function AcceptMatch(): void
 declare function ToggleRequestUserCmd(state: boolean): void
@@ -210,7 +209,6 @@ declare function setFireEvent(
 	cb: (eventName: string, cancellable: boolean, ...args: any) => boolean
 ): void
 declare function require(absolutePath: string): any
-declare function hrtime(): number
 declare function SetTreeModel(
 	modelName: string,
 	scale: number,
@@ -263,23 +261,6 @@ declare function WriteUserCmd(): void
 declare function IsShopOpen(): boolean
 declare function GetQueryUnit(): number
 declare function GetSelectedEntities(): number
-declare function LoadFont(
-	path: string,
-	isFallback: boolean,
-	weight?: number
-): boolean
-
-declare function parseKV(path: string, block?: string | number): RecursiveMap
-declare function parseKV<T>(path: string, block?: string | number): T 
-declare function parseKV(
-	data: Uint8Array,
-	block?: string | number
-): RecursiveMap
-
-declare function parseKVBlock(data: Uint8Array): RecursiveMap
-declare function parseKVBlock(path: string): RecursiveMap
-
-declare function MurmurHash2(str: string, seed: number): number
 
 declare function GetPathByHash(hash: bigint): Nullable<string>
 
@@ -292,18 +273,10 @@ declare function GetOriginalParticlePath(path: string): string
 declare function GetEconItemName(id: number): string
 declare function GetEconItemHealthBarOffset(id: number): Nullable<number>
 
-declare function SendListenerPerf(line: string, took: number, gameSecond: number): void
-
-declare function RequestUnitsProperties(buf: Uint16Array): void
-
 /**
  * @description Pass boolean to clear banned heroes
  */
 declare function ToggleBanHeroes(bannedHeroIds: number[] | false): void
-
-declare function fread(path: string, binary: boolean): Nullable<ArrayBuffer | string>
-declare function fread(path: string, binary: true): Nullable<ArrayBuffer>
-declare function fread(path: string, binary: false): Nullable<string>
 
 declare function SetChangerEnabled(enabled: boolean): void
 declare function AddPrismaticGem(r: number, g: number, b: number): void
@@ -373,3 +346,111 @@ declare interface FileSystem {
 }
 
 declare const FileSystem: FileSystem
+
+declare interface GFXModel {
+	IsLoaded(): boolean
+	GetBoneIdx(name: string): number
+	GetBoneCount(): number
+	GetBoneName(index: number): string
+	GetBoneParent(index: number): number
+	GetMeshCount(): number
+	GetSubmeshCount(meshIndex: number): number
+	GetSubmeshMaterial(meshIndex: number, submeshIndex: number): string
+	GetMeshGroupMask(meshIndex: number): number
+	GetAnimationCount(): number
+	GetAnimationName(index: number): string
+	GetAnimationDuration(index: number): number
+	GetBoundsMin(): number[]
+	GetBoundsMax(): number[]
+	GetAttachmentCount(): number
+	GetAttachmentName(index: number): string
+	GetAttachmentBone(index: number): number
+	GetAttachmentOffset(index: number): number[]
+	GetAttachmentRotation(index: number): number[]
+	/** Whether a clip of this name is already loaded, so LoadAGClip can be skipped. */
+	HasClip(name: string): boolean
+	LoadAGClip(path: string, name?: string): Promise<boolean>
+}
+
+declare interface GFXInstance {
+	SetModel(model: GFXModel): void
+	SetParent(parent: GFXInstance): void
+	SetAttachmentBone(boneIndex: number): void
+	SetTransform(position: number[], angles: number[], scale?: number): void
+	PlayAnimation(name: string): void
+	Stop(): void
+	/**
+	 * Leans a bone and everything under it about the model's left axis at the bone's origin, in
+	 * degrees, positive pitching forward the way a Source pitch does; zero straightens it again.
+	 * Composed onto every pose sampled after the call — this is how a preview shows an aim pitch,
+	 * since the renderer plays plain clips and never runs the animation graph's aim pose.
+	 */
+	SetBoneBend(boneIndex: number, degrees: number): void
+	GetGroupCount(): number
+	GetGroupName(index: number): string
+	IsGroupVisible(index: number): boolean
+	SetGroupVisible(index: number, visible: boolean): void
+	GetBoneMatrix(boneIndex: number): Nullable<number[]>
+	/**
+	 * Replaces one submesh's material, given either as a `.vmat` path or as an inline KV3
+	 * definition — the same text a material is authored in, parsed on the calling thread so a bad
+	 * one is reported here rather than failing silently inside a render task.
+	 *
+	 * Each distinct definition mints a material the scene then holds, so this is for a material
+	 * that CHANGES rarely. Anything that moves per frame belongs in {@link SetMaterialParam}.
+	 */
+	SetSubmeshMaterial(
+		meshIndex: number,
+		submeshIndex: number,
+		material: string
+	): void
+	/**
+	 * Overrides one parameter of whatever material a submesh draws with, for this instance only.
+	 * Mints nothing and is safe to call every frame. A submesh of -1 applies to every submesh of
+	 * that mesh. A scalar is broadcast to all four components.
+	 */
+	SetMaterialParam(
+		meshIndex: number,
+		submeshIndex: number,
+		name: string,
+		value: number | number[]
+	): void
+	/** Drops the parameter overrides on one mesh, or on every mesh when none is named. */
+	ClearMaterialParams(meshIndex?: number): void
+	ClearMaterialOverrides(): void
+}
+
+declare interface GFXScene {
+	CreateInstance(model?: GFXModel): GFXInstance
+	AddLight(type: number, position: number[], rotation?: number[], color?: number): void
+	GetLightCount(): number
+	SetLight(
+		index: number,
+		type: number,
+		position: number[],
+		rotation?: number[],
+		color?: number
+	): void
+	RemoveLight(index: number): void
+	ClearLights(): void
+	SetUpdating(updating: boolean): void
+	IsUpdating(): boolean
+	SetSize(width: number, height: number): void
+	SetSamples(samples: number): void
+	SetCamera(position: number[], target: number[], fov: number, up?: number[]): void
+	SetOrthoCamera(position: number[], target: number[], size: number, up?: number[]): void
+	ResetCamera(): void
+	GetTextureId(): number
+	/** Silhouette glow around the scene's content: 0xRRGGBBAA (0 = off), width in target px. */
+	SetGlow(color: number, width?: number): void
+}
+
+declare interface GFX {
+	CreateScene(width: number, height: number): GFXScene
+	DestroyScene(scene: GFXScene): void
+	LoadModel(path: string): Promise<Nullable<GFXModel>>
+	readonly LIGHT_DIRECTIONAL: number
+	readonly LIGHT_POINT: number
+}
+
+declare var GFX: GFX

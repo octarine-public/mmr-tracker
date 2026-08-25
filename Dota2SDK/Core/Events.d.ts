@@ -56,7 +56,7 @@ interface NativeEventsMap {
 	PanoramaWindowDestroy: [windowName: string]
 	CustomGameEvent: [eventName: string, data: RecursiveMap]
 	DebuggerPrepareUnitOrders: [isUserInput: boolean, wasCancelled: boolean]
-	Draw: [visualData: ArrayBuffer, w: number, h: number, x?: number, y?: number]
+	Draw: [visualData: ArrayBuffer, w: number, h: number, x: number, y: number]
 	GCPingResponse: []
 	GameEvent: [eventName: string, obj: unknown]
 	InputCaptured: [isCaptured: boolean]
@@ -66,7 +66,7 @@ interface NativeEventsMap {
 	ServerMessage: [msgID: number, buf: ArrayBuffer]
 	SetLanguage: [language: MenuLanguageID]
 	SharedObjectChanged: [typeID: number, reason: number, msg: ArrayBuffer]
-	WndProc: [messageType: number, wParam: bigint, lParam: bigint, x?: number, y?: number]
+	WndProc: [messageType: number, wParam: bigint, lParam: bigint, x: number, y: number]
 }
 
 declare const Events: EventEmitter<EventsMap>

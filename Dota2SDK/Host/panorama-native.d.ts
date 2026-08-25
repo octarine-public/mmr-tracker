@@ -143,8 +143,6 @@ declare namespace Panorama {
 	/** Interns a string; 65535 symbols is the engine's limit. */
 	function MakeSymbol(name: string): PanoramaSymbol
 	function GetSymbolString(symbol: PanoramaSymbol): string
-	function SetWindowCreateCallback(callback: (name: string) => void): void
-	function SetWindowDestroyCallback(callback: (name: string) => void): void
 	/**
 	 * Attaches a callback to an event of the given type on one panel. The callback takes however
 	 * many arguments that event carries.

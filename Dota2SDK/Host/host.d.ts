@@ -113,8 +113,6 @@ interface NetMediaSessionState {
 	sources: string[]
 	/** The artwork, present only when it was asked for and the player publishes one. */
 	thumbnail?: ArrayBuffer
-	/** How loud the player is right now, 0..1. Only mediaSessionLevel fills this in. */
-	level: number
 	/** Where the player's volume slider stands, 0..1. Filled by mediaSessionVolume and by a
 	 * volume command, which answers with where it left it. */
 	volume: number
@@ -129,15 +127,9 @@ declare function mediaSessionRead(
 	source: string,
 	wantThumbnail: boolean
 ): Promise<NetMediaSessionState>
-/** command is "playpause", "play", "pause", "next" or "prev"; source as in mediaSessionRead. */
-/**
- * Just how loud the player is, without the rest of the state. Its own call because a level worth
- * animating is asked for many times a second, and the track and the list of players would be the
- * same answer resent tens of times over.
- */
-declare function mediaSessionLevel(source: string): Promise<NetMediaSessionState>
 /** Where the player's own volume slider stands. */
 declare function mediaSessionVolume(source: string): Promise<NetMediaSessionState>
+/** command is "playpause", "play", "pause", "next" or "prev"; source as in mediaSessionRead. */
 declare function mediaSessionCommand(
 	command: string,
 	source: string
