@@ -40,6 +40,14 @@ declare namespace MenuSDK {
 		readonly readable: (color: Color) => Color
 	}
 	/**
+	 * A `#rrggbb[aa]` literal packed as a HUD command carries it, parsed once and cached — the form a
+	 * per-frame draw wants, where parsing the string each time would mint a colour per call.
+	 *
+	 * @example
+	 * surface.Push({ kind: "rect", ..., borderColor: PackedHex(HexOf(Tokens.Accent)) })
+	 */
+	function PackedHex(hex: string): number
+	/**
 	 * A `#rrggbb[aa]` literal as the engine's colour, cached: a token resolves to the same literal
 	 * until the palette changes, and the HUD asks for it on every label of every frame.
 	 *
@@ -68,6 +76,10 @@ declare namespace MenuSDK {
 	const HudHeaderGap = 10
 	/** What a carved shape's quad is grown by, so its antialiased edge is not clipped by its own box. */
 	const HudSdfInset = 1
+	/**
+	 * `base` faded by the alpha the card frame set: readings drawn after a {@link CHudCard.Frame}
+	 * follow the card's own fade without carrying it by hand.
+	 */
 	function hudAlpha(base?: number): number
 	/**
 	 * The scale a card pinned to the screen is laid out at, and the theme it is measured against. A

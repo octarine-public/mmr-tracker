@@ -3,9 +3,15 @@ declare namespace MenuSDK {
 	interface IOverlayMenu {
 		Position: Vector2
 		Scale?: number
+		/**
+		 * Menu row a right-click on the panel reveals while the menu is open. A menu without one
+		 * leaves the right button alone.
+		 */
 		readonly SetupEntry?: Entry
 	}
 	class OverlayMenu implements IOverlayMenu {
+		/** The node the panel's rows live under: what a right-click on the panel opens. */
+		public readonly SetupEntry: Entry
 		/**
 		 * The panel's place is carried by the hand that drags it, so the two sliders holding it stay
 		 * out of the page: they are where the place is kept and read back from a config, not how it
@@ -40,15 +46,34 @@ declare namespace MenuSDK {
 		/** Draws the card centred above `world`, or hides it and answers `false` when off screen. */
 		public Draw(world: Vector3, size: Vector2, distance: number, content: (origin: Vector2) => void): boolean
 		public Hide(): void
+		/**
+		 * Lets go of the panel's surface for good, for a card whose anchor is gone - the entity
+		 * despawned, the marker picked up. A kept surface is walked by the frame gate every tick for
+		 * the rest of the session; a panel built again under the same key opens a fresh one.
+		 */
+		public Destroy(): void
+	}
+	/**
+	 * When a screen panel stands. The host's overlay gate closes on the game's own screens and
+	 * outside a match; each life names what a panel answers to beyond it.
+	 */
+	const enum EPanelLife {
+		/** Only while the host lets overlays draw: inside a match, no game screen over it. */
+		Overlay = 0,
+		/**
+		 * Also while the menu is open — a window the user opened the menu to use is there on the
+		 * main menu too.
+		 */
+		MenuBound = 1,
+		/**
+		 * Also anywhere outside a match, menu open or not: a card meant to live on every screen —
+		 * a music player. In a match it still yields to the game's own screens.
+		 */
+		Standalone = 2
 	}
 	class OverlayPanel {
-		/**
-		 * @param menuBound whether this panel stands with the menu rather than over the world. The
-		 * host's overlay gate closes on the game's own screens and outside a match; a window the user
-		 * opened the menu to use answers to the menu being open instead, so it is there on the main
-		 * menu too.
-		 */
-		constructor(menu: IOverlayMenu, key?: string, menuBound?: boolean)
+		/** @param life when the panel stands; see {@link EPanelLife}. */
+		constructor(menu: IOverlayMenu, key?: string, life?: EPanelLife)
 		public get Scale(): number
 		/**
 		 * Brings this panel in front of every other one, in what is drawn and in what takes a click.
@@ -75,5 +100,12 @@ declare namespace MenuSDK {
 		public MouseKeyDown(key?: VMouseKeys): boolean
 		public MouseKeyUp(): boolean
 		public Reset(): void
+		/**
+		 * Takes the panel apart for good: the surface is dropped, the overlay registration stops
+		 * taking clicks and the config listener lets go of the instance. For a panel owned by
+		 * something that dies mid-session; one built again under the same key starts fresh. The menu
+		 * rows given at birth stay where they are - they belong to whoever added them.
+		 */
+		public Destroy(): void
 	}
 }

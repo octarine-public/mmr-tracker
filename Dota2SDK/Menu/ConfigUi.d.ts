@@ -18,6 +18,10 @@ declare namespace MenuSDK {
 	/** 1840 → «1.8k»: the order of magnitude decides, the exact count does not. */
 	function FormatCompact(value: number): string
 	type TagTone = "neutral" | "accent" | "success" | "warn" | "danger"
+	/** The same, for a control the cursor rests on. */
+	const HoverFillAlpha = 0.06
+	/** The same, for a row of a list, which wears the wash over a busier surface. */
+	const RowFillAlpha = 0.04
 	function CfgTag(props: {
 		text: string
 		tone?: TagTone

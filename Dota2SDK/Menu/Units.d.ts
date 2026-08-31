@@ -16,6 +16,14 @@ declare namespace MenuSDK {
 		Fill(unit: T, out: WorldUnitBounds): boolean
 		/** Tracking range in world units from the overlay's origin; unmounting keeps 15% slack. */
 		MaxDistance?(): number
+		/**
+		 * How far off the unit's box the FIRST element on each side sits, in screen px. Docked
+		 * elements stack outward from there, each one leaving its own gap behind it.
+		 *
+		 * Read once a tick rather than held, so it follows the ui scale it was measured against.
+		 * Nothing given is flush against the box.
+		 */
+		Edge?(): number
 	}
 	/** What a widget factory receives: element supply in the overlay's layer, and the layer. */
 	interface IWorldUnitHost {
@@ -43,6 +51,14 @@ declare namespace MenuSDK {
 		readonly thickness: number
 		/** The gap to the next widget on the same side. */
 		readonly gap: number
+		/**
+		 * Whether the widget draws on this unit at all, asked before the stack is laid out. One that
+		 * answers false takes no room from its side: what is docked past it closes up rather than
+		 * standing off a gap where nothing is being drawn.
+		 *
+		 * `Update` is called either way, so a widget that has stopped drawing still hides itself.
+		 */
+		Draws?(unit: T, distance: number): boolean
 		Update(unit: T, frame: CWorldUnitFrame, out: number, distance: number): void
 		Hide(): void
 		/**

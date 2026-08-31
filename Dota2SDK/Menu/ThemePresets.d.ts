@@ -10,10 +10,17 @@ declare namespace MenuSDK {
 		Surface: string
 		Text: string
 		/**
-		 * Color of the window frame, the dividers and the controls derived from it. Its alpha carries
-		 * into every edge it feeds, the pill's included.
+		 * Color of the window frame and the edges derived from it. Its alpha carries into every edge
+		 * it feeds, the pill's included, and every edge also thins faster than the window as
+		 * {@link IThemeSeeds.Opacity} drops - a glass theme is not framed in solid lines.
 		 */
 		Border: string
+		/**
+		 * Color of the inert controls - switch tracks, slider rails, scrollbars and the dividers
+		 * beside them. Omitted means they follow {@link IThemeSeeds.Border}, which is what every
+		 * theme saved before this seed existed expects.
+		 */
+		Controls?: string
 		GlassBlur: number
 		Opacity: number
 		/** Corner radius scale as a fraction, 1 = 100%. Omitted means 1. */

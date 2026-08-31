@@ -134,3 +134,62 @@ declare function mediaSessionCommand(
 	command: string,
 	source: string
 ): Promise<NetMediaSessionState>
+
+// The script storage bridge. A script's own key/value store is a file on the
+// user's disk, one directory per game, and the game process writes no files, so
+// every read and write goes to the client and comes back here.
+// `Storage/LocalStorage.ts` wraps these; a script should reach for that.
+
+interface LocalStorageResult {
+	/** 0 when the op succeeded; otherwise why it did not. */
+	result: number
+	error: string
+	/** get only: whether the key was there at all. */
+	found: boolean
+	/** get only: the stored value as JSON text, empty when the key is absent. */
+	value: string
+	/** open and keys only: every key the store holds, sorted. */
+	keys: string[]
+}
+
+/** Creates the store if it is not there yet. Until it has run, every other op is refused. */
+declare function localStorageOpen(store: string): Promise<LocalStorageResult>
+declare function localStorageGet(store: string, key: string): Promise<LocalStorageResult>
+/** `value` is the JSON text to store, not the value itself. */
+declare function localStorageSet(
+	store: string,
+	key: string,
+	value: string
+): Promise<LocalStorageResult>
+declare function localStorageRemove(
+	store: string,
+	key: string
+): Promise<LocalStorageResult>
+declare function localStorageClear(store: string): Promise<LocalStorageResult>
+declare function localStorageKeys(store: string): Promise<LocalStorageResult>
+
+// Which of the other people in this match run our product. The game asks about
+// nobody in particular and uploads no account ids: the client asks the loader
+// server, which already knows who is in which match. `Match/MatchProducts.ts`
+// wraps this; a script should reach for that.
+
+interface MatchProductsHostPlayer {
+	accountID: number
+	/**
+	 * Bit 0 is our product, running in this match right now. Bits 1-4 are other
+	 * products our own client once found installed on that machine, one bit each.
+	 */
+	products: number
+}
+
+interface MatchProductsHostResult {
+	/**
+	 * False when the server would not answer at all. An empty `players` with this
+	 * set means "nobody else to report", which is not the same thing.
+	 */
+	answered: boolean
+	/** Our own users only. A player who is absent is unknown, not clean. */
+	players: MatchProductsHostPlayer[]
+}
+
+declare function matchProductsRead(): Promise<MatchProductsHostResult>

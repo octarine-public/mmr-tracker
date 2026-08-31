@@ -17,7 +17,7 @@ declare namespace MenuSDK {
 	function EaseValue(ease: Ease, t: number): number
 	/**
 	 * Global speed multiplier applied to every tween and stylesheet transition;
-	 * 1 is the designed pace, higher is faster. Clamped to [0.01, 4].
+	 * 1 is the designed pace, higher is faster. Clamped to [0.4, 4].
 	 */
 	function SetAnimationSpeed(value: number): void
 	function AnimationSpeed(): number
@@ -52,4 +52,15 @@ declare namespace MenuSDK {
 	function usePopIn(target: {
 		current: Nullable<HTMLElement>
 	}, options?: PopInOptions): void
+	/**
+	 * Slides an element back from an offset to where the layout already stands it. The move is a
+	 * transform, so nothing around it is laid out again and the element travels at whatever precision
+	 * the compositor has rather than in whole pixels. `pinned` is the element doing something else
+	 * with its transform - a tile being dragged writes its own and must not be written over.
+	 */
+	function useGlide(element: {
+		current: Nullable<HTMLElement>
+	}, pinned?: {
+		current?: boolean
+	}): (dx: number, dy: number) => void
 }

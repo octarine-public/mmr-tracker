@@ -76,6 +76,12 @@ declare namespace MenuSDK {
 	 * {@link SdfShape} states.
 	 */
 	function SdfCircle(fill: string, borderW?: number, borderColor?: string, inset?: number, glowW?: number, glowColor?: string): RmlStyle
+	/**
+	 * The popover surface at a given radius: the menu glass made opaque and faded to 0.96, rimmed
+	 * with a 1dp panel border — the fill the context menu, the preset panels and the tooltips
+	 * share. Palette-reactive, so re-apply it on render like every SDF fragment.
+	 */
+	function SdfPopoverTheme(radius: number): RmlStyle
 	/** SdfRounded with live theme palette colors, resolved at call time. */
 	function SdfRoundedTheme(radius: number, fill: keyof IThemePalette, borderW?: number, borderColor?: keyof IThemePalette): RmlStyle
 }

@@ -14,6 +14,7 @@ declare namespace MenuSDK {
 		InputBg: string
 		InputBorder: string
 		InputBorderHover: string
+		ButtonBorder: string
 		TextPrimary: string
 		TextBody: string
 		TextBright: string

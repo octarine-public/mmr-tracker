@@ -17,6 +17,8 @@ declare namespace MenuSDK {
 	 * regular language-independent face, excluding pure fallbacks.
 	 */
 	function MenuFontFamilies(): string[]
+	/** The weights the font weight picker offers, lightest first; the first is the default. */
+	const FontWeightNames: string[]
 	/**
 	 * The family the menu currently renders with, before language overrides.
 	 */
@@ -26,5 +28,21 @@ declare namespace MenuSDK {
 	 * to the default. The caller re-applies the root font and invalidates.
 	 */
 	function SetMenuFontFamily(family: string): void
+	/**
+	 * The name from {@link FontWeightNames} the menu currently renders with.
+	 */
+	function SelectedFontWeight(): string
+	/**
+	 * Selects the menu font weight by its name in {@link FontWeightNames}; names outside it
+	 * fall back to regular. Returns whether the selection moved — a weight is baked into
+	 * every written style, so the caller rebuilds the trees when it did.
+	 */
+	function SetMenuFontWeight(name: string): boolean
+	/**
+	 * The weight text asking for `weight` is drawn at under the font weight setting: raised to
+	 * the setting's floor, never lowered, so heavier runs keep their emphasis. The style writers
+	 * and the text measurers apply it themselves — callers keep passing design weights.
+	 */
+	function MenuFontWeight(weight: number): number
 	function FamilyForLanguage(language: string): string
 }

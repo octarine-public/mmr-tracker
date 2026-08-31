@@ -18,6 +18,11 @@ declare namespace MenuSDK {
 		constructor()
 		public Register(rect: Rectangle): OverlayRegistration
 		/**
+		 * Takes a registration out for good, so a destroyed panel stops being walked by every click
+		 * and every drag; the counterpart of {@link COverlayManager.Register}.
+		 */
+		public Unregister(registration: OverlayRegistration): void
+		/**
 		 * Brings a panel in front of the ones it overlaps, and answers where it now stands so the
 		 * caller can put its surface there too.
 		 */

@@ -43,9 +43,14 @@ declare namespace MenuSDK {
 	 */
 	class FloatingWindow {
 		public readonly Title: string
-		/** One short localized line under the pages on how the window is used; empty shows none. */
-		public Hint: string
 		constructor(holder: Node, Title: string, defaultX?: number, defaultY?: number, onClose?: (() => void) | undefined)
+		/**
+		 * Takes the window apart for good: the card unmounts, the overlay registration stops taking
+		 * clicks, the outline surface is dropped and the config listener lets go of the instance. The
+		 * pages added through {@link FloatingWindow.AddPage} stay in the menu tree - they belong to
+		 * the node given at birth.
+		 */
+		public Destroy(): void
 		/**
 		 * Adds a page: an item in the sidebar, and a node whose rows fill the window while it is
 		 * picked. The sidebar shows the node's localized name; its icon is resolved the way an image
@@ -64,6 +69,9 @@ declare namespace MenuSDK {
 		public get Pages(): readonly Node[]
 		/** The name of the page the sidebar has picked. */
 		public get Selected(): string
+		/** One short localized line under the pages on how the window is used; empty shows none. */
+		public get Hint(): string
+		public set Hint(value: string)
 		/** Whether the window is off the screen regardless of what the host would allow. */
 		public get IsHidden(): boolean
 		/** Where this window stands in the stack of overlay cards, for its element's z-index. */
@@ -72,7 +80,7 @@ declare namespace MenuSDK {
 		public SetHidden(hidden: boolean): void
 		/** Picks a page, exactly like a click on its sidebar row. */
 		public Select(name: string): void
-		/** Opens the window's own node in the menu, which is what the right button asks anywhere. */
+		/** Opens the window's own node in the menu, which is what the title bar's right button asks. */
 		public Reveal(): void
 		/** What the title bar's close button does: the closer given at birth, or plain hiding. */
 		public Close(): void

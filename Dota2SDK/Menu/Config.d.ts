@@ -2,6 +2,12 @@
 declare namespace MenuSDK {
 	type ConfigObject = Record<string, unknown>
 	function IsLoadingConfig(): boolean
+	/**
+	 * Whether the boot config has landed — or never will, on a host that has none. Until it does,
+	 * the window state, the navigation and every control are defaults: a surface that decides where
+	 * to stand from them draws itself against a window that is about to move, so it waits for this.
+	 */
+	function ConfigSettled(): boolean
 	function SerializeConfig(node?: NodeEntry): ConfigObject
 	/**
 	 * Gives a newly attached entry the value the config already holds for it. The
@@ -25,6 +31,12 @@ declare namespace MenuSDK {
 	function IsDefaultDeep(entry: Entry): boolean
 	const WindowConfigKey = "Header"
 	const LanguageConfigKey = "SelectedLocalization"
-	function OnConfigWritten(listener: (config: ConfigObject) => void): void
+	/** Runs the listener after every config write; the returned call takes it off again. */
+	function OnConfigWritten(listener: (config: ConfigObject) => void): () => void
 	function FlushPendingConfig(): void
+	/**
+	 * Forces the pending-save flag and flushes, for the paths where the runtime is about to die: a
+	 * reload must carry the freshest window and navigation state even when nothing marked a save.
+	 */
+	function FlushConfigBeforeReload(): void
 }

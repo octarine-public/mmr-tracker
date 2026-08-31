@@ -1,6 +1,6 @@
 // AUTO-GENERATED - do not edit.
 declare namespace MenuSDK {
-	type EntryKind = "node" | "toggle" | "slider" | "dropdown" | "multiSelect" | "keybind" | "button" | "color" | "text" | "images" | "description"
+	type EntryKind = "node" | "toggle" | "slider" | "dropdown" | "multiSelect" | "keybind" | "button" | "color" | "text" | "images" | "presets" | "description"
 	interface MenuHintMedia {
 		kind: "image" | "gif" | "video"
 		src: string
@@ -52,7 +52,8 @@ declare namespace MenuSDK {
 	/**
 	 * Whether this entry's rows live in a floating window rather than on a page or in a popover:
 	 * some ancestor is a hosted node that is not a popover — the combination only a window's page
-	 * carries. Such a row offers no context menu; the window itself answers the right button.
+	 * carries. Such a row answers the right button with its own context menu the way a page row
+	 * does; carrying the click into the menu belongs to the window's title bar alone.
 	 */
 	function IsWindowHosted(entry: EntryCommon): boolean
 	/**
@@ -106,6 +107,11 @@ declare namespace MenuSDK {
 		textColor?: Color
 		iconGrayScale?: boolean
 		tabbedChildren?: boolean
+		/**
+		 * Whether a top-level tab lays its child nodes out as section cards on its own page instead
+		 * of listing them as sub-pages in the navigation column.
+		 */
+		inlinePages?: boolean
 		headerControl?: ValueEntry
 		/** Toggle whose off state makes every card of this page read as inert. */
 		gate?: ToggleEntry
@@ -333,7 +339,41 @@ declare namespace MenuSDK {
 		catalogue: readonly CatalogueSection[]
 		listeners: ((entry: ImagesEntry) => void)[]
 	}
-	type ValueEntry = ToggleEntry | SliderEntry | DropdownEntry | MultiSelectEntry | KeybindEntry | ButtonEntry | ColorEntry | TextEntry | ImagesEntry | DescriptionEntry
+	/** One preset of a preset selector: its display name and the catalogue values it claims. */
+	interface PresetGroup {
+		/**
+		 * Identity that survives renames and the removal of other presets, unique within its entry.
+		 * What a script keys per-preset state of its own by; the base preset always carries 0.
+		 */
+		readonly id: number
+		name: string
+		values: string[]
+	}
+	/**
+	 * A preset selector: a row showing the chosen preset, opening a panel that lists a permanent
+	 * base preset above the user's own. Every other preset claims values from the catalogue, each
+	 * value belonging to at most one preset; values the base covers are whatever no other claims.
+	 */
+	interface PresetsEntry extends EntryCommon {
+		readonly kind: "presets"
+		/** Name of the permanent first preset. It claims no values and cannot be renamed or removed. */
+		readonly baseName: string
+		/** Heading of the row's panel where it should differ from the row's own name. */
+		panelTitle?: string
+		/** Every preset, the base always first. Mutate only through the Store's preset calls. */
+		presets: PresetGroup[]
+		selected: number
+		nextId: number
+		/** What preset values are picked from, laid out section by section like a browse catalogue. */
+		catalogue: readonly CatalogueSection[]
+		listeners: ((entry: PresetsEntry) => void)[]
+		/**
+		 * Who carries one preset's settings over to another. The selector owns no settings of its
+		 * own, so the panel offers Copy/Paste only while something is listening here.
+		 */
+		copyListeners: ((from: PresetGroup, to: PresetGroup) => void)[]
+	}
+	type ValueEntry = ToggleEntry | SliderEntry | DropdownEntry | MultiSelectEntry | KeybindEntry | ButtonEntry | ColorEntry | TextEntry | ImagesEntry | PresetsEntry | DescriptionEntry
 	type Entry = NodeEntry | ValueEntry
 	/** Entries whose rows carry hotkeys and logic rules from the context menu. */
 	type DriverHolder = ToggleEntry | SliderEntry | DropdownEntry | MultiSelectEntry

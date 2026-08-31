@@ -16,7 +16,9 @@ declare namespace MenuSDK {
 	 * One row of the context menu. A disabled row is greyed out, keeps its hover
 	 * fill off and swallows the click. `run` runs on click and closes the menu; a
 	 * row with `flyout` instead keeps the menu open and receives the menu rect at
-	 * its own height, in screen pixels, to place a side panel against. `open`
+	 * its own height, in screen pixels, to place a side panel against. `hover`
+	 * opens the flyout as soon as the cursor enters the row, without waiting for a
+	 * click, as long as `open` does not already say the panel is showing. `open`
 	 * keeps the hover fill on while the row's side panel is showing. `danger`
 	 * paints the label, the icon and the hover fill in the theme's danger colour,
 	 * for a row that throws work away; `color` gives a non-destructive row its own
@@ -29,6 +31,7 @@ declare namespace MenuSDK {
 		readonly run?: () => void
 		readonly trailing?: ContextMenuTrailing
 		readonly flyout?: (anchor: ScreenRect) => void
+		readonly hover?: boolean
 		readonly open?: boolean
 		readonly danger?: boolean
 		readonly color?: string
@@ -45,6 +48,12 @@ declare namespace MenuSDK {
 	function SetContextItems(entry: EntryCommon, build: Nullable<() => readonly ContextMenuItem[]>): void
 	/** The rows a script has put on this entry, or none. */
 	function ContextItemsOf(entry: EntryCommon): Nullable<() => readonly ContextMenuItem[]>
+	/**
+	 * Hands the menu the closer of a side panel a scripted row's flyout opened, so
+	 * the panel leaves with the menu: closing the menu, opening another one, or
+	 * hovering a row other than the panel's own runs the closer once and forgets it.
+	 */
+	function AttachContextFlyout(close: () => void): void
 	/**
 	 * The hotkey and logic rows of the switch a node wears in its header, for a menu that builds its
 	 * rows itself instead of going through {@link OpenContextMenu} — the menu of a navigation tab. A

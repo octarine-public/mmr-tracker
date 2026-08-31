@@ -9,7 +9,13 @@ declare const SharedSDK: {
 	readonly HSVToRGB: (h: number, s: number, v: number) => [number, number, number]
 	readonly Headers: typeof Headers
 	readonly KeyNames: typeof KeyNames
+	readonly LocalStorage: typeof LocalStorage
+	readonly LocalStorageError: typeof LocalStorageError
+	readonly LocalStorageErrorCode: typeof LocalStorageErrorCode
 	readonly MapToObject: (map: Map<unknown, unknown>) => Record<string, unknown>
+	readonly MatchProduct: typeof MatchProduct
+	readonly MatchProductNames: (products: number) => string[]
+	readonly MatchProductOtherMask: number
 	readonly MaterialFlags: typeof MaterialFlags
 	readonly Matrix3x4: typeof Matrix3x4
 	readonly MediaSessionError: typeof MediaSessionError
@@ -43,6 +49,8 @@ declare const SharedSDK: {
 	readonly Vector4: typeof Vector4
 	readonly WebSocket: typeof WebSocket
 	readonly fetch: (url: string, init?: FetchInit) => Promise<Response>
+	readonly matchProducts: () => Promise<MatchProductsSnapshot>
+	readonly openLocalStorage: (name: string) => Promise<LocalStorage>
 	readonly readJSON: <T = unknown>(path: string) => T
 	readonly readMediaSession: (options?: MediaReadOptions) => Promise<MediaSessionSnapshot>
 	readonly readNowPlaying: (options?: MediaReadOptions) => Promise<Nullable<NowPlaying>>

@@ -37,6 +37,20 @@ declare namespace MenuSDK {
 	 */
 	function ActivePageTab(page: NodeEntry): Nullable<NodeEntry>
 	function SetActivePageTab(page: NodeEntry, child: NodeEntry): void
+	const NavigationKey = "__nav"
+	interface StoredNavigation {
+		tab: string
+		page: string
+		tabs: [string, string][]
+	}
+	/**
+	 * The place the menu stands at, for the config: a scripts reload lands back on the same tab and
+	 * page instead of the first one — a preview card gated on its page being active must not spring
+	 * up because a reload forgot where the user was.
+	 */
+	function SerializeNavigation(): StoredNavigation
+	/** Puts the selection back where {@link SerializeNavigation} recorded it. */
+	function ApplyNavigation(stored: unknown): void
 	function ActiveContentNode(): Nullable<NodeEntry>
 	function SelectGeneral(): void
 	function OpenSettingsTab(): void

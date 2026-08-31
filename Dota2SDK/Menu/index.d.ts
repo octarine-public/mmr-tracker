@@ -39,6 +39,18 @@ declare namespace MenuSDK {
 		divider: boolean
 		nested?: boolean
 	}): React.ReactElement
+	/**
+	 * The preset selector's bare dropdown chip, for the window's top bar: no row and no label,
+	 * just the selected preset opening the panel.
+	 */
+	function PresetsHeader(props: {
+		entry: PresetsEntry
+	}): React.ReactElement
+	function PresetsRow(props: {
+		entry: PresetsEntry
+		divider: boolean
+		nested?: boolean
+	}): React.ReactElement
 	function MultiSelectRow(props: {
 		entry: MultiSelectEntry
 		divider: boolean
@@ -135,21 +147,27 @@ declare namespace MenuSDK {
 	/**
 	 * The theme's glow as the element it is drawn through, for a surface that hosts one: nothing at
 	 * all while the theme asks for no glow. It goes first among the surface's children, and the
-	 * surface carries {@link SdfGlowHost}.
+	 * surface carries {@link SdfGlowHost}. `fill` is what the surface under the halo is painted, so
+	 * an adaptive theme lights it in its own color; without it the halo keeps the theme's one color.
 	 *
 	 * @example
 	 * <div style={{ ...SdfGlowHost, ...card }}>
-	 * 	<GlowLayer radius={12} />
+	 * 	<GlowLayer radius={12} fill={Theme.ValueOf("CardBg")} />
 	 * 	{children}
 	 * </div>
 	 */
 	function GlowLayer(props: {
 		radius: number
+		fill?: string
 	}): React.ReactElement | null
 	/**
 	 * A card of the theme's own material. `glow` lights it with the theme's glow, which a surface
 	 * standing on its own wants and one in a list of them does not - the glow says "this is a thing
 	 * of its own", and a column of glowing cards says nothing at all.
+	 *
+	 * A lit card lays out as a block with its rows in a column of their own: the glow layer is an
+	 * absolutely placed quad, and a flex parent would seat it as a zero-height first row — the halo
+	 * then radiates from a line at the top instead of hugging the card.
 	 */
 	function Surface(props: {
 		elevation?: "flat" | "raised"
@@ -185,6 +203,33 @@ declare namespace MenuSDK {
 		style?: RmlStyle
 		onClick?: (event: Event) => void
 		onMouseDown?: (event: Event) => void
+		children?: React.ReactNode
+	}): React.ReactElement
+	/**
+	 * Single-line label that hides overflow behind a fading edge and, while `active`, scrolls the line
+	 * so the whole of it can be read where it stands: it waits at its head, travels far enough to bring
+	 * the tail in, waits there and comes back, for as long as the row asks. A line that fits is left
+	 * alone and costs nothing — the row it sits in is what says when to read, so a nav row scrolls its
+	 * own name under the cursor instead of standing a panel over it.
+	 *
+	 * The travel is one transform written by a tween, so nothing around the label lays out again while
+	 * it reads, and it is snapped to whole screen pixels — a line resting between two of them is what
+	 * makes glyphs shimmer as they move. Both edges carry a scrim dissolving into `base`, the resting
+	 * fill of the surface behind the label, and they follow the travel: the head's comes up as the line
+	 * leaves, the tail's goes out as it arrives.
+	 *
+	 * @example
+	 * <ScrollLabel base={Theme.ValueOf("WindowBg")} active={hovered} style={{ flex: "0 1 auto" }}>
+	 *     {name}
+	 * </ScrollLabel>
+	 */
+	function ScrollLabel(props: {
+		/** Resting background behind the clipped edges; the scrims dissolve into it. */
+		base: StyleColor
+		/** Scrolls a line that does not fit while true, and sends it home when it goes false. */
+		active: boolean
+		className?: string
+		style?: RmlStyle
 		children?: React.ReactNode
 	}): React.ReactElement
 	function Icon(props: {

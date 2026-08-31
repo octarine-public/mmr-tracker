@@ -6,6 +6,13 @@ declare namespace MenuSDK {
 	}
 	const AccentAlphas: readonly [0.06, 0.15, 0.25, 0.3, 0.4]
 	function AccentAlphaToken(alpha: (typeof AccentAlphas)[number]): string
+	/**
+	 * Delivers every palette change made since the last flush, one listener call per moved scope.
+	 * A theme apply moves the accent, the palette and the glow of up to three scopes in one pass,
+	 * and each listener answers with a full retint and re-render - so the changes are batched here
+	 * and drained once per menu frame instead of firing per setter.
+	 */
+	function FlushPaletteChanges(): void
 	function DefineTokens<P extends Record<keyof P, string>>(initial: P): TokenSet<P>
 	function IsToken(value: unknown): value is ThemeTokenRef
 	function ResolveToken(reference: ThemeTokenRef): string
@@ -86,14 +93,6 @@ declare namespace MenuSDK {
 		public AccentAlphaOf(inert: boolean, alpha: number): string
 		public ValueOf(token: keyof IThemePalette): string
 		/**
-		 * One scope's accent, whichever scope happens to be active. The plain {@link Accent} reads
-		 * the active scope, which is what a component wants; a controller writing a scope it is not
-		 * rendering in wants this.
-		 */
-		public AccentOf(scope: EThemeScope): Color
-		/** One scope's glow, whichever scope happens to be active; {@link Glow} reads the active one. */
-		public GlowOf(scope: EThemeScope): IThemeGlow
-		/**
 		 * Dresses one scope's surfaces in a glow: how far it reaches past their edge, in dp, how much
 		 * of a color it keeps, and which color that is. A reach of nothing puts it out. It repaints
 		 * the scope like a palette change, because that is what it is - the halo is baked into a
@@ -112,12 +111,10 @@ declare namespace MenuSDK {
 		public WalkGlow(color: string, scope?: EThemeScope): void
 		public SetAccent(color: Color, scope?: EThemeScope): void
 		public SetPalette(values: Partial<IThemePalette>, scope?: EThemeScope): void
-		public ResetPalette(defaults: Partial<IThemePalette>, scope?: EThemeScope): void
 		public SetMetrics(values: {
 			radius?: number
 			font?: number
 		}, scope?: EThemeScope): void
 	}
 	const Theme: CTheme
-	function SetPalette(values: Partial<IThemePalette>, scope?: EThemeScope): void
 }

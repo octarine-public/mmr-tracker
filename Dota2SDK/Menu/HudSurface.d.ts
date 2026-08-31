@@ -228,11 +228,20 @@ declare namespace MenuSDK {
 	 */
 	function EndHudFrame(): void
 	/**
+	 * How much of full opacity everything drawn onto the active surface keeps right now, 0 to 1.
+	 * {@link CHudCard.Frame} sets it from the card's own alpha so the readings on the glass fade with
+	 * it; opening or closing a surface puts it back to 1.
+	 */
+	function HudAlphaScale(): number
+	/** Fades everything drawn onto the active surface from here on; the card frame calls it. */
+	function SetHudAlphaScale(value: number): void
+	/**
 	 * Opens and closes the window a panel's content callback draws in. The surface's theme scope is
 	 * entered along with it, so a colour the callback asks the menu for - `HudColors.accent`, a token,
 	 * a blur - resolves against the theme that surface wears instead of the window's. It cannot be
 	 * taken from the command: by the time one is pushed its colour is already a literal, and only the
-	 * callback knows which surface it is drawing into.
+	 * callback knows which surface it is drawing into. Surfaces nest: a panel drawn from inside
+	 * another panel's callback hands the outer one back on close, scope and all.
 	 */
 	function SetActiveSurface(surface: Nullable<CHudSurface>): void
 	/** Where every HUD primitive lands while a panel's content callback runs. */

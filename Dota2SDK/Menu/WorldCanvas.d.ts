@@ -27,6 +27,12 @@ declare namespace MenuSDK {
 		public Circle(centerX: number, centerY: number, radius: number, width: number, color: Color): void
 		/** A filled disc in screen pixels. */
 		public Dot(centerX: number, centerY: number, radius: number, color: Color): void
+		/**
+		 * A picture centred on the point, in screen pixels. White-filled art is painted by `color`
+		 * the way every icon in the interface is tinted; the caller owns the aspect ratio, because
+		 * only it knows what the file holds.
+		 */
+		public Image(centerX: number, centerY: number, width: number, height: number, path: string, color: Color): void
 		/** A run of text in screen pixels, centred on the point. */
 		public Text(centerX: number, centerY: number, text: string, size: number, color: Color, bold?: boolean): void
 		/** Projects a world point, answering `false` when it is behind the camera. */

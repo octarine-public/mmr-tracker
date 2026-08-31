@@ -15,7 +15,8 @@ declare namespace MenuSDK {
 	/**
 	 * Text size at a font size already in screen pixels, in the theme's own face, outside the
 	 * font-scale setting — for callers that write `font-size` in px themselves and need the width
-	 * the renderer will lay that exact line out at. Undefined until the host can answer.
+	 * the renderer will lay that exact line out at. Undefined until the host can answer. `weight`
+	 * is the design weight; the font weight setting is applied here, as every style writer does.
 	 *
 	 * The answer is kept per size, weight and string, and thrown away whole when the face changes:
 	 * a card measures the room it needs every frame it draws, and the answer only moves when the

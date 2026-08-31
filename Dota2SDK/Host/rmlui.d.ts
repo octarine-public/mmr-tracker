@@ -277,6 +277,19 @@ declare function FreeImageBlob(source: string): void
  */
 declare function RegisterSizedImage(path: string, width: number, height: number): string
 /**
+ * Mints an image source for bytes a script holds plus the pixel size they will be drawn at, so the
+ * decode resamples straight to that size the way {@link RegisterSizedImage} does for a file. Freed
+ * with {@link FreeImageBlob} like any other blob. Feature-detect: hosts predating it have no such
+ * function.
+ *
+ * Returns `""` when the bytes are empty or the size is unusable.
+ */
+declare function RegisterSizedImageBlob(
+	data: ArrayBuffer | ArrayBufferView,
+	width: number,
+	height: number
+): string
+/**
  * Drops one hold on a source minted by {@link RegisterSizedImage}. A texture already built from it
  * stays valid, so the moment to free one is when its replacement is registered.
  */

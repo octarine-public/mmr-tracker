@@ -47,6 +47,42 @@ declare namespace MenuSDK {
 	 */
 	function SetImageCatalogue(entry: ImagesEntry, sections: readonly CatalogueSection[]): void
 	function ImagePairs(entry: ImagesEntry): [string, boolean][]
+	function CreatePresets(parent: NodeEntry, name: string, baseName: string, tooltip?: string, priority?: number): PresetsEntry
+	/** Hands the selector the catalogue its value picker offers. Claimed values stay as they are. */
+	function SetPresetCatalogue(entry: PresetsEntry, sections: readonly CatalogueSection[]): void
+	function SelectPreset(entry: PresetsEntry, index: number): void
+	/** Adds an empty preset under a fresh unique name and selects it. */
+	function AddPreset(entry: PresetsEntry): PresetGroup
+	/**
+	 * Hands one preset's settings to another through whoever is listening for it: the selector owns
+	 * the presets, a script owns what a preset means, so the carry itself belongs to the script. The
+	 * values a preset claims stay where they are — only the settings behind them travel.
+	 */
+	function CopyPresetSettings(entry: PresetsEntry, fromIndex: number, toIndex: number): void
+	function RemovePreset(entry: PresetsEntry, index: number): void
+	/** Renames a preset; an empty name or one another preset already carries is ignored. */
+	function RenamePreset(entry: PresetsEntry, index: number, name: string): void
+	/**
+	 * Claims a catalogue value for the preset, taking it away from whichever other preset held it —
+	 * a value belongs to at most one. The base preset claims nothing and is left alone.
+	 */
+	function AddPresetValue(entry: PresetsEntry, index: number, value: string): void
+	/**
+	 * Claims every value of `values` for the preset in one write — a whole catalogue section at
+	 * once. Each value obeys the {@link AddPresetValue} rules; listeners hear one change, not one
+	 * per value.
+	 */
+	function AddPresetValues(entry: PresetsEntry, index: number, values: readonly string[]): void
+	function RemovePresetValue(entry: PresetsEntry, index: number, value: string): void
+	/**
+	 * Replaces every preset beyond the base and the selection in one write, for a config or a script
+	 * restoring saved state. Names are made unique, a value stays with the first preset naming it,
+	 * and every group is given a fresh id — read the ids back off the entry after the call.
+	 */
+	function SetPresetGroups(entry: PresetsEntry, groups: readonly {
+		name: string
+		values: readonly string[]
+	}[], selected: number): void
 	function SetToggleValue(entry: ToggleEntry, value: boolean): void
 	/**
 	 * Records that a driver — a hotkey or a logic rule — changed: the config is due and the menu

@@ -29,15 +29,6 @@ declare namespace MenuSDK {
 	function ThemeGalleryPage(host: IThemeGalleryHost): () => React.ReactNode
 	function snapshotsEqual(a: IThemeSnapshot, b: IThemeSnapshot): boolean
 	function seedsEqual(a: IThemeSeeds, b: IThemeSeeds): boolean
-	/**
-	 * The label a saved theme carries on its card. Unlike a config's play style this is about how the
-	 * theme looks, so it stays visible without hovering - a grid of cards is meant to be scanned.
-	 */
-	function ThemeBadgeTag(props: {
-		badge?: EThemeBadge
-		blur?: boolean
-		style?: RmlStyle
-	}): React.ReactElement | null
 	function ThemeCard(props: {
 		name: string
 		seeds: IThemeSeeds
@@ -46,9 +37,9 @@ declare namespace MenuSDK {
 		width: number
 		last: boolean
 		onApply: () => void
-		/** The theme's own labels. Shown whether or not the card is hovered, unlike the actions. */
+		/** The theme's own label, worn as a chip on the preview in the theme's own colors. */
 		badge?: EThemeBadge
-		/** Whether the theme carries the independent Blur label. */
+		/** Whether the theme carries the independent Blur chip. */
 		blur?: boolean
 		/**
 		 * Everything that can be done to this theme, as rows of one menu: a card is a picture of a
@@ -70,6 +61,8 @@ declare namespace MenuSDK {
 	 */
 	function SaveCard(props: {
 		width: number
+		/** Width the naming form opens out to; the closed tile keeps `width`. */
+		openWidth?: number
 		unsaved: boolean
 		onSave: (name: string) => void
 		/** Answers a click the card has nothing to do with, so a press is never met with silence. */

@@ -23,9 +23,10 @@ declare namespace MenuSDK {
 	 */
 	function TickTour(now: number): void
 	/**
-	 * Opens the step-by-step menu tour: the window dims, a cutout highlights the
-	 * live element of the current step and a card beside it explains what it is.
-	 * The tour walks the menu through the same navigation the user would.
+	 * Opens the step-by-step menu tour: the window slides to the middle of the
+	 * screen, dims, a cutout highlights the live element of the current step and
+	 * a card beside it explains what it is. The tour walks the menu through the
+	 * same navigation the user would.
 	 */
 	function OpenTour(): void
 	/** Closes the tour and remembers that it was shown. */

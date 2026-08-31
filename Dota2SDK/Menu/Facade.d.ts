@@ -508,6 +508,60 @@ declare namespace MenuSDK {
 		/** Runs the value listeners without a value having changed. */
 		public TriggerOnValueChangedCBs(): ImageSelector
 	}
+	/**
+	 * A preset selector: its row shows the chosen preset and opens a panel listing a permanent base
+	 * preset above the user's own. Presets are added, renamed and removed in the panel, and every
+	 * one beyond the base claims values from {@link Catalogue} — each value belonging to at most
+	 * one preset, so the base stands for whatever no other claims.
+	 */
+	class PresetSelector extends Handle<PresetsEntry> {
+		public IsDefault(): boolean
+		public ResetToDefault(): void
+		/** Heading of the row's panel where it should differ from the row's own name. */
+		public get PanelTitle(): string
+		public set PanelTitle(value: string)
+		/**
+		 * The sections the panel's value picker offers, one row per value with its image and label.
+		 * @example
+		 * presets.Catalogue = [{ title: "Rifles", values: [{ value: icon, label: "AK-47" }] }]
+		 */
+		public get Catalogue(): readonly CatalogueSection[]
+		public set Catalogue(next: readonly CatalogueSection[])
+		/**
+		 * Every preset, the permanent base always first. Each carries the stable id a script keys
+		 * per-preset state of its own by. Treat as read-only — the selector owns the structure.
+		 */
+		public get Presets(): readonly PresetGroup[]
+		public get SelectedID(): number
+		public set SelectedID(next: number)
+		/** The preset the panel has selected, which is the one a script should be editing. */
+		public get Selected(): PresetGroup
+		/** The preset claiming `value`, or nothing while no preset does — the base covers it then. */
+		public OwnerOf(value: string): Nullable<PresetGroup>
+		/**
+		 * Replaces every preset beyond the base and the selection in one write, for a script
+		 * restoring state it saved itself. Every group is given a fresh id — read them back off
+		 * {@link Presets} after the call.
+		 * @example
+		 * presets.Load([{ name: "Rifles", values: rifleIcons }], 1)
+		 */
+		public Load(groups: readonly {
+			name: string
+			values: readonly string[]
+		}[], selected?: number): PresetSelector
+		public OnValue(callback: (caller: PresetSelector) => void): PresetSelector
+		/**
+		 * Carries one preset's settings over to another, for the Copy settings / Paste settings rows
+		 * of the panel's right-click menu. Registering a listener is what puts those rows there: the
+		 * selector owns the presets, the script owns what a preset means, so only the script can move
+		 * the meaning. The values a preset claims stay where they are.
+		 * @example
+		 * presets.OnCopySettings((from, to) => byId.set(to.id, byId.get(from.id)!.Clone()))
+		 */
+		public OnCopySettings(callback: (from: PresetGroup, to: PresetGroup) => void): PresetSelector
+		/** Runs the value listeners without a value having changed. */
+		public TriggerOnValueChangedCBs(): PresetSelector
+	}
 	class Node extends Handle<NodeEntry> {
 		public IsDefault(): boolean
 		public ResetToDefault(): void
@@ -526,7 +580,10 @@ declare namespace MenuSDK {
 		public get IsOpen(): boolean
 		public set IsOpen(value: boolean)
 		public get IsOpenStored(): boolean
-		/** Whether this node's card can be folded by clicking its header. */
+		/**
+		 * Whether this node's card can be folded by clicking its header. Off on a page, it also
+		 * pins the page's own General card open.
+		 */
 		public get Collapsible(): boolean
 		public set Collapsible(value: boolean)
 		/**
@@ -587,6 +644,16 @@ declare namespace MenuSDK {
 		public set Popover(value: boolean)
 		public get TabbedChildren(): boolean
 		public set TabbedChildren(value: boolean)
+		/**
+		 * Lays a top-level tab's child nodes out as collapsible section cards on the tab's own page,
+		 * instead of listing them as sub-pages in the navigation column. Sections fold independently,
+		 * and the tab's own rows stand in a General card above them.
+		 * @example
+		 * const tab = MenuSDK.Menu.AddEntry("Aimbot")
+		 * tab.InlinePages = true
+		 */
+		public get InlinePages(): boolean
+		public set InlinePages(value: boolean)
 		public get SaveUnusedConfigs(): boolean
 		public set SaveUnusedConfigs(value: boolean)
 		public get HeaderControl(): Nullable<AnyHandle>
@@ -676,6 +743,15 @@ declare namespace MenuSDK {
 		 */
 		public AddDynamicImageSelector(name: string, values: string[], defaultValues?: Map<string, boolean> | [string, boolean][], createdDefaultState?: boolean, tooltip?: string, priority?: number): ImageSelector
 		public AddImageSelector(name: string, values: string[], defaultValues?: Map<string, boolean> | [string, boolean][], tooltip?: string, createdDefaultState?: boolean, priority?: number, draggable?: boolean): ImageSelector
+		/**
+		 * A preset selector: a row showing the chosen preset, opening a panel that lists a permanent
+		 * base preset above the user's own — presets are added, renamed and removed there, and each
+		 * claims values from the catalogue handed to the returned handle.
+		 * @example
+		 * const presets = node.AddPresetSelector("Preset", "Global")
+		 * presets.Catalogue = [{ title: "Rifles", values: [{ value: icon, label: "AK-47" }] }]
+		 */
+		public AddPresetSelector(name: string, baseName?: string, tooltip?: string, priority?: number): PresetSelector
 	}
 	/** What {@link Node.AddVector2} hands back: the two sliders, and the point they make. */
 	interface Vector2Handle {
@@ -693,7 +769,7 @@ declare namespace MenuSDK {
 		readonly Color: ColorPicker
 		readonly Style: Dropdown
 	}
-	type AnyHandle = Node | Toggle | Slider | Dropdown | MultiSelect | Keybind | Button | ColorPicker | TextInput | ImageSelector | ShortDescription
+	type AnyHandle = Node | Toggle | Slider | Dropdown | MultiSelect | Keybind | Button | ColorPicker | TextInput | ImageSelector | PresetSelector | ShortDescription
 	/** A hotkey of any entry, whatever kind of value it drives. */
 	type AnyHotkey = HotkeyHandle<DrivenValue>
 	/** A logic rule of any entry, whatever kind of value it drives. */
