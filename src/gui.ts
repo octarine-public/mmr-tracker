@@ -1,49 +1,119 @@
-
 import { MMRChangedType } from "./enum"
 import { MenuManager } from "./menu"
+
+const PANEL_HEIGHT = 34
+const ICON = 18
+const FONT = 13
+const RATING_RESERVE = "0000"
 
 export class GUIHelper {
 	private rating = -1
 	private remainder = -1
-	private dragging = false
 	private mmrType = MMRChangedType.None
 
-	private readonly vecSize = new Vector2()
-	private readonly vecPosition = new Vector2()
-	private readonly draggingOffset = new Vector2()
+	private readonly size = new Vector2()
+	private readonly box = new Rectangle()
+	private readonly iconPos = new Vector2()
+	private readonly iconSize = new Vector2()
+	private readonly panel: MenuSDK.OverlayPanel
 
-	// TODO: handle full position by text size end
-	private readonly recIcon = new Rectangle()
-	private readonly position = new Rectangle()
 	private readonly basePath = "github.com/octarine-public/mmr-tracker/scripts_files/"
-	private readonly header = this.basePath + "images/header.svg"
-
 	private readonly stats = this.basePath + "images/stats.svg"
 	private readonly up = this.basePath + "images/arrow-up.svg"
 	private readonly down = this.basePath + "images/arrow-down.svg"
 
-	public Draw(menu: MenuManager) {
-		if (this.rating === -1 || !menu.IsToggled) {
-			return
-		}
+	private readonly drawContent = (origin: Vector2) => {
+		const box = this.box
+		box.pos1.CopyFrom(origin)
+		box.pos2.SetVector(origin.x + this.size.x, origin.y + this.size.y)
+		MenuSDK.HudCard.Frame(box)
 
-		const vecPosition = this.UpdateScale(menu)
-		const alpha = (Math.max(menu.Opacity.value, this.dragging ? 100 : 50) / 100) * 255
+		const pad = MenuSDK.hudW(MenuSDK.HudCard.Pad),
+			icon = MenuSDK.hudW(ICON),
+			centerY = box.y + this.size.y / 2
 
-		// background
-		RendererSDK.Image(
-			this.header,
-			this.position.pos1,
-			-1,
-			this.position.Size,
-			Color.White.SetA(alpha)
+		this.iconPos.SetVector(box.x + pad, centerY - icon / 2)
+		this.iconSize.SetVector(icon, icon)
+		MenuSDK.HudCard.Image(
+			this.iconPath(),
+			this.iconPos,
+			this.iconSize,
+			this.iconColor()
 		)
 
-		this.DrawInformation(alpha)
-		this.UpdatePosition(menu, vecPosition)
+		const shown = this.rating === -1 ? 0 : this.rating
+		const label = `${Menu.Localization.Localize("Tracker")}: ${shown}${this.remainder === -1 ? " MMR" : ""}`
+		let x = box.x + pad + icon + MenuSDK.hudW(MenuSDK.HudHeaderGap)
+		x += MenuSDK.HudText.Left(
+			x,
+			centerY,
+			label,
+			FONT,
+			MenuSDK.HudColors.title,
+			MenuSDK.HudBold
+		)
+
+		if (this.remainder === -1) {
+			return
+		}
+		const gained = this.mmrType === MMRChangedType.Add
+		MenuSDK.HudText.Left(
+			x + MenuSDK.hudW(4),
+			centerY,
+			`(${gained ? "+" : ""}${this.remainder} MMR)`,
+			FONT,
+			gained ? MenuSDK.HudColors.ok : MenuSDK.HudColors.kill,
+			MenuSDK.HudBold
+		)
 	}
 
-	public SetRating(newValue: number, oldValue: number) {
+	constructor(private readonly menu: MenuManager) {
+		this.panel = new MenuSDK.OverlayPanel(
+			menu.Overlay,
+			"hud-mmr-tracker",
+			MenuSDK.EPanelLife.Standalone
+		)
+	}
+
+	public Draw(): void {
+		if (!this.menu.IsToggled || (this.rating === -1 && !this.menu.IsOpen)) {
+			this.panel.Reset()
+			return
+		}
+		MenuSDK.setHudScale(this.panel.Scale)
+
+		const pad = MenuSDK.hudW(MenuSDK.HudCard.Pad),
+			icon = MenuSDK.hudW(ICON),
+			gap = MenuSDK.hudW(MenuSDK.HudHeaderGap)
+
+		const shown = this.rating === -1 ? 0 : this.rating
+		const label = `${Menu.Localization.Localize("Tracker")}: ${shown}${this.remainder === -1 ? " MMR" : ""}`
+		let width =
+			pad * 2 +
+			icon +
+			gap +
+			Math.max(
+				MenuSDK.HudText.Width(label, FONT, MenuSDK.HudBold),
+				MenuSDK.HudText.Width(
+					`${Menu.Localization.Localize("Tracker")}: ${RATING_RESERVE} MMR`,
+					FONT,
+					MenuSDK.HudBold
+				)
+			)
+		if (this.remainder !== -1) {
+			width +=
+				MenuSDK.hudW(4) +
+				MenuSDK.HudText.Width(
+					`(+${this.remainder} MMR)`,
+					FONT,
+					MenuSDK.HudBold
+				)
+		}
+		this.size.SetVector(Math.round(width), MenuSDK.hudH(PANEL_HEIGHT))
+		this.panel.Draw(this.size, this.drawContent)
+	}
+
+	public SetRating(newValue: number, oldValue: number): void {
 		const rem = newValue - oldValue
 		this.rating = newValue
 		this.remainder = newValue === rem ? -1 : rem
@@ -54,138 +124,37 @@ export class GUIHelper {
 		this.mmrType = newValue < oldValue ? MMRChangedType.Subtract : MMRChangedType.Add
 	}
 
-	public MouseKeyUp() {
-		if (!this.dragging) {
-			return true
-		}
-		this.dragging = false
-		Menu.Base.SaveConfigASAP = true
-		return false
+	public MouseKeyDown(key: VMouseKeys): boolean {
+		return this.panel.MouseKeyDown(key)
 	}
 
-	public MouseKeyDown() {
-		if (this.dragging) {
-			return true
-		}
-		const pos = this.position
-		const mouse = InputManager.CursorOnScreen
-		if (!mouse.IsUnderRectangle(pos.x, pos.y, pos.Width, pos.Height)) {
-			return true
-		}
-		this.dragging = true
-		mouse.Subtract(pos.pos1).CopyTo(this.draggingOffset)
-		return false
+	public MouseKeyUp(key: VMouseKeys): boolean {
+		return key !== VMouseKeys.MK_LBUTTON || this.panel.MouseKeyUp()
 	}
 
-	protected DrawInformation(alpha: number) {
-		let iconPath = this.stats
+	public Reset(): void {
+		this.panel.Reset()
+	}
+
+	private iconPath(): string {
 		switch (this.mmrType) {
 			case MMRChangedType.Add:
-				iconPath = this.up
-				break
+				return this.up
 			case MMRChangedType.Subtract:
-				iconPath = this.down
-				break
+				return this.down
+			default:
+				return this.stats
 		}
+	}
 
-		// left icon
-		RendererSDK.Image(
-			iconPath,
-			this.recIcon.pos1,
-			-1,
-			this.recIcon.Size,
-			Color.White.SetA(alpha)
-		)
-
-		const basePos = this.position.Clone()
-		const flags = TextFlags.Center | TextFlags.Left
-
-		const indentationX = 4
-		const startPos = basePos.AddX((this.recIcon.Width + indentationX) * (88 / 64))
-
-		const trackerName = Menu.Localization.Localize("Tracker")
-		const textRating = `${trackerName}: ${this.rating}${this.remainder === -1 ? " MMR" : ""}`
-		const trackerPos = RendererSDK.TextByFlags(
-			textRating,
-			startPos,
-			Color.White.SetA(alpha),
-			3,
-			flags
-		)
-
-		if (this.remainder === -1) {
-			return
-		}
-
-		let text = ""
-		let color = Color.White
+	private iconColor(): Color {
 		switch (this.mmrType) {
 			case MMRChangedType.Add:
-				color = Color.Green
-				text = `(+${this.remainder} MMR)`
-				break
+				return MenuSDK.HudColors.ok
 			case MMRChangedType.Subtract:
-				color = Color.Red
-				text = `(${this.remainder} MMR)`
-				break
+				return MenuSDK.HudColors.kill
+			default:
+				return MenuSDK.HudColors.accent
 		}
-		const position = startPos.Add(new Vector2(trackerPos.pos2.x + 1, -1))
-		RendererSDK.TextByFlags(text, position, color.SetA(alpha), 3, flags)
-	}
-
-	protected UpdateScale(menu: MenuManager) {
-		const panelSize = GUIInfo.ScaleVector(250, 35)
-		this.vecSize.CopyFrom(panelSize)
-
-		const menuPos = menu.Position
-		const panelPosition = GUIInfo.ScaleVector(menuPos.X.value, menuPos.Y.value)
-		this.vecPosition.CopyFrom(panelPosition)
-
-		this.position.pos1.CopyFrom(panelPosition)
-		this.position.pos2.CopyFrom(panelPosition.Add(panelSize))
-
-		const iconSize = GUIInfo.ScaleVector(24, 24)
-		this.recIcon.pos1.CopyFrom(panelPosition)
-		this.recIcon.pos2.CopyFrom(panelPosition.Add(iconSize))
-
-		this.recIcon.x += this.recIcon.Width / 4
-		this.recIcon.y += this.recIcon.Height / 4
-
-		return panelPosition
-	}
-
-	protected UpdatePosition(menu: MenuManager, position: Vector2) {
-		if (!this.dragging) {
-			// NOTE: update full panel if added new unit's or items
-			this.updateMinMaxPanelPosition(menu, position)
-			return
-		}
-		const wSize = RendererSDK.WindowSize
-		const mousePos = InputManager.CursorOnScreen
-		const toPosition = mousePos
-			.SubtractForThis(this.draggingOffset)
-			.Min(wSize.Subtract(this.position.Size))
-			.Max(0)
-			.CopyTo(position)
-		this.saveNewPosition(menu, toPosition)
-	}
-
-	private updateMinMaxPanelPosition(menu: MenuManager, position: Vector2) {
-		const wSize = RendererSDK.WindowSize
-		const totalSize = this.position.Size
-		const newPosition = position
-			.Min(wSize.Subtract(totalSize))
-			.Max(0)
-			.CopyTo(position)
-		this.saveNewPosition(menu, newPosition)
-	}
-
-	private saveNewPosition(menu: MenuManager, newPosition?: Vector2) {
-		const position = newPosition ?? this.vecPosition
-		menu.Position.Vector = position
-			.Clone()
-			.DivideScalarX(GUIInfo.GetWidthScale())
-			.DivideScalarY(GUIInfo.GetHeightScale())
-			.RoundForThis(1)
 	}
 }

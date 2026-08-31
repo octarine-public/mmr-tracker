@@ -1,16 +1,8 @@
-
 export class MenuManager {
 	public IsToggled = true
 	public readonly State: Menu.Toggle
-	public readonly Opacity: Menu.Slider
 	public readonly ToggleKey: Menu.KeyBind
-
-	public readonly Position: {
-		readonly node: Menu.Node
-		readonly X: Menu.Slider
-		readonly Y: Menu.Slider
-		Vector: Vector2
-	}
+	public readonly Overlay: MenuSDK.OverlayMenu
 
 	private readonly tree: Menu.Node
 	private readonly baseNode = Menu.AddEntry("Visual")
@@ -21,15 +13,10 @@ export class MenuManager {
 		this.tree = this.baseNode.AddNode("MMR Tracker", this.nodeIcon)
 		this.tree.SortNodes = false
 		this.State = this.tree.AddToggle("State", true)
-		this.Opacity = this.tree.AddSlider("Opacity", 95, 0, 100)
 		this.ToggleKey = this.tree.AddKeybind("Key", "None", "Key turn on/off panel")
-		this.Position = this.tree.AddVector2(
-			"Settings",
-			new Vector2(31, 951),
-			new Vector2(0, 0),
-			new Vector2(1980, 1080)
-		)
-		this.Position.node.IsHidden = true
+		this.Overlay = new MenuSDK.OverlayMenu(this.tree, 31, 951)
+		this.State.OnValue(control => this.Overlay.SetHidden(!control.value))
+		this.Overlay.SetHidden(!this.State.value)
 		this.ToggleKey.OnRelease(({ assignedKey }) => {
 			if (assignedKey < 0) {
 				this.IsToggled = true
@@ -37,5 +24,9 @@ export class MenuManager {
 			}
 			this.IsToggled = !this.IsToggled
 		})
+	}
+
+	public get IsOpen(): boolean {
+		return MenuSDK.MenuManager.IsOpen && this.tree.IsOpen
 	}
 }

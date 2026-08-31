@@ -5,8 +5,8 @@ import { MenuManager } from "./menu"
 
 new (class CMMRTraker {
 	private oldRating = 0
-	private readonly gui = new GUIHelper()
 	private readonly menu = new MenuManager()
+	private readonly gui = new GUIHelper(this.menu)
 
 	constructor() {
 		EventsSDK.on("Draw", this.Draw.bind(this))
@@ -25,7 +25,9 @@ new (class CMMRTraker {
 
 	public Draw() {
 		if (this.State && !this.InGameUIState) {
-			this.gui.Draw(this.menu)
+			this.gui.Draw()
+		} else {
+			this.gui.Reset()
 		}
 	}
 
@@ -48,14 +50,14 @@ new (class CMMRTraker {
 		if (!this.shouldInput(key)) {
 			return true
 		}
-		return this.gui.MouseKeyUp()
+		return this.gui.MouseKeyUp(key)
 	}
 
 	public MouseKeyDown(key: VMouseKeys) {
 		if (!this.shouldInput(key)) {
 			return true
 		}
-		return this.gui.MouseKeyDown()
+		return this.gui.MouseKeyDown(key)
 	}
 
 	private shouldInput(key: VMouseKeys) {
