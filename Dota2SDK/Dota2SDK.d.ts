@@ -78,7 +78,6 @@ declare const Dota2SDK: {
 	readonly ETormentorSpawnPhase: typeof ETormentorSpawnPhase
 	readonly EarthSpiritStone: typeof EarthSpiritStone
 	readonly EmptyAbility: typeof EmptyAbility
-	readonly EnableDisableUpdated: typeof EnableDisableUpdated
 	readonly Entity: typeof Entity
 	readonly EntityManager: typeof EntityManager
 	readonly EnvDeferredLight: typeof EnvDeferredLight
@@ -138,8 +137,6 @@ declare const Dota2SDK: {
 	readonly NeutralSpawnerBox: typeof NeutralSpawnerBox
 	readonly NeutralSpawnerType: typeof NeutralSpawnerType
 	readonly NeutralSpawners: NeutralSpawnerBox[]
-	readonly Notification: typeof Notification
-	readonly NotificationsSDK: typeof NotificationsSDK
 	readonly Outpost: typeof Outpost
 	readonly PARTICLE_RENDER: typeof PARTICLE_RENDER
 	readonly PARTICLE_RENDER_NAME: typeof PARTICLE_RENDER_NAME
@@ -164,7 +161,6 @@ declare const Dota2SDK: {
 	readonly RagdollManager: typeof RagdollManager
 	readonly RenderMode: typeof RenderMode
 	readonly RendererSDK: typeof RendererSDK
-	readonly ResetSettingsUpdated: typeof ResetSettingsUpdated
 	readonly Roshan: typeof Roshan
 	readonly RoshanLocation1: typeof RoshanLocation1
 	readonly RoshanLocation2: typeof RoshanLocation2
@@ -200,8 +196,6 @@ declare const Dota2SDK: {
 	readonly Tree: typeof Tree
 	readonly TurboHeroPickRules: Nullable<CTurboHeroPickRules>
 	readonly TwinGate: typeof TwinGate
-	readonly UIPanel: typeof UIPanel
-	readonly UIPanelManager: typeof UIPanelManager
 	readonly UnderlordPortal: typeof UnderlordPortal
 	readonly Unit: typeof Unit
 	readonly UnitData: typeof UnitData
