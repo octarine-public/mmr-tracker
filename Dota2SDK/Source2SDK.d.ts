@@ -11,6 +11,7 @@ declare const Source2SDK: {
 	readonly CPanorama: typeof CPanorama
 	readonly CProjection: typeof CProjection
 	readonly CRenderer: typeof CRenderer
+	readonly CSoundSDK: typeof CSoundSDK
 	readonly CStringTablesManager: typeof CStringTablesManager
 	readonly CTaskManager: typeof CTaskManager
 	readonly ConVarsSDK: typeof ConVarsSDK
@@ -29,6 +30,7 @@ declare const Source2SDK: {
 	readonly Projection: CProjection
 	readonly RenderList: typeof RenderList
 	readonly Renderer: CRenderer
+	readonly SoundSDK: typeof SoundSDK
 	readonly StringTables: typeof StringTables
 	readonly TaskManager: typeof TaskManager
 	readonly WASM: typeof WASM

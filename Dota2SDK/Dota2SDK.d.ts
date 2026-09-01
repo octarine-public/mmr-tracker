@@ -180,7 +180,6 @@ declare const Dota2SDK: {
 	readonly Siege: typeof Siege
 	readonly SignonState: typeof SignonState
 	readonly SkillShotType: typeof SkillShotType
-	readonly SoundSDK: typeof SoundSDK
 	readonly SpeechBubbleManager: typeof SpeechBubbleManager
 	readonly SpiritBear: typeof SpiritBear
 	readonly StockInfo: typeof StockInfo

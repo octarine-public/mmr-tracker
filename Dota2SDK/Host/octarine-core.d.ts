@@ -216,17 +216,6 @@ declare function SetTreeModel(
 	resetRotation: boolean,
 	colorU32: number
 ): void
-declare function EmitStartSoundEvent( // pass location: Vector2 at IOBuffer offset 0
-	soundeventGUID: number,
-	soundeventName: string,
-	sourceEntityID: number,
-	seed: number
-): void
-declare function EmitStopSoundEvent( // pass location: Vector2 at IOBuffer offset 0
-	soundeventGUID: number,
-	soundeventName: Nullable<string>,
-	sourceEntityID: number
-): void
 /**
  * @param customEntityID (entityID << 1) or (binaryID << 1) | 1
  * @param renderMode RenderMode
