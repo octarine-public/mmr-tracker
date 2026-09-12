@@ -1,34 +1,32 @@
 // AUTO-GENERATED - do not edit.
 declare namespace MenuSDK {
-	/** Everything a theme preset captures: the seed colors plus the accent. */
-	interface IThemeSnapshot {
-		seeds: IThemeSeeds
-		accent: string
-	}
 	/**
-	 * Bridge between the preset gallery and whoever owns the theme controls: the
-	 * gallery reads the current theme through it and writes an applied preset back,
-	 * so the pickers, the palette and the config stay the single source of truth.
+	 * Bridge between the theme galleries and whoever owns the theme controls: a gallery reads the
+	 * theme the menu wears through it and hands one back, so the pickers, the palette and the
+	 * stored theme stay the single source of truth.
 	 */
 	interface IThemeGalleryHost {
-		Current(): IThemeSnapshot
+		/** The theme the menu wears right now, whole. */
+		Current(): IThemeDocument
+		/** Dresses the menu in a snapshot - colors, accent and metrics - keeping the rest of the theme. */
 		Apply(snapshot: IThemeSnapshot): void
+		/** Puts a whole theme on: the menu, its palette overrides and glow, and the surfaces outside it. */
+		Load(theme: IThemeDocument): void
 		/** Rolls a random theme onto the controls, as the Shuffle button on Customization does. */
 		Shuffle(): void
 	}
 	/**
-	 * Builds the theme presets page for {@link Node.CustomPage}: built-in and saved
-	 * themes as preview blocks, click to apply, plus a block that saves the current
-	 * theme under a chosen name.
+	 * Builds the theme presets page for {@link Node.CustomPage}: the built-in themes as preview
+	 * blocks, click to apply, plus a block that rolls a random one.
 	 * @example
 	 * presets.CustomPage = ThemeGalleryPage({
-	 * 	Current: () => this.Snapshot(),
-	 * 	Apply: snapshot => this.LoadSnapshot(snapshot)
+	 * 	Current: () => this.Document(),
+	 * 	Apply: snapshot => this.LoadSnapshot(snapshot),
+	 * 	Load: theme => this.LoadDocument(theme),
+	 * 	Shuffle: () => this.Shuffle()
 	 * })
 	 */
 	function ThemeGalleryPage(host: IThemeGalleryHost): () => React.ReactNode
-	function snapshotsEqual(a: IThemeSnapshot, b: IThemeSnapshot): boolean
-	function seedsEqual(a: IThemeSeeds, b: IThemeSeeds): boolean
 	function ThemeCard(props: {
 		name: string
 		seeds: IThemeSeeds
@@ -49,6 +47,8 @@ declare namespace MenuSDK {
 		menu?: CfgAction[]
 		/** Hover actions kept on the card itself, for the one-click ones — the gallery's like. */
 		actions?: React.ReactNode
+		/** What the name row wears whatever the cursor does — the key the theme is on. */
+		trailing?: React.ReactNode
 		/** Small muted line under the name row — the cloud page shows share codes. */
 		subtitle?: string
 		/** Changes when this card is the answer to something, and pulses once when it does. */

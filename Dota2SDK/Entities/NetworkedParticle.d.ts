@@ -17,6 +17,9 @@ declare class NetworkedParticle {
 	public readonly ControlPointsOrient: Map<number, [Vector3, Vector3, Vector3]>
 	public readonly ControlPointsOffset: Map<number, [Vector3, QAngle]>
 	public readonly ControlPointsEnt: Map<number, [INativePredictionTarget, number, number, boolean]>
+	public UnresolvedAttachedTo_: Nullable<number>
+	public UnresolvedModifiersAttachedTo_: Nullable<number>
+	public UnresolvedControlPoints_: Nullable<Map<number, [number, number, number, boolean]>>
 	public readonly TextureAttributes: Map<string, string>
 	public readonly EndTime: number
 	public readonly PathNoEcon: string

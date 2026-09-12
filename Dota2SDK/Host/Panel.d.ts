@@ -43,7 +43,7 @@ declare class Panel {
 	 * @example
 	 * const clip = panel.VisibleRect
 	 * if (clip !== undefined) {
-	 * 	Renderer.FilledRect(pos, size, color, 0, clip)
+	 * 	canvas.Image(path, pos, size, { color, clip })
 	 * }
 	 */
 	public get VisibleRect(): Nullable<Rectangle>
@@ -51,6 +51,13 @@ declare class Panel {
 	public HasClass(name: string): boolean
 	/** True when the panel or any of its ancestors carries the given CSS class. */
 	public AscendantHasClass(name: string): boolean
+	/**
+	 * Shows or hides the panel, the way the game does when it folds a HUD element away. A write
+	 * to the game's tree: run it on the main thread, through `MainThread.Queue`.
+	 * @example
+	 * await MainThread.Queue(() => chat?.SetVisible(false))
+	 */
+	public SetVisible(visible: boolean): void
 	/**
 	 * Finds a descendant by id at any depth, keeping the ancestor chain intact.
 	 * @example

@@ -21,7 +21,7 @@ declare namespace MenuSDK {
 	 * and the radius, like the border width, is in dp. `glowW` paints a soft halo that many px wide
 	 * falling off outside the shape in `glowColor`; the inset has to leave room for it.
 	 */
-	function SdfShape(radius: number, fill: string, borderW?: number, borderColor?: string, inset?: number, glowW?: number, glowColor?: string): RmlStyle
+	function SdfShape(radius: number, fill: string, borderW?: number, borderColor?: string, inset?: number, glowW?: number, glowColor?: string, sweep?: number, from?: number): RmlStyle
 	/**
 	 * What a surface has to carry for {@link SdfGlowLayer} to land on it: the layer is placed against
 	 * the surface's own box, and the surface has to open a stacking context of its own or the halo is

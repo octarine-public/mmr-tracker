@@ -98,6 +98,8 @@ declare namespace MenuSDK {
 		readonly lift?: number
 		/** How far to the side it looks, for a subject that does not stand centred in them. */
 		readonly slide?: number
+		/** What the camera centres on across the model: its authored origin, or the middle of its bounds. */
+		readonly center?: "origin" | "bounds"
 		/**
 		 * What the framing is measured against. `height` is the subject standing up, which is what a
 		 * body is; `widest` is its longest side whichever that is, which is what anything lying down

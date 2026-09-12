@@ -24,5 +24,33 @@ declare class CSoundSDK {
 	 * SoundSDK.EmitStopSoundEventByName("Roshan.PreAttack", entity)
 	 */
 	public EmitStopSoundEventByName(name: string, sourceEntity?: INativeEntity): void
+	/**
+	 * Registers the sound events a KV3 soundevent script declares — the text of a `.vsndevts`,
+	 * which maps each event name to an operator stack and the `.vsnd` files it plays. Afterwards
+	 * {@link EmitStartSoundEvent} plays them by name like any of the game's own.
+	 *
+	 * The compiled `.vsnd_c` files a script names are resolved by the game itself, so they have to
+	 * ship under the package's `scripts_files/fs` directory — the only one the game can see. The
+	 * script's own text is read by the cheat and may live anywhere under `scripts_files`.
+	 *
+	 * @param origin names the script in the engine's parser errors and keys its events, so
+	 * registering the same origin again replaces exactly what it registered before
+	 * @returns whether every event the script declares was registered
+	 * @example
+	 * const script = fread("soundevents/octarine/test.vsndevts", false)!
+	 * SoundSDK.RegisterSoundEvents(script, "octarine/test")
+	 * SoundSDK.EmitStartSoundEvent("Octarine.Test")
+	 */
+	public RegisterSoundEvents(kv3Text: string, origin: string): boolean
+	/**
+	 * Drops every sound event registered under `origin` and frees what they were parsed from.
+	 * Registering the same origin again already replaces them, so this is for taking them away
+	 * for good — a script unloading, or a feature the user turned off.
+	 *
+	 * @returns whether that origin had anything registered
+	 * @example
+	 * SoundSDK.UnregisterSoundEvents("octarine/test")
+	 */
+	public UnregisterSoundEvents(origin: string): boolean
 }
 declare const SoundSDK: CSoundSDK

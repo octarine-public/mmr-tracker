@@ -15,7 +15,13 @@ declare namespace MenuSDK {
 	 * invalidates; nothing else in the rail changes size with them.
 	 */
 	function SetRailIconsSmall(small: boolean): void
-	function BeginWindowDrag(event: Event, state: WindowState): void
+	/**
+	 * Drags the window from the element the press landed on. `onTap` is for a surface that answers a
+	 * click of its own: the press only turns out to be one once the button comes back up without the
+	 * window having travelled, which is why it is answered here rather than by a click handler - the
+	 * shield that carries the drag takes the release, so the surface never sees one.
+	 */
+	function BeginWindowDrag(event: Event, state: WindowState, onTap?: () => void): void
 	function TopCompressOf(state: {
 		w: number
 	}, tabs: NodeEntry[], current: number): number

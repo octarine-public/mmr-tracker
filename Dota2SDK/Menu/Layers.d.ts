@@ -6,6 +6,8 @@ declare namespace MenuSDK {
 		readonly cards: HTMLElement
 		readonly main: HTMLElement
 		readonly portal: HTMLElement
+		/** Invisible document used only for intrinsic resource measurements. */
+		readonly measure: HTMLElement
 	}
 	/**
 	 * Bumped whenever the layers are built or torn down. Style sheets key on it: a sheet synced
@@ -34,5 +36,10 @@ declare namespace MenuSDK {
 	function TickLayers(now: number): boolean
 	function SetMainFilter(filter: Nullable<string>): void
 	function ResetLayers(): void
+	/**
+	 * Writes the typeface each layer document is set in onto its root: the world document wears
+	 * the world's, the cards document the panels', the chrome the menu's. A stack that stands in a
+	 * document of another scope - the menu's own cards - writes its own onto its element.
+	 */
 	function ApplyRootFont(): void
 }

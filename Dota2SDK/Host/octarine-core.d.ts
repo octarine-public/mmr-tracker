@@ -46,7 +46,6 @@ declare var SchemaClassesInheritance: Map<string, string[]>
 declare var ConVars: ConVars
 declare var CustomGameEvents: CustomGameEvents
 declare var Particles: Particles
-declare var Renderer: Renderer
 declare var WorldUtils: WorldUtils
 declare var Camera: Camera
 declare const IS_MINIMAL_CORE: boolean
@@ -72,25 +71,6 @@ declare interface Particles {
 	DeleteAll(): void
 }
 
-// must be called only in onDraw!
-declare interface Renderer {
-	CreateFont(path: string): number
-	/**
-	 * @returns size: Vector2 to IOBuffer at offset 0
-	 */
-	GetTextSize(text: string, fontID: number, size: number): void
-	/**
-	 * Builds a texture and answers its id, or `-1` when the image could not be decoded. Its
-	 * width and height land in `IOBuffer[0]` and `IOBuffer[1]`.
-	 *
-	 * `source` is a path in the game's virtual filesystem, or the bytes of an image the script
-	 * already holds — one fetched over the network, say, which has no path because it was never
-	 * a file. Bytes are identified by their container, so svg works there too.
-	 */
-	CreateTexture(source: string | ArrayBuffer | ArrayBufferView): number
-	FreeTexture(textureID: number): void
-	ExecuteCommandBuffer(buf: Uint8Array): void
-}
 
 declare interface WorldUtils {
 	/**

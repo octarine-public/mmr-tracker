@@ -23,7 +23,7 @@ declare namespace MenuSDK {
 		readonly abilityOwner?: (name: string) => Nullable<[hero: string, slot: number]>
 		readonly scale?: () => number
 		readonly cursor?: () => [number, number]
-		readonly measureText?: (text: string, font: string, sizePx: number, weight: number) => Nullable<[number, number]>
+		readonly measureText?: (text: string, font: string, sizePx: number, weight: number, italic?: boolean) => Nullable<[number, number]>
 		readonly imageSize?: (path: string) => Nullable<[number, number]>
 		readonly inGame?: () => boolean
 		/**
@@ -39,6 +39,8 @@ declare namespace MenuSDK {
 		 * says otherwise.
 		 */
 		readonly inputCaptured?: () => boolean
+		/** True while the game's text chat is open for interaction. */
+		readonly chatOpen?: () => boolean
 		/**
 		 * Seconds on the match clock, `undefined` while no match is running - a menu, a hero select,
 		 * an intro. Logic rules stand down without an answer and let go of whatever they were
@@ -95,20 +97,31 @@ declare namespace MenuSDK {
 	 * identical no matter which phase asks for it. An unknown string measured while the host
 	 * cannot answer returns undefined and records a measure miss.
 	 */
-	function HostMeasureText(text: string, font: string, sizePx: number, weight: number): Nullable<[number, number]>
+	function HostMeasureText(text: string, font: string, sizePx: number, weight: number, italic?: boolean): Nullable<[number, number]>
 	/** Image size in px, cached like HostMeasureText. */
 	function HostImageSize(path: string): Nullable<[number, number]>
 	function HostInGame(): boolean
 	function HostInputCaptured(): boolean
 	/** Seconds on the match clock; see {@link MenuHost.gameTime}. */
 	function HostGameTime(): Nullable<number>
+	/**
+	 * Whether the game keeps a match clock at all; see {@link MenuHost.gameTime}. A game without
+	 * one - a round-based shooter, a lobby-only host - is offered no logic rules rather than rules
+	 * that can never come true.
+	 */
+	function HostHasGameClock(): boolean
 	const PanicEntryTitle = "Try to reload"
 	/**
-	 * Registered by Store/Config (importing it here would be a cycle): flushes the
-	 * pending config before the runtime dies, so a change made in the same frame as
-	 * a reload still reaches disk.
+	 * Registered by whoever writes a stored document - Store/Config for the config, the theme
+	 * settings for the theme; importing them here would be a cycle. Each flushes what it holds
+	 * before the runtime dies, so a change made in the same frame as a reload still reaches disk.
 	 */
-	function SetBeforeScriptsReload(fn: () => void): void
+	function OnBeforeScriptsReload(fn: () => void): void
+	/**
+	 * Runs every flush registered for a reload. A reload is also the recovery path out of a broken
+	 * menu, so a flush that throws never blocks the others, nor the reload.
+	 */
+	function FlushBeforeReload(): void
 	/**
 	 * Registered by the bootstrap (same cycle): takes the menu and its layer documents off the
 	 * screen before the runtime dies. The render thread goes on compositing whatever documents
@@ -174,6 +187,12 @@ declare namespace MenuSDK {
 	 * Puts the card where its placement says it stands and derives the stage rectangle inside it.
 	 * Both panels lay out from this, so the stage always covers the card's middle band exactly: the
 	 * card sizes to its border box, which leaves the band its border narrower on either side.
+	 *
+	 * The stage stands on whole pixels of the screen, each edge on the pixel the renderer lands the
+	 * band's own edge on. What a page lays out on it in whole pixels then lands on whole pixels of
+	 * the screen, the way it does in the world: a glyph is a bitmap, and over a stage standing a
+	 * fraction off the grid it smears across two pixel rows, so a line set two pixels off a frame
+	 * reads as one.
 	 */
 	function ComputeLayout(window: WindowState, ratio: number, height: number): PreviewLayout
 	/**
@@ -188,7 +207,6 @@ declare namespace MenuSDK {
 		readonly scene: CPreviewScene
 		/** Whether the page this belongs to is the one on screen. */
 		Shown(): boolean
-		Title(): string
 		/** The model on the stage this frame; the scene reloads only when it changes. */
 		Model(): Nullable<string>
 		/** A clip file to show the model in, for one that carries no animation of its own. */

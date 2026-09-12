@@ -1,7 +1,6 @@
 // AUTO-GENERATED - do not edit.
 declare const Source2SDK: {
 	readonly AllEntitiesAsMap: Map<number, INativeEntity>
-	readonly AnchorKind: typeof AnchorKind
 	readonly CCameraManager: typeof CCameraManager
 	readonly CConVars: typeof CConVars
 	readonly CEntityManager: typeof CEntityManager
@@ -20,15 +19,12 @@ declare const Source2SDK: {
 	readonly GetNameByConstructor: (constructor: Constructor<INativeEntity>) => Nullable<string>
 	readonly InputManager: CInputManager
 	readonly InputMessage: typeof InputMessage
-	readonly LineCap: typeof LineCap
-	readonly LineJoin: typeof LineJoin
 	readonly MainThread: typeof MainThread
 	readonly NativeEvents: EventEmitter<NativeEventsMap>
 	readonly NetworkedParticle: typeof NetworkedParticle
 	readonly Panel: typeof Panel
 	readonly Panorama: CPanorama
 	readonly Projection: CProjection
-	readonly RenderList: typeof RenderList
 	readonly Renderer: CRenderer
 	readonly SoundSDK: typeof SoundSDK
 	readonly StringTables: typeof StringTables

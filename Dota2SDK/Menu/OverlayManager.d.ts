@@ -39,6 +39,18 @@ declare namespace MenuSDK {
 		public IsVisible(registration: OverlayRegistration, now: number): boolean
 		public IsActive(registration: OverlayRegistration): boolean
 		public Begin(registration: OverlayRegistration, now: number): boolean
+		/**
+		 * An arrow key going down or coming up while a panel is held. Each press carries the panel
+		 * one pixel the way the arrow points, and an arrow kept down keeps carrying it after a short
+		 * wait; the first press lets the snapping go for the rest of the hold, so the pixel lands
+		 * where it was put instead of being pulled back onto a guide. Answers whether the key was the
+		 * hand's - false for any other key, and for an arrow with nothing in the hand - so the caller
+		 * knows to keep it from the game and the binds.
+		 *
+		 * @param code the host's VK-aligned key code
+		 * @param down true on the press, false on the release
+		 */
+		public NudgeKey(code: number, down: boolean): boolean
 		public End(registration: OverlayRegistration): void
 		public Reset(registration: OverlayRegistration): void
 		public Snap(registration: OverlayRegistration, position: Vector2, width: number, height: number, viewWidth: number, viewHeight: number, now: number): void

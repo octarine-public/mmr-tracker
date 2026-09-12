@@ -3,11 +3,20 @@ declare namespace MenuSDK {
 	function toHex2(value: number): string
 	function cssColor(color: Color): string
 	function cssAlpha(hex: string, alpha: number): string
+	/** The hue circle laid out left to right, as a decorator: what a rainbow shows while it stands still. */
+	const HueGradient = "linear-gradient(to right, #ff0000, #ffff00 17%, #00ff00 33%, #00ffff 50%, #0000ff 67%, #ff00ff 83%, #ff0000)"
+	/** A gradient's two colours laid out left to right, as a decorator: what it shows while it stands still. */
+	function gradientDecorator(from: Color, to: Color): string
 	function parseHex(hex: string): [number, number, number, number]
 	function composeHex(r: number, g: number, b: number, a: number): string
 	function mixHex(from: string, to: string, ratio: number): string
 	function lerpHex(from: string, to: string, ratio: number): string
 	function fadeHex(hex: string, alpha: number): string
+	/**
+	 * `layer` laid over `ground` by its own alpha: the colour a translucent fill reads as on that
+	 * surface. The ground keeps its alpha.
+	 */
+	function overHex(ground: string, layer: string): string
 	/**
 	 * How much of `tint` an edge scrim laid over a surface of that same colour may keep. A fill of
 	 * alpha `a` over a surface of alpha `a` composites to `a + (1 - a) * a * p`, so the strip adds

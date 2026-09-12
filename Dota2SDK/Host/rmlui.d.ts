@@ -105,7 +105,13 @@ declare class HTMLElement {
 	public worldStyle_?: RmlStyleDeclaration
 	/** The string the element's text node holds; owned by `World/Write.ts`. */
 	public worldText_?: string
+	/** The `src` an image element carries; owned by menu-sdk `World/Write.ts`. */
 	public hudSource_?: string
+	/** The artwork that source was minted from; same owner. */
+	public hudArt_?: string
+	/** The box in screen px it was minted for; same owner. */
+	public hudArtW_?: number
+	public hudArtH_?: number
 	/** The live text node inside the element; owned by `World/Write.ts`. */
 	public worldTextNode_?: HTMLElement
 	/**

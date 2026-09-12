@@ -53,12 +53,13 @@ declare namespace MenuSDK {
 	 * The analytic fill a button paints at hover strength `mix`. The chip in a menu row and the
 	 * button on a page differ in nothing but their corner radius, and both take every colour from the
 	 * palette - a theme with a light background gets a light button rather than a black slab, and
-	 * {@link CTheme.ReadableOn} keeps the label on top of it readable.
+	 * {@link CTheme.ReadableOn} keeps the label on top of it readable. A button in an inert block
+	 * paints the muted accent instead of the live one, so it goes grey with the rest of the block.
 	 *
 	 * @example
 	 * const surface = useHoverFill(button, hovered, mix => ButtonFill("danger", 8, mix))
 	 */
-	function ButtonFill(variant: ButtonVariant, radius: number, mix: number): RmlStyle
+	function ButtonFill(variant: ButtonVariant, radius: number, mix: number, inert?: boolean): RmlStyle
 	function ClassOn(base: string, on: boolean): string
 	function SyncStyleSheet(): void
 }

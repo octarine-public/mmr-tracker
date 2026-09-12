@@ -36,9 +36,14 @@ declare namespace MenuSDK {
 	function RequestScrollTo(entry: object): void
 	function TickScrollAreas(now: number): void
 	function ResetScrollAreas(): void
+	/**
+	 * A scroll area. `fade` names the surface the area lies on and turns the edge scrims on: a strip
+	 * of that colour over each edge the content runs past, so a cut row fades out instead of ending
+	 * on the border.
+	 */
 	function Scroll(props: {
 		style?: RmlStyle
-		fade?: boolean
+		fade?: keyof IThemePalette
 		controller?: (controller: Nullable<ScrollController>) => void
 		rootRef?: (element: Nullable<HTMLElement>) => void
 		children?: React.ReactNode

@@ -44,6 +44,11 @@ declare namespace MenuSDK {
 	 * field has already moved by then.
 	 */
 	function listen(element: HTMLElement, name: string, callback: (event: Event) => void, capture?: boolean): void
+	/**
+	 * Which way a wheel event turned: -1 towards the user's up, 1 towards down, 0 for a tick that
+	 * carried no vertical delta.
+	 */
+	function WheelDirection(event: Event): -1 | 0 | 1
 	function unlisten(element: HTMLElement, name: string, callback: (event: Event) => void, capture?: boolean): void
 	/**
 	 * The layer documents document-level listeners must also reach. An event bubbles only inside

@@ -12,6 +12,14 @@ declare namespace MenuSDK {
 	/** The hero behind an ability name and its button number, where the host knows one. */
 	function ResolveAbilityOwner(value: string): Nullable<[string, number]>
 	const MenuTree: NodeEntry
+	/**
+	 * Moves an entry and everything under it to the document `document`: an entry attached later
+	 * inherits its parent's, so the whole subtree stays in one document.
+	 *
+	 * @example
+	 * SetEntryDocument(themes.entry, "theme")
+	 */
+	function SetEntryDocument(entry: Entry, document: EntryDocument): void
 	function SortEntries(parent: NodeEntry): void
 	/**
 	 * Registers the host's tables of icons and sort priorities for menu pages, keyed by the page's
@@ -35,10 +43,11 @@ declare namespace MenuSDK {
 	function CreateSlider(parent: NodeEntry, name: string, defaultValue: number, min: number, max: number, precision: number, tooltip?: string, priority?: number): SliderEntry
 	function CreateDropdown(parent: NodeEntry, name: string, values: string[], defaultValue: number, tooltip?: string, priority?: number): DropdownEntry
 	function CreateMultiSelect(parent: NodeEntry, name: string, values: string[], defaultValue?: string[], tooltip?: string, priority?: number): MultiSelectEntry
-	function CreateKeybind(parent: NodeEntry, name: string, defaultKey: string, tooltip?: string, priority?: number): KeybindEntry
+	function CreateKeybind(parent: NodeEntry, name: string, defaultKey: string, tooltip?: string, priority?: number, defaultHotkeysHidden?: boolean): KeybindEntry
 	function CreateButton(parent: NodeEntry, name: string, tooltip?: string, priority?: number, variant?: ButtonVariant, size?: ButtonSize): ButtonEntry
 	function CreateColor(parent: NodeEntry, name: string, defaultColor: Color, tooltip?: string, priority?: number): ColorEntry
 	function CreateTextInput(parent: NodeEntry, name: string, placeholder: string, priority?: number): TextEntry
+	function CreateList(parent: NodeEntry, name: string, values: readonly string[], tooltip?: string, priority?: number, placeholder?: string, maxLength?: number, maxItems?: number): ListEntry
 	function CreateImages(parent: NodeEntry, name: string, values: string[], defaults: Map<string, boolean> | [string, boolean][], tooltip?: string, priority?: number, createdDefault?: boolean, ordered?: boolean, draggable?: boolean): ImagesEntry
 	/**
 	 * Hands the picker the catalogue its browse modal lists, and lays every value in it out as a tile
@@ -46,6 +55,8 @@ declare namespace MenuSDK {
 	 * goes with it: the picker speaks for what the catalogue holds and nothing else.
 	 */
 	function SetImageCatalogue(entry: ImagesEntry, sections: readonly CatalogueSection[]): void
+	/** Puts every tile back into the state and the slot it was declared with. */
+	function ResetImages(entry: ImagesEntry): void
 	function ImagePairs(entry: ImagesEntry): [string, boolean][]
 	function CreatePresets(parent: NodeEntry, name: string, baseName: string, tooltip?: string, priority?: number): PresetsEntry
 	/** Hands the selector the catalogue its value picker offers. Claimed values stay as they are. */
@@ -83,6 +94,12 @@ declare namespace MenuSDK {
 		name: string
 		values: readonly string[]
 	}[], selected: number): void
+	/**
+	 * Marks the document `entry` belongs to as changed. A setter does it on its own; this is for the
+	 * paths a setter cannot see - the end of a drag, a value typed into a field, a row a script runs -
+	 * and it goes by the entry, so a theme control never re-dates the config.
+	 */
+	function MarkEntryChanged(entry: EntryCommon): void
 	function SetToggleValue(entry: ToggleEntry, value: boolean): void
 	/**
 	 * Records that a driver — a hotkey or a logic rule — changed: the config is due and the menu
@@ -158,6 +175,8 @@ declare namespace MenuSDK {
 	function SetDropdownOptions(entry: DropdownEntry, values: string[]): void
 	function SetMultiSelectOptions(entry: MultiSelectEntry, values: string[]): void
 	function SetMultiSelectValues(entry: MultiSelectEntry, values: string[]): void
+	/** Sets the saved hotkeys-panel visibility preference without changing key handling. */
+	function SetKeybindHotkeysHidden(entry: KeybindEntry, hidden: boolean): void
 	function SetKeybindValue(entry: KeybindEntry, key: number): void
 	/**
 	 * What a picker is showing right now: the colour it holds, or the live one it
@@ -167,8 +186,69 @@ declare namespace MenuSDK {
 	 * ...SdfRounded(SwatchRadius, cssColor(ColorOf(entry)))
 	 */
 	function ColorOf(entry: ColorEntry): Color
+	/**
+	 * Where a rainbow stands in its walk right now, 0 to 1: the share of the hue circle it has
+	 * walked from its seed.
+	 */
+	function ColorPhase(entry: ColorEntry): number
+	/**
+	 * The colour at one point along a gradient, 0 at its first colour and 1 at its second. A solid
+	 * or a rainbow answers with its one colour at every point, so a surface that paints a gradient
+	 * can ask this of any picker.
+	 *
+	 * @example
+	 * const left = ColorAt(entry, 0)
+	 * const right = ColorAt(entry, 1)
+	 */
+	function ColorAt(entry: ColorEntry, at: number): Color
 	function SetColorValue(entry: ColorEntry, color: Color): void
+	/**
+	 * Switches how the picker makes its colour. A rainbow needs a hue to walk from, so a grey seed
+	 * is given full saturation on the way in; a solid or gradient keeps whatever it held.
+	 */
+	function SetColorMode(entry: ColorEntry, wanted: ColorMode): void
+	function SetColorSecond(entry: ColorEntry, color: Color): void
+	function SetColorPeriod(entry: ColorEntry, period: number): void
+	/**
+	 * The palette a picker holds, as its own copies: what a copy of the row takes with it. A solid
+	 * picker still following the theme hands over the colour it is showing rather than the default
+	 * it has not been moved off, so the paste lands what was seen; a rainbow hands over its seed,
+	 * so the paste walks the same circle rather than freezing one moment of it.
+	 *
+	 * @example
+	 * SetCopiedColor(ColorPaletteOf(entry))
+	 */
+	function ColorPaletteOf(entry: ColorEntry): ColorPalette
+	/**
+	 * Whether pasting `palette` onto the picker would change nothing: it already makes its colour
+	 * that way, from those colours — as far as its own modes let it, since a picker kept to one
+	 * colour takes only the first stop of a gradient.
+	 */
+	function HoldsColorPalette(entry: ColorEntry, palette: ColorPalette): boolean
+	/**
+	 * Puts a whole palette onto the picker at once — mode, both colours and the period — so that a
+	 * gradient pasted from another row arrives as a gradient, and the listeners hear one change
+	 * rather than one per field. A mode the picker does not offer lands as solid, in the first
+	 * colour.
+	 *
+	 * @example
+	 * const copied = CopiedColor()
+	 * if (copied !== undefined) {
+	 * 	SetColorPalette(entry, copied)
+	 * }
+	 */
+	function SetColorPalette(entry: ColorEntry, palette: ColorPalette): void
+	/** Puts the picker back to the one colour it was declared with, still and alone. */
+	function ResetColorEntry(entry: ColorEntry): void
+	/** Whether the picker holds the one colour it was declared with, and nothing animated. */
+	function IsColorEntryDefault(entry: ColorEntry): boolean
 	function SetTextValue(entry: TextEntry, text: string): void
+	/** Replaces the whole list; every value is trimmed, cut to length and deduplicated on the way in. */
+	function SetListValues(entry: ListEntry, values: readonly string[]): void
+	/** Appends one value; false when it is empty once trimmed, already there, or the list is full. */
+	function AddListValue(entry: ListEntry, text: string): boolean
+	function RemoveListValue(entry: ListEntry, index: number): void
+	function IsListDefault(entry: ListEntry): boolean
 	function SetImageEnabled(entry: ImagesEntry, value: string, on: boolean): void
 	/**
 	 * Moves a tile within the grid. `enabled` doubles as the stored order, so it is
@@ -183,11 +263,21 @@ declare namespace MenuSDK {
 	}
 	/**
 	 * Entries whose name — or a translated alias `localize` returns for it — contains the query,
-	 * best match first: exact names, then prefixes, then substrings, with ties going to the entry
-	 * sitting higher in the tree and finally to menu order. Entries flagged `searchHidden` are
-	 * skipped together with their children.
+	 * best match first. The query is also tried as if typed in the other keyboard layout and
+	 * transliterated to Latin, so `ghbwtk` finds «Прицел» and `аимбот` finds "Aimbot"; hits as typed
+	 * come first, then wrong-layout hits, then transliterated ones. Within a tier exact names beat
+	 * prefixes beat substrings, with ties going to the entry sitting higher in the tree and finally
+	 * to menu order. Entries flagged `searchHidden` are skipped together with their children.
 	 */
 	function SearchEntries(query: string, localize?: (name: string) => string[]): SearchHit[]
+	/** Puts an entry among the ones a key or the clock reaches; one already there stays where it is. */
+	function NoteBindHolder(entry: KeybindEntry | DriverHolder): void
+	/**
+	 * Walks the entries a key or the clock can reach, in the order they were put on one. What a
+	 * keybind row, a hotkey or a logic rule fires from; a listing walks the tree instead, for the
+	 * menu's own order.
+	 */
+	function ForEachBindHolder(callback: (entry: KeybindEntry | DriverHolder) => void): void
 	/**
 	 * What the capture popup binds into — a keybind row or one toggle hotkey.
 	 * `entry` is set for keybind rows so their chips light up while capturing.
@@ -250,6 +340,11 @@ declare namespace MenuSDK {
 	function FocusedText(): Nullable<TextEntry>
 	function SetPanicMode(value: boolean): void
 	function IsPanicMode(): boolean
+	/**
+	 * Marks a drag across a picker's palette as begun or over. A picker set to call on release
+	 * hears the colour the drag ends on as it ends, and nothing of the colours it passed through.
+	 */
+	function SetColorDragging(entry: ColorEntry, dragging: boolean): void
 	function SetSliderDragging(value: boolean): void
 	function PressKey(code: number, menuOpen?: boolean): boolean
 	function ReleaseKey(code: number, menuOpen?: boolean): boolean

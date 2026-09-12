@@ -104,7 +104,6 @@ interface EventsMap {
 	TrueSightedChanged: [npc: Unit]
 	HasScepterChanged: [npc: Unit]
 	HasShardChanged: [npc: Unit]
-	Draw2D: []
 	ParticleCreated: [particle: DotaNetworkedParticle]
 	ParticleUpdated: [particle: DotaNetworkedParticle]
 	ParticleUnitPositionUpdated: [unit: Nullable<FakeUnit | Unit>, particle: Nullable<DotaNetworkedParticle>]

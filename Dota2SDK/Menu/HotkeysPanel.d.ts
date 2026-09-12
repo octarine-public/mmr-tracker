@@ -13,10 +13,12 @@ declare namespace MenuSDK {
 	function CursorOverHotkeysPanel(): boolean
 	/** The panel-wide limit on when the on-screen hotkeys panel lists binds. */
 	type HotkeysPanelDisplay = "always" | "active" | "hidden"
+	/** Includes ordinary keybind entries in the hotkeys panel while they are held. */
+	function SetShowPressedKeybinds(show: boolean): void
 	/**
 	 * Sets the panel-wide limit: each hotkey's visibility choice, active binds
-	 * only, or no panel. While the menu is open the full non-hidden list shows —
-	 * except in "hidden" — so the panel can still be found and dragged.
+	 * only, or no panel in game. While the menu is open the panel can always be
+	 * found and dragged, even with an empty list or in "hidden" mode.
 	 */
 	function SetHotkeysPanelDisplay(mode: HotkeysPanelDisplay): void
 	/**
@@ -27,12 +29,16 @@ declare namespace MenuSDK {
 	 * panel itself, which fades and lifts as one surface — glass blur included —
 	 * and only leaves the screen once that has played out. Both are cut when
 	 * `MenuFlags.HotkeysPanelAnimation` is off. While the menu is open the panel
-	 * is dragged with the mouse, and the position persists in the config.
+	 * is dragged with the mouse like every other overlay card: it snaps to the
+	 * edges and centres of the cards beside it and they snap to its, with the same
+	 * accent guides and the same dragging outline, and the position persists in
+	 * the config.
 	 */
 	function SetupHotkeysOverlay(): void
 	/**
-	 * Refreshes the panel when the host enters or leaves the game; ticked once
-	 * per frame while the menu runs.
+	 * Refreshes the panel when the host enters or leaves the game, and keeps its
+	 * place among the overlay cards - the rectangle the others snap to, and the
+	 * drag while it is held; ticked once per frame while the menu runs.
 	 */
 	function TickHotkeysOverlay(): void
 }

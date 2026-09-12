@@ -127,7 +127,7 @@ declare namespace MenuSDK {
 		 * One side of the input, fed from the game's own mouse events the way every overlay card
 		 * is, open or closed menu alike — so the same checks arbitrate a click between this window
 		 * and the cards drawn beside it. A press on the title bar starts the drag; with the menu
-		 * closed a press on a sidebar row picks its page by plain geometry, since the controls
+		 * closed a sidebar press arms its page or toggle until release, using geometry since the controls
 		 * cannot be asked anything without the menu's cursor. Answers whether the game should
 		 * still see the click.
 		 */

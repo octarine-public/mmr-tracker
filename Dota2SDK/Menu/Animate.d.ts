@@ -16,6 +16,11 @@ declare namespace MenuSDK {
 	}
 	function EaseValue(ease: Ease, t: number): number
 	/**
+	 * The range the animation speed control offers, as a fraction of the designed pace, and what a
+	 * stored theme is read into.
+	 */
+	const AnimationSpeedRange: readonly [0.4, 3]
+	/**
 	 * Global speed multiplier applied to every tween and stylesheet transition;
 	 * 1 is the designed pace, higher is faster. Clamped to [0.4, 4].
 	 */
@@ -43,6 +48,8 @@ declare namespace MenuSDK {
 	function tickTweens(now: number): void
 	interface PopInOptions {
 		readonly scale?: number
+		/** Where the element starts out from, in dp, relative to where the layout stands it. */
+		readonly dx?: number
 		readonly dy?: number
 		readonly duration?: number
 	}

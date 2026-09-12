@@ -32,6 +32,8 @@ declare namespace MenuSDK {
 	 * WithThemeScope(PanelScope(EPanelLayer.World), () => marker.Draw())
 	 */
 	function PanelScope(layer: EPanelLayer): EThemeScope
+	/** Rewrites the typeface every stack is set in, after a scope's font moved. */
+	function RefontPanels(): void
 	function RefreshPanels(): void
 	/**
 	 * Re-renders one stack, leaving the others standing. What a panel of its own has to say rarely

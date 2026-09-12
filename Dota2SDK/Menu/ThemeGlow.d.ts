@@ -65,6 +65,14 @@ declare namespace MenuSDK {
 	/** How much of the accent a glow keeps by default. */
 	const DefaultGlowStrength = 0.35
 	/**
+	 * The range the walking light's speed, in seconds per turn, and its saturation are held to: what
+	 * the controls offer, and what a stored or shared theme is read into.
+	 */
+	const GlowStyleRange: {
+		readonly speed: readonly [1, 30]
+		readonly saturation: readonly [0.2, 1]
+	}
+	/**
 	 * What a quad has to reach past the shape it carves for a halo `width` wide to fit outside it:
 	 * the halo itself and one more for the antialiased edge it falls away from. It is in whatever
 	 * unit the width was measured in - dp for a surface laid out by the menu, screen pixels for one

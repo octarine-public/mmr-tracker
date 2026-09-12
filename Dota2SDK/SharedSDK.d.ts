@@ -3,6 +3,7 @@ declare const SharedSDK: {
 	readonly AABB: typeof AABB
 	readonly AbortController: typeof AbortController
 	readonly AbortSignal: typeof AbortSignal
+	readonly Benchmark: CBenchmark
 	readonly Color: typeof Color
 	readonly EventEmitter: typeof EventEmitter
 	readonly EventPriority: typeof EventPriority
@@ -22,7 +23,6 @@ declare const SharedSDK: {
 	readonly MenuLanguageID: typeof MenuLanguageID
 	readonly NetError: typeof NetError
 	readonly NetErrorCode: typeof NetErrorCode
-	readonly PathFlags: typeof PathFlags
 	readonly Polygon2D: typeof Polygon2D
 	readonly Polygon3D: typeof Polygon3D
 	readonly ProfileBegin: () => boolean

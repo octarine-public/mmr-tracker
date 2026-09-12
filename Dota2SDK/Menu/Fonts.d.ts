@@ -20,29 +20,48 @@ declare namespace MenuSDK {
 	/** The weights the font weight picker offers, lightest first; the first is the default. */
 	const FontWeightNames: string[]
 	/**
-	 * The family the menu currently renders with, before language overrides.
+	 * The typeface a surface is set in: a family the font picker offers, and a weight by its name
+	 * in {@link FontWeightNames}. Part of a theme snapshot, one per surface the menu dresses.
 	 */
-	function SelectedFontFamily(): string
+	interface IThemeFont {
+		family: string
+		weight: string
+	}
+	/** The typeface a surface is set in until a theme says otherwise: the default family, regular. */
+	function DefaultThemeFont(): IThemeFont
+	/** Whether two themes are set in the same type. A theme that names none is set in the default one. */
+	function fontsEqual(a: Nullable<IThemeFont>, b: Nullable<IThemeFont>): boolean
 	/**
-	 * Selects the menu font family; names outside MenuFontFamilies fall back
-	 * to the default. The caller re-applies the root font and invalidates.
+	 * Bumped whenever any surface's typeface moves. A writer that pins the face onto an element and
+	 * rewrites it only when its own input moved - the HUD pools, whose commands say nothing about
+	 * the face they are set in - watches this to know it owes the elements one more write.
 	 */
-	function SetMenuFontFamily(family: string): void
+	function FontEpoch(): number
+	/** The family `scope` renders with, before language overrides; the active scope's by default. */
+	function SelectedFontFamily(scope?: EThemeScope): string
 	/**
-	 * The name from {@link FontWeightNames} the menu currently renders with.
+	 * Selects the family `scope` renders with; names outside MenuFontFamilies fall back to the
+	 * default. The caller re-applies the root font and invalidates.
 	 */
-	function SelectedFontWeight(): string
+	function SetMenuFontFamily(family: string, scope?: EThemeScope): void
+	/** The name from {@link FontWeightNames} `scope` renders with; the active scope's by default. */
+	function SelectedFontWeight(scope?: EThemeScope): string
 	/**
-	 * Selects the menu font weight by its name in {@link FontWeightNames}; names outside it
-	 * fall back to regular. Returns whether the selection moved — a weight is baked into
-	 * every written style, so the caller rebuilds the trees when it did.
+	 * Selects the weight `scope` renders with by its name in {@link FontWeightNames}; names outside
+	 * it fall back to regular. Returns whether the selection moved — a weight is baked into every
+	 * written style, so the caller rebuilds the trees when it did.
 	 */
-	function SetMenuFontWeight(name: string): boolean
+	function SetMenuFontWeight(name: string, scope?: EThemeScope): boolean
 	/**
-	 * The weight text asking for `weight` is drawn at under the font weight setting: raised to
-	 * the setting's floor, never lowered, so heavier runs keep their emphasis. The style writers
-	 * and the text measurers apply it themselves — callers keep passing design weights.
+	 * The weight text asking for `weight` is drawn at under the font weight setting of `scope` -
+	 * the active one by default: raised to the setting's floor, never lowered, so heavier runs keep
+	 * their emphasis. The style writers and the text measurers apply it themselves — callers keep
+	 * passing design weights.
 	 */
-	function MenuFontWeight(weight: number): number
-	function FamilyForLanguage(language: string): string
+	function MenuFontWeight(weight: number, scope?: EThemeScope): number
+	/**
+	 * The family `scope` draws `language` in: the language's own face where one is shipped, the
+	 * family selected for the scope otherwise.
+	 */
+	function FamilyForLanguage(language: string, scope?: EThemeScope): string
 }

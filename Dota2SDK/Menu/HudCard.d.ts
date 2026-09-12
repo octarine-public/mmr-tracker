@@ -107,20 +107,20 @@ declare namespace MenuSDK {
 	/** A corner radius, carrying that theme's radius scale for the same reason. */
 	function hudRadius(value: number): number
 	class CHudText {
-		public Width(text: string, size: number, weight?: number): number
+		public Width(text: string, size: number, weight?: number, family?: string): number
 		/**
 		 * The line the engine will actually lay out, in px. Digits are measured as zeroes: the
 		 * line box does not depend on which digit it is, and a ticking counter would otherwise
 		 * mint a fresh measurement cache entry every change.
 		 */
-		public Height(text: string, size: number, weight: number): number
+		public Height(text: string, size: number, weight: number, family?: string): number
 		/**
 		 * The longest prefix that fits, ellipsis included, found by binary search and remembered:
 		 * a clipped name is the same clipped name every frame, and the shrink loop cost one
 		 * measurement per overflowing character each time it ran.
 		 */
-		public Clip(text: string, maxWidth: number, size: number, weight?: number): string
-		public Left(x: number, centerY: number, text: string, size: number, color: Color, weight?: number, effect?: EHudTextEffect): number
+		public Clip(text: string, maxWidth: number, size: number, weight?: number, family?: string): string
+		public Left(x: number, centerY: number, text: string, size: number, color: Color, weight?: number, effect?: EHudTextEffect, family?: string, effectOpacity?: number): number
 		/**
 		 * Centred inside a box the caller already sized - a chip, a cell - rather than at a computed
 		 * offset. Widths here are measured with the digits replaced by zeroes so a counter does not
@@ -128,10 +128,12 @@ declare namespace MenuSDK {
 		 * side. Letting the layout centre it makes the measurement error invisible.
 		 *
 		 * `effect` cuts the glyphs against whatever is behind them, which is what a run of text standing
-		 * on the world rather than on a card needs to stay readable.
+		 * on the world rather than on a card needs to stay readable, and `effectOpacity` is how dark
+		 * that cut is drawn - a rim heavy enough for a bright wall is heavier than one over anything
+		 * else, so the two are asked apart.
 		 */
-		public Center(x: number, centerY: number, boxWidth: number, text: string, size: number, color: Color, weight?: number, effect?: EHudTextEffect): void
-		public Right(rightX: number, centerY: number, text: string, size: number, color: Color, weight?: number, effect?: EHudTextEffect): number
+		public Center(x: number, centerY: number, boxWidth: number, text: string, size: number, color: Color, weight?: number, effect?: EHudTextEffect, family?: string, effectOpacity?: number): void
+		public Right(rightX: number, centerY: number, text: string, size: number, color: Color, weight?: number, effect?: EHudTextEffect, family?: string, effectOpacity?: number): number
 	}
 	const HudText: CHudText
 	interface HudHeaderValue {
@@ -156,6 +158,15 @@ declare namespace MenuSDK {
 		 * HudCard.Plate(x, y, w, h, h * 0.34, HudColors.glass, 150)
 		 */
 		public Plate(x: number, y: number, w: number, h: number, radius: number, color: Color, alpha?: number): void
+		/**
+		 * The dress a badge wears without its label: a plate washed `tint` deep in `color` and rimmed
+		 * `edge` deep in it by a hairline, for a chip whose contents the caller lays out itself - a
+		 * reading beside its word, a glyph in front of them. `radius` is in dp, like a badge's.
+		 *
+		 * @example
+		 * HudCard.Chip(x, y, w, h, 7, HudColors.ok, hudAlpha(36), hudAlpha(107))
+		 */
+		public Chip(x: number, y: number, w: number, h: number, radius: number, color: Color, tint: number, edge: number): void
 		/**
 		 * The card the menu's own panels wear, and the plate a marker standing in the world wears with
 		 * them: the theme's glass and its hairline rim carved by the shader, over the frosted backdrop
@@ -211,21 +222,38 @@ declare namespace MenuSDK {
 		public Bar(pos: Vector2, size: Vector2, pct: number, fillColor: Color, markerPct?: number): void
 		public Separator(x: number, y: number, width: number): void
 		/**
-		 * An image on the card. `radius` crops it — half the size makes a round portrait — and the
-		 * crop is a rasterized one, so anything that has to hide its stepping edge draws a
-		 * {@link CHudCard.Ring} of the same radius over it. `angle` turns it clockwise about its own
-		 * centre in degrees, which is how a glyph carries a bearing.
+		 * An image on the card, cut for the box it is drawn in: raster artwork is resampled straight
+		 * to `size` rather than read off a mip level that does not hold it, so a caller passes the
+		 * path it has and nothing about sharpness is left for it to arrange.
+		 *
+		 * `radius` crops it — half the size makes a round portrait — and the crop is a rasterized one,
+		 * so anything that has to hide its stepping edge draws a {@link CHudCard.Ring} of the same
+		 * radius over it. `angle` turns it clockwise about its own centre in degrees, which is how a
+		 * glyph carries a bearing.
 		 */
 		public Image(path: string, pos: Vector2, size: Vector2, color: Color, alpha?: number, radius?: number, angle?: number): void
 		/** A filled disc: the chip a glyph or a portrait is set on. */
 		public Disc(centerX: number, centerY: number, radius: number, color: Color, alpha?: number): void
-		/** A ring on the card, drawn by the sdf circle so it stays round at any size. */
+		/**
+		 * A ring on the card, drawn by the sdf circle so it stays round at any size. `radius` is the
+		 * middle of the stroke, which is what the shape asked for is half a thickness wider than: the
+		 * shader lays a border inside the shape it is handed, the way a panel's rim sits inside its
+		 * box, and a ring measured that way would be drawn a half thickness in from the radius it was
+		 * struck at. Which is the one thing about a ring that has to agree with {@link CHudCard.Arc},
+		 * whose capsules straddle theirs — a track and the run filling it are struck from the same two
+		 * numbers, and the two conventions leave the arc riding a half thickness outside its own track.
+		 */
 		public Ring(centerX: number, centerY: number, radius: number, thickness: number, color: Color, alpha?: number): void
 		/**
 		 * A run of a ring's edge, from `start` clockwise by `sweep` radians, with `0` at three
 		 * o'clock. One element whatever the sweep: the capsules shader unions the whole run into a
 		 * single field, so the arc is as smooth as a {@link CHudCard.Ring} and carries no seam at any
 		 * alpha. A host without that shader falls back to a chain of {@link CHudCard.Line}s.
+		 *
+		 * `radius` is the middle of the stroke, on the terms {@link CHudCard.Ring} states, so the two
+		 * struck from one radius and one thickness land on the same band: the ring is the track a
+		 * dial drains along and the arc is how much of it is left, and the pair only reads as one
+		 * ring while both are measured the same way.
 		 *
 		 * @example
 		 * HudCard.Arc(x, y, radius, 2, -Math.PI / 2, Math.PI * 2 * health, HudColors.kill, hudAlpha())

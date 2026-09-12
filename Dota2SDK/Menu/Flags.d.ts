@@ -15,6 +15,12 @@ declare namespace MenuSDK {
 		 * typing a message should not set off the binds its letters are on.
 		 */
 		TriggerWhileTyping: boolean
+		/**
+		 * Asks for the config to be written on the next frame. Raising it counts as a change to the
+		 * settings: the config is stamped as changed and uploaded. The state the menu keeps beside the
+		 * settings - the window, where the panels stand, the search history - asks for its write
+		 * through {@link SaveConfigState} instead, which leaves the config as unchanged as it is.
+		 */
 		SaveConfigASAP: boolean
 		NoWriteConfig: boolean
 		IsLoadingConfig: boolean
@@ -29,9 +35,24 @@ declare namespace MenuSDK {
 		TabOpenAnimation: boolean
 		LayoutSwitchAnimation: boolean
 		HotkeysPanelAnimation: boolean
+		PanelSnap: boolean
+		PanelScreenCenterSnap: boolean
 		TooltipStyle: TooltipStyle
 		Flash(element: Flashable): void
 	}
+	/**
+	 * Asks for the config to be written because state kept beside the settings moved - the window
+	 * was dragged, the hotkeys panel was placed, the tour was closed. The bytes reach disk, but the
+	 * config is not marked changed for it: its changed-at stays and nothing is uploaded. What a
+	 * config carries as settings - every control, the HUD cards' places among them - marks a change
+	 * through its setter instead.
+	 *
+	 * @example
+	 * drag.Begin(element, () => SaveConfigState())
+	 */
+	function SaveConfigState(): void
+	/** Whether the write that is due carries a change to the settings, not only to the state. */
+	function SettingsChanged(): boolean
 	function FlashedEntry(): Nullable<Entry>
 	function ConsumeFlash(entry: Entry): void
 }

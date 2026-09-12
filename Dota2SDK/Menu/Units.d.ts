@@ -17,6 +17,25 @@ declare namespace MenuSDK {
 		/** Tracking range in world units from the overlay's origin; unmounting keeps 15% slack. */
 		MaxDistance?(): number
 		/**
+		 * How long a unit takes to come in and to thin away as it crosses the tracking range, in
+		 * milliseconds. It is for the things of a map — what comes into view as you walk up to it and
+		 * goes as you leave — and nothing given cuts instead, which is what a reading whose instant
+		 * is the point wants.
+		 *
+		 * It is the RANGE that is faded and nothing else. A unit that stops being placed — picked up,
+		 * dead, gone from the list — cuts wherever it stood, however long this is: what it was saying
+		 * was about where it was, and a moment more of it is a reading of nothing hanging in the air
+		 * over a floor the thing has left. One that only leaves the screen keeps where it had got to
+		 * and comes back there: the edge of the frame is not the edge of the range.
+		 *
+		 * The fade is written on the unit's root as `opacity`, which the document inherits rather than
+		 * composites: a widget that writes an opacity of its own — or a filter — is handed the same
+		 * value through `Update` and multiplies it in itself.
+		 *
+		 * Read once a tick rather than held, and scaled by the menu's animation speed.
+		 */
+		Fade?(): number
+		/**
 		 * How far off the unit's box the FIRST element on each side sits, in screen px. Docked
 		 * elements stack outward from there, each one leaving its own gap behind it.
 		 *
@@ -59,7 +78,13 @@ declare namespace MenuSDK {
 		 * `Update` is called either way, so a widget that has stopped drawing still hides itself.
 		 */
 		Draws?(unit: T, distance: number): boolean
-		Update(unit: T, frame: CWorldUnitFrame, out: number, distance: number): void
+		/**
+		 * Draws the widget on a unit that is on screen. `fade` is what the unit is painted at this
+		 * frame, 0 to 1, as it comes into the adapter's range and thins away out of it — 1 for an
+		 * overlay that names no fade. The host has written it on the unit's root as `opacity`
+		 * already; a widget that writes an opacity of its own, or a filter, multiplies it in.
+		 */
+		Update(unit: T, frame: CWorldUnitFrame, out: number, distance: number, fade: number): void
 		Hide(): void
 		/**
 		 * Hands this widget's elements to another unit. A widget that keeps something of the unit it

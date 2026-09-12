@@ -10,6 +10,10 @@ declare namespace MenuSDK {
 		readonly duration?: number
 		/** Image set on the card's chip, such as a hero portrait. */
 		readonly titleIcon?: string
+		/** Full-size images shown side by side in place of the title chip. Takes precedence over titleIcon. */
+		readonly titleIcons?: readonly string[]
+		/** Color multiplied into the title icon; omitted to preserve the source artwork. */
+		readonly titleIconColor?: Color
 		/** Image shown beside the message, such as a rune or ability icon. */
 		readonly messageIcon?: string
 		/**
@@ -64,4 +68,10 @@ declare namespace MenuSDK {
 	 */
 	function SetNotificationSamples(next: () => readonly INotificationSample[]): void
 	const Notifications: INotifications
+	/**
+	 * Joins the notifications to the host's frame and input. The bootstrap calls it once the menu
+	 * is up, as it does for the watermark and the now-playing card: a card queued before that waits,
+	 * and a copy of the menu that no host drives never draws.
+	 */
+	function SetupNotifications(): void
 }

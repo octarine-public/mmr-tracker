@@ -12,6 +12,8 @@ declare namespace MenuSDK {
 	class OverlayMenu implements IOverlayMenu {
 		/** The node the panel's rows live under: what a right-click on the panel opens. */
 		public readonly SetupEntry: Entry
+		protected readonly x: Slider
+		protected readonly y: Slider
 		/**
 		 * The panel's place is carried by the hand that drags it, so the two sliders holding it stay
 		 * out of the page: they are where the place is kept and read back from a config, not how it
@@ -69,12 +71,19 @@ declare namespace MenuSDK {
 		 * Also anywhere outside a match, menu open or not: a card meant to live on every screen —
 		 * a music player. In a match it still yields to the game's own screens.
 		 */
-		Standalone = 2
+		Standalone = 2,
+		/**
+		 * Ignores the host overlay gate: for a panel intentionally paired with one of the game's own
+		 * screens, such as a companion shown while the scoreboard key is held.
+		 */
+		Always = 3
 	}
 	class OverlayPanel {
 		/** @param life when the panel stands; see {@link EPanelLife}. */
 		constructor(menu: IOverlayMenu, key?: string, life?: EPanelLife)
 		public get Scale(): number
+		/** Whether the panel is in hand right now, being carried by the cursor. */
+		public get Dragging(): boolean
 		/**
 		 * Brings this panel in front of every other one, in what is drawn and in what takes a click.
 		 * A window calls it the moment it is clicked, which is what click-to-front is.
@@ -88,7 +97,9 @@ declare namespace MenuSDK {
 		public HandlesInput(): boolean
 		/**
 		 * Extra ground that counts as part of this panel while a click is arbitrated - a dropdown or
-		 * a context menu standing outside its rect. Pass nothing to clear it.
+		 * a context menu standing outside its rect, a handle hanging off its edge. A press on it
+		 * starts a drag and a right-click opens the setup row the same as one on the panel itself.
+		 * Pass nothing to clear it.
 		 */
 		public SetInputExtent(extent?: Rectangle): void
 		/**

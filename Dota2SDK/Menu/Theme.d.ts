@@ -13,6 +13,15 @@ declare namespace MenuSDK {
 	 * and drained once per menu frame instead of firing per setter.
 	 */
 	function FlushPaletteChanges(): void
+	/**
+	 * Subscribes to the glow of any scope being rebuilt: a color walking, a reach or a strength set,
+	 * an accent it follows moving. For the layer that draws a halo in a React tree, which re-renders
+	 * itself on it and nothing else - a whole tree is told through the palette, and only when a
+	 * theme is put on.
+	 */
+	function SubscribeGlow(onChange: () => void): () => void
+	/** Counts every time a scope's glow was rebuilt; what a glow subscriber compares. */
+	function GlowEpoch(): number
 	function DefineTokens<P extends Record<keyof P, string>>(initial: P): TokenSet<P>
 	function IsToken(value: unknown): value is ThemeTokenRef
 	function ResolveToken(reference: ThemeTokenRef): string
@@ -103,10 +112,11 @@ declare namespace MenuSDK {
 		 */
 		public SetGlow(next: IThemeGlowSeed, scope?: EThemeScope): void
 		/**
-		 * Moves one scope's halo onto another color and tells nobody. A color that walks moves
-		 * several times a second, and a palette change is a retint of every panel in the scope -
-		 * while everything that draws a halo outside the menu window reads the glow every frame
-		 * anyway. The window is the one that has to be told, and {@link SetGlow} is what tells it.
+		 * Moves one scope's halo onto another color and tells the glow layers alone, through
+		 * {@link SubscribeGlow}. A color that walks moves several times a second, and a palette
+		 * change is a retint of every panel in the scope and a render of every tree - while a halo
+		 * is one layer that re-renders itself, and everything drawing one outside the menu window
+		 * reads the glow every frame anyway.
 		 */
 		public WalkGlow(color: string, scope?: EThemeScope): void
 		public SetAccent(color: Color, scope?: EThemeScope): void

@@ -1,6 +1,25 @@
 // AUTO-GENERATED - do not edit.
 declare namespace MenuSDK {
+	/**
+	 * The ground a run of rows stands on, as the colour a label too long for its row fades out into.
+	 * Rows rest on a card unless the host says otherwise: one drawing them on a popover or on the
+	 * window itself wraps them in the provider, or the fade shows as a block of the wrong colour.
+	 *
+	 * @example
+	 * <RowSurface.Provider value={Tokens.PopoverBg}>
+	 * 	{rows.map((entry, index) => RenderControl(entry, index > 0))}
+	 * </RowSurface.Provider>
+	 */
+	const RowSurface: React.Context<StyleColor>
 	function MarkColorOf(entry: Entry): string
+	/**
+	 * Folds its content in when the entry turns visible and out when it hides, keeping a hidden
+	 * entry mounted until the fold has run; `VisibleRows` is what lists such an entry meanwhile.
+	 */
+	function Reveal(props: {
+		entry: Entry
+		children?: React.ReactNode
+	}): React.ReactElement | null
 	function VisibleRows(children: Entry[], skip?: Entry): Entry[]
 	function CloseSubSettings(): void
 	function DescriptionRow(props: {
@@ -20,6 +39,7 @@ declare namespace MenuSDK {
 	}): React.ReactElement
 	function ToggleTrack(props: {
 		entry: ToggleEntry
+		style?: RmlStyle
 	}): React.ReactElement
 	function ToggleRow(props: {
 		entry: ToggleEntry
@@ -41,7 +61,8 @@ declare namespace MenuSDK {
 	}): React.ReactElement
 	/**
 	 * The preset selector's bare dropdown chip, for the window's top bar: no row and no label,
-	 * just the selected preset opening the panel.
+	 * just the selected preset opening the panel — and beside it, where the selector carries
+	 * settings of its own, the button that opens them.
 	 */
 	function PresetsHeader(props: {
 		entry: PresetsEntry
@@ -78,8 +99,8 @@ declare namespace MenuSDK {
 		leadIcon?: string
 		placeholder?: string
 		/**
-		 * Laid-out width of the field in dp. Only the placeholder needs it: a hint that does not fit
-		 * the remaining room falls back to the generic "Search" instead of running past the field.
+		 * Laid-out width of the field in dp. A placeholder that does not fit the remaining room is
+		 * shortened with an ellipsis while retaining the field's own wording.
 		 */
 		width?: number
 		/**
@@ -94,11 +115,23 @@ declare namespace MenuSDK {
 		 * tint clears as soon as the value is edited.
 		 */
 		invalid?: boolean
+		/** The longest text the field takes: what is typed past it is cut and the field snaps back. */
+		maxLength?: number
 		autoFocus?: boolean
 		onKeyDown?: (event: Event) => boolean
 	}): React.ReactElement
 	function TextInputRow(props: {
 		entry: TextEntry
+		divider: boolean
+		nested?: boolean
+	}): React.ReactElement
+	/**
+	 * The list editor: the label with a count on the right, and under it a field with an Add
+	 * button and the rows themselves, which scroll once there are more than a handful. Enter in
+	 * the field adds and keeps the focus, so several strings go in one after another.
+	 */
+	function TextListRow(props: {
+		entry: ListEntry
 		divider: boolean
 		nested?: boolean
 	}): React.ReactElement
@@ -149,6 +182,8 @@ declare namespace MenuSDK {
 	 * all while the theme asks for no glow. It goes first among the surface's children, and the
 	 * surface carries {@link SdfGlowHost}. `fill` is what the surface under the halo is painted, so
 	 * an adaptive theme lights it in its own color; without it the halo keeps the theme's one color.
+	 * It follows the glow on its own - a walking color moves it several times a second - so the
+	 * surface hosting it is never rendered for that.
 	 *
 	 * @example
 	 * <div style={{ ...SdfGlowHost, ...card }}>
@@ -209,23 +244,35 @@ declare namespace MenuSDK {
 	 * Single-line label that hides overflow behind a fading edge and, while `active`, scrolls the line
 	 * so the whole of it can be read where it stands: it waits at its head, travels far enough to bring
 	 * the tail in, waits there and comes back, for as long as the row asks. A line that fits is left
-	 * alone and costs nothing — the row it sits in is what says when to read, so a nav row scrolls its
-	 * own name under the cursor instead of standing a panel over it.
+	 * alone and costs nothing — the row it sits in is what says when to read, so a preset row scrolls
+	 * its own name under the cursor instead of standing a panel over it.
 	 *
 	 * The travel is one transform written by a tween, so nothing around the label lays out again while
 	 * it reads, and it is snapped to whole screen pixels — a line resting between two of them is what
 	 * makes glyphs shimmer as they move. Both edges carry a scrim dissolving into `base`, the resting
 	 * fill of the surface behind the label, and they follow the travel: the head's comes up as the line
-	 * leaves, the tail's goes out as it arrives.
+	 * leaves, the tail's goes out as it arrives. A surface that lights up under the pointer names what
+	 * it reads as then in `litBase` and says so with `lit`: the scrims cross to it at the pace the
+	 * hover fill rises, so they never stand out as a block of the resting colour over a lit row.
 	 *
 	 * @example
-	 * <ScrollLabel base={Theme.ValueOf("WindowBg")} active={hovered} style={{ flex: "0 1 auto" }}>
+	 * <ScrollLabel
+	 *     base={Theme.ValueOf("WindowBg")}
+	 *     litBase={overHex(Theme.ValueOf("WindowBg"), Theme.ValueOf("NavRowHover"))}
+	 *     lit={hovered}
+	 *     active={hovered}
+	 *     style={{ flex: "0 1 auto" }}
+	 * >
 	 *     {name}
 	 * </ScrollLabel>
 	 */
 	function ScrollLabel(props: {
 		/** Resting background behind the clipped edges; the scrims dissolve into it. */
 		base: StyleColor
+		/** What the background reads as while `lit`; the scrims dissolve into this one then. */
+		litBase?: StyleColor
+		/** Whether the surface behind the label is showing its hover fill. */
+		lit?: boolean
 		/** Scrolls a line that does not fit while true, and sends it home when it goes false. */
 		active: boolean
 		className?: string

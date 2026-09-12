@@ -14,6 +14,12 @@ declare namespace MenuSDK {
 		readonly height: number
 	}
 	/**
+	 * How far the card stands off the window it is docked to, and off the edge of the screen, in dp.
+	 * What opens beside the card leaves the same air against it, so a row of the menu, the card and
+	 * the settings of something on it read as one run of surfaces rather than as three placements.
+	 */
+	const CardGap = 6
+	/**
 	 * Where the card's corner goes this frame, in screen pixels. Every panel of one preview lays out
 	 * from this one answer, so the stage covers the card's middle band wherever the card is standing.
 	 *

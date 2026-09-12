@@ -13,8 +13,8 @@ declare namespace MenuSDK {
 		cols: number
 		cellW: number
 	}
-	/** «2 h ago» from a unix-seconds stamp — the largest unit that is not zero. */
-	function FormatAgo(unixSeconds: number): string
+	/** «2 h ago» from a unix-milliseconds stamp — the largest unit that is not zero. */
+	function FormatAgo(unixMs: number): string
 	/** 1840 → «1.8k»: the order of magnitude decides, the exact count does not. */
 	function FormatCompact(value: number): string
 	type TagTone = "neutral" | "accent" | "success" | "warn" | "danger"
@@ -83,6 +83,8 @@ declare namespace MenuSDK {
 		style?: RmlStyle
 		onClick: () => void
 	}): React.ReactElement
+	/** Laid-out side of a `CfgIconButton` in dp, for hosts that budget a toolbar row. */
+	function CfgIconButtonSide(size?: CfgButtonSize): number
 	/** Square glyph button for toolbar actions that a label would only make heavier. */
 	function CfgIconButton(props: {
 		icon: string
@@ -94,6 +96,12 @@ declare namespace MenuSDK {
 		onClick: (event: Event) => void
 	}): React.ReactElement
 	/** 2–4 mutually exclusive options, all visible — a sort order, a filter. */
+	/**
+	 * Laid-out width of a `CfgSegmented` with these `names` in dp, in the current language.
+	 * Lets a toolbar row hand the remaining room to a sibling — a search field budgeting
+	 * its placeholder — instead of guessing.
+	 */
+	function CfgSegmentedWidth(names: string[]): number
 	function CfgSegmented(props: {
 		names: string[]
 		value: number

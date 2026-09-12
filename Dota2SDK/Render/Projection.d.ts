@@ -28,7 +28,7 @@ declare class CProjection {
 	 * const screen = Projection.WorldToScreen(entity.Position)
 	 * if (screen !== undefined) { ... }
 	 */
-	public WorldToScreen(position: Vector3): Nullable<Vector2>
+	public WorldToScreen(position: Vector3, cull?: boolean): Nullable<Vector2>
 	/**
 	 * Allocation-free `WorldToScreen`: writes `[x, y]` screen pixels into `out` and reports whether
 	 * the point is on the frame. Prefer this when projecting every entity every frame.
@@ -40,7 +40,7 @@ declare class CProjection {
 	 * const screen: [number, number] = [0, 0]
 	 * if (Projection.WorldToScreenXYZ(pos.x, pos.y, pos.z, screen)) { ... }
 	 */
-	public WorldToScreenXYZ(x: number, y: number, z: number, out: [number, number]): boolean
+	public WorldToScreenXYZ(x: number, y: number, z: number, out: [number, number], cull?: boolean): boolean
 	/**
 	 * World position under a screen point, on the ground plane the engine picks.
 	 * @example

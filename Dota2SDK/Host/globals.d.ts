@@ -184,3 +184,9 @@ declare interface Math {
 declare const __OCT_PACKAGE_ROOT__: string
 declare function LoadFont(path: string, isFallback: boolean, weight?: number): boolean
 declare function SendListenerPerf(line: string, took: number, gameSecond: number): void
+
+// The benchmark recorder bridge, present only in a build that carries the recorder
+// (octarine-core, OCT_ENABLE_BENCHMARK). `Managers/Benchmark.ts` wraps it; a script should reach for that.
+declare const BENCHMARK_ENABLED: boolean
+declare function benchmarkSubmit(text: string): void
+declare function benchmarkMark(label: string): void

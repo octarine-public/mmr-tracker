@@ -35,6 +35,35 @@ declare namespace MenuSDK {
 		GlowStrength?: number
 	}
 	const DefaultSeeds: IThemeSeeds
+	/** The accent every theme starts from. */
+	const DefaultAccent = "#9854ff"
+	/**
+	 * The range each numeric seed is held to: what the controls offer, and what a stored or shared
+	 * theme is read into, so a number nobody could have set never reaches a surface.
+	 */
+	const SeedRange: {
+		readonly GlassBlur: readonly [0, 100]
+		readonly Opacity: readonly [0.3, 1]
+		readonly Radius: readonly [0, 2]
+		readonly TextScale: readonly [0.85, 1.2]
+		readonly GlowSize: readonly [2, 40]
+		readonly GlowStrength: readonly [0.05, 1]
+	}
+	/**
+	 * Everything a theme preset captures: the seed colors plus the accent, and the typeface. A
+	 * snapshot that names none is set in the default type: a theme saved before the font was part
+	 * of one was made in it. A preset is seeds alone, so whoever puts one on carries the type worn
+	 * over - `IThemeGalleryHost.Apply` does, and so does the page that dresses a surface.
+	 */
+	interface IThemeSnapshot {
+		seeds: IThemeSeeds
+		accent: string
+		font?: IThemeFont
+	}
+	/** A copy of a snapshot that shares nothing with it, for a store that keeps its own. */
+	function CloneThemeSnapshot(snapshot: IThemeSnapshot): IThemeSnapshot
+	function seedsEqual(a: IThemeSeeds, b: IThemeSeeds): boolean
+	function snapshotsEqual(a: IThemeSnapshot, b: IThemeSnapshot): boolean
 	const ThemePresets: Map<string, IThemeSeeds>
 	/**
 	 * What a saved theme says about itself at a glance. Chosen by whoever saved it, the way a cloud
