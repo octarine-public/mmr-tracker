@@ -30,5 +30,9 @@
 		"type": "git",
 		"directory": "/",
 		"url": "https://github.com/octarine-public/mmr-tracker.git"
-	}
+	},
+	"octarineBundle": true,
+	"octarineMinimize": true,
+	"octarineObfuscate": true,
+	"octarineTreeShaking": true
 }
