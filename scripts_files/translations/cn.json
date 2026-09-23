@@ -1,1 +1,7 @@
-{}
+{
+	"State": "启用",
+	"Key": "按键",
+	"Tracker": "追踪器",
+	"MMR Tracker": "MMR 追踪器",
+	"Key turn on/off panel": "开关面板的按键"
+}
