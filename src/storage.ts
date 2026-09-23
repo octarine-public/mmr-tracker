@@ -1,21 +1,30 @@
 const StoreName = "mmr-tracker"
-const RatingKey = "rating"
+const LegacyRatingKey = "rating"
+
+function RatingKey(account: number): string {
+	return `rating.${account}`
+}
 
 /**
- * The last ranked rating seen, kept on disk so the first rating after a restart still has
- * something to be compared against. Writes run one after another, so an older rating can
- * never land after a newer one. A storage failure is logged and the tracker keeps working
- * from memory.
+ * The last ranked rating seen per game account, kept on disk so the first rating after a
+ * restart is compared against the same account's previous one. A rating saved before ratings
+ * were kept per account belongs to no known account and is dropped. Writes run one after
+ * another, so an older rating can never land after a newer one. A storage failure is logged
+ * and the tracker keeps working from memory.
  */
 export class RatingStore {
-	private storage: Nullable<LocalStorage>
-	private queue: Promise<void> = Promise.resolve()
+	private readonly storage = this.open()
+	private queue: Promise<void> = this.storage
+		.then(storage => storage?.remove(LegacyRatingKey))
+		.catch(e => console.error("[mmr-tracker] storage:", e))
 
-	public async Load(): Promise<Nullable<number>> {
+	public async Load(account: number): Promise<Nullable<number>> {
+		const storage = await this.storage
+		if (storage === undefined) {
+			return undefined
+		}
 		try {
-			const storage = await SharedSDK.openLocalStorage(StoreName)
-			this.storage = storage
-			const rating = await storage.get<unknown>(RatingKey)
+			const rating = await storage.get<unknown>(RatingKey(account))
 			return typeof rating === "number" && Number.isFinite(rating)
 				? rating
 				: undefined
@@ -25,13 +34,21 @@ export class RatingStore {
 		}
 	}
 
-	public Save(rating: number): void {
-		const storage = this.storage
-		if (storage === undefined) {
-			return
-		}
+	public Save(account: number, rating: number): void {
 		this.queue = this.queue
-			.then(() => storage.set(RatingKey, rating))
+			.then(async () => {
+				const storage = await this.storage
+				await storage?.set(RatingKey(account), rating)
+			})
 			.catch(e => console.error("[mmr-tracker] storage:", e))
+	}
+
+	private async open(): Promise<Nullable<LocalStorage>> {
+		try {
+			return await SharedSDK.openLocalStorage(StoreName)
+		} catch (e) {
+			console.error("[mmr-tracker] storage:", e)
+			return undefined
+		}
 	}
 }
