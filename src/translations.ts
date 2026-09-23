@@ -1,4 +1,3 @@
-
 function Load(name: string) {
 	return new Map<string, string>(
 		Object.entries(SharedSDK.readJSON(`translations/${name}.json`))

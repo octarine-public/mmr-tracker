@@ -1,5 +1,6 @@
 import { MMRChangedType } from "./enum"
 import { MenuManager } from "./menu"
+import { Paths } from "./paths"
 
 const PANEL_HEIGHT = 34
 const ICON = 18
@@ -17,10 +18,9 @@ export class GUIHelper {
 	private readonly iconSize = new Vector2()
 	private readonly panel: MenuSDK.OverlayPanel
 
-	private readonly basePath = "github.com/octarine-public/mmr-tracker/scripts_files/"
-	private readonly stats = this.basePath + "images/stats.svg"
-	private readonly up = this.basePath + "images/arrow-up.svg"
-	private readonly down = this.basePath + "images/arrow-down.svg"
+	private readonly stats = `${Paths.Images}/stats.svg`
+	private readonly up = `${Paths.Images}/arrow-up.svg`
+	private readonly down = `${Paths.Images}/arrow-down.svg`
 
 	private readonly drawContent = (origin: Vector2) => {
 		const box = this.box
@@ -103,11 +103,7 @@ export class GUIHelper {
 		if (this.remainder !== -1) {
 			width +=
 				MenuSDK.hudW(4) +
-				MenuSDK.HudText.Width(
-					`(+${this.remainder} MMR)`,
-					FONT,
-					MenuSDK.HudBold
-				)
+				MenuSDK.HudText.Width(`(+${this.remainder} MMR)`, FONT, MenuSDK.HudBold)
 		}
 		this.size.SetVector(Math.round(width), MenuSDK.hudH(PANEL_HEIGHT))
 		this.panel.Draw(this.size, this.drawContent)
