@@ -23,6 +23,11 @@ declare class NetworkedParticle {
 	public readonly TextureAttributes: Map<string, string>
 	public readonly EndTime: number
 	public readonly PathNoEcon: string
+	/**
+	 * Whether the game let the particle play out on its own instead of cutting it: one with a
+	 * known lifetime then stays until that ends, one without is destroyed at once but keeps
+	 * the flag, so a destroy listener can tell a cut effect from a finished one.
+	 */
 	public Released: boolean
 	public ShouldDraw: boolean
 	public FrozenAt: number

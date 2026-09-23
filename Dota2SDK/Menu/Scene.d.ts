@@ -56,6 +56,16 @@ declare namespace MenuSDK {
 		 * subject's — what a stage hangs things off nine times in ten.
 		 */
 		readonly parent?: string
+		/**
+		 * Wear it on the parent's skeleton rather than hang it off one bone: every bone the two share
+		 * by name is driven by the parent's, and the model needs neither a bone nor an animation of
+		 * its own.
+		 *
+		 * What a garment is. A Dota hero is a bare body and a set of default items — hair, armour, a
+		 * weapon — each skinned to his skeleton and carrying none of his animations, and each of them
+		 * hung off a bone instead would stand in its bind pose while the body under it moved.
+		 */
+		readonly merge?: boolean
 		/** Where it stands, when it hangs off nothing. */
 		readonly position?: readonly number[]
 		/** Which way it faces there, as pitch, yaw and roll. */
@@ -107,6 +117,28 @@ declare namespace MenuSDK {
 		 * times past the edges of the stage.
 		 */
 		readonly span?: "height" | "widest"
+		/**
+		 * Fit the subject into a box of the stage instead of standing it at a share of the stage's
+		 * height: what is given is the room kept CLEAR on each side, as fractions of the stage, and the
+		 * subject is made as large as it fits in what is left — measured as it is posed, so a subject
+		 * turned, tipped over or wider than it is tall is sized by what it actually covers.
+		 *
+		 * This is what a page wants whenever it has furniture of its own: the room over a health bar is
+		 * a property of the CARD and the same on every stage, while the size that leaves is a property
+		 * of the subject and different for a hero, a courier and Roshan. Naming the room says the first
+		 * and lets the stage work out the second.
+		 *
+		 * It replaces {@link CPreviewScene.SetFill} and {@link lift}, which say the same thing the
+		 * other way round, and {@link span}, which is a guess at the shape this measures.
+		 */
+		readonly fit?: IPreviewFit
+	}
+	/** The room a fitted stage keeps clear around its subject, in fractions of the stage. */
+	interface IPreviewFit {
+		readonly top?: number
+		readonly bottom?: number
+		/** Kept clear on BOTH sides, so the subject stays centred across the stage. */
+		readonly sides?: number
 	}
 	/**
 	 * The 3d stage behind a preview page: one GFX scene showing whichever model it is given,
@@ -171,9 +203,14 @@ declare namespace MenuSDK {
 		 */
 		public AddModel(id: string, spec: Readonly<IPreviewModel>): void
 		/**
-		 * Takes a model off the stage. It is hidden rather than destroyed — the scene owns every
+		 * Takes a model off the stage. It is taken down rather than destroyed — the scene owns every
 		 * instance it makes for as long as it lives — so a page cycling through models pays for the
 		 * ones standing at once, not for every one it has shown.
+		 *
+		 * The entry is kept aside under its id rather than dropped, because the instance is IN it: a
+		 * page that puts a model back under an id it has used before stands it on the instance that id
+		 * already has. Dropped, every cycle would leave one more instance in the scene, still parented
+		 * to whatever it was wearing and still drawn.
 		 */
 		public RemoveModel(id: string): void
 		/**

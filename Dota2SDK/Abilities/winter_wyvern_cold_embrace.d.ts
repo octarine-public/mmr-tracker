@@ -10,4 +10,5 @@ declare class winter_wyvern_cold_embrace extends Ability implements IHealthResto
 	public GetMaxDurationForLevel(level: number): number
 	public IsManaRestore(): this is IManaRestore<Unit>
 	public IsHealthRestore(): this is IHealthRestore<Unit>
+	public get AppliesUnitState(): bigint
 }

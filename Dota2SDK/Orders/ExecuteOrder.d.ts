@@ -39,6 +39,16 @@ declare class ExecuteOrder {
 	 * @param issuer default: DOTA_ORDER_ISSUER_PASSED_UNIT_ONLY
 	 */
 	constructor(OrderType: dotaunitorder_t, Target: Nullable<Entity | number>, Position: Vector3 | undefined, Ability_: Nullable<Ability | number>, Issuers: Unit[], Queue?: boolean, ShowEffects?: boolean, IsPlayerInput?: boolean)
+	/**
+	 * Seconds the humanizer will hold an order issued now before it reaches the game: the cursor
+	 * glides of the orders already queued and, with `PrefireOrders` off, this order's own glide to
+	 * `target`. Zero when the humanizer is disabled or bypassed on this map. Follows the cursor
+	 * model the queue runs on (peak speed, acceleration and deceleration in screen widths, the
+	 * reaction pause before a glide from rest, the pause after an order) without its random spread.
+	 * @example
+	 * const wait = ExecuteOrder.EstimateDispatchDelay(target) + GameState.InputLag
+	 */
+	public static EstimateDispatchDelay(target?: Vector3 | Entity): number
 	public static get DisableHumanizer(): boolean
 	public static set DisableHumanizer(newVal: boolean)
 	public static PrepareOrder(order: {

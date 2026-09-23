@@ -8,4 +8,5 @@ declare class legion_commander_press_the_attack extends Ability implements IHeal
 	public GetMaxDurationForLevel(level: number): number
 	public GetBaseAOERadiusForLevel(level: number): number
 	public IsHealthRestore(): this is IHealthRestore<Unit>
+	public get AbilityBehaviorMask(): DOTA_ABILITY_BEHAVIOR
 }

@@ -112,6 +112,9 @@ declare class HTMLElement {
 	/** The box in screen px it was minted for; same owner. */
 	public hudArtW_?: number
 	public hudArtH_?: number
+	public hudArtRadius_?: number
+	/** The copy the element waits on while the host cuts it; same owner. */
+	public hudPending_?: string
 	/** The live text node inside the element; owned by `World/Write.ts`. */
 	public worldTextNode_?: HTMLElement
 	/**
@@ -276,24 +279,35 @@ declare function FreeImageBlob(source: string): void
  * Sizes are in whole screen pixels. The same file at the same size answers with the same source
  * however many elements ask, and the host counts the holders, so each caller frees its own.
  *
- * Returns `""` when the path is empty or the size is unusable.
+ * Optional radius is a finite, nonnegative screen-pixel corner radius, clamped to half the
+ * smaller dimension. Defaults to zero. Rounded coverage is baked into premultiplied RGBA; draw
+ * on a rectangular element without a second rounded clip. Radius is part of the source cache key.
+ * Returns `""` when the path, size, or radius is unusable.
  * @example
  * const src = RegisterSizedImage(path, DpToPx(width), DpToPx(height))
  * element.setAttribute("src", src)
  */
-declare function RegisterSizedImage(path: string, width: number, height: number): string
+declare function RegisterSizedImage(
+	path: string,
+	width: number,
+	height: number,
+	radius?: number
+): string
 /**
  * Mints an image source for bytes a script holds plus the pixel size they will be drawn at, so the
  * decode resamples straight to that size the way {@link RegisterSizedImage} does for a file. Freed
  * with {@link FreeImageBlob} like any other blob. Feature-detect: hosts predating it have no such
  * function.
  *
- * Returns `""` when the bytes are empty or the size is unusable.
+ * Optional radius has the same pixel units and rounded coverage as {@link RegisterSizedImage}.
+ * Defaults to zero. A positive radius requires a nonzero size.
+ * Returns `""` when the bytes, size, or radius is unusable.
  */
 declare function RegisterSizedImageBlob(
 	data: ArrayBuffer | ArrayBufferView,
 	width: number,
-	height: number
+	height: number,
+	radius?: number
 ): string
 /**
  * Drops one hold on a source minted by {@link RegisterSizedImage}. A texture already built from it

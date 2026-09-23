@@ -4,4 +4,5 @@ declare class magnataur_shockwave extends Ability implements INuke {
 	public GetBaseSpeedForLevel(level: number): number
 	public GetBaseAOERadiusForLevel(level: number): number
 	public GetBaseDamageForLevel(level: number): number
+	public get AbilityBehaviorMask(): DOTA_ABILITY_BEHAVIOR
 }

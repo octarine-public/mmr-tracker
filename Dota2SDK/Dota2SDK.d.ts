@@ -5,6 +5,7 @@ declare const Dota2SDK: {
 	readonly ATTACK_DAMAGE_STRENGTH: typeof ATTACK_DAMAGE_STRENGTH
 	readonly Ability: typeof Ability
 	readonly AbilityData: typeof AbilityData
+	readonly AbilityPrediction: typeof AbilityPrediction
 	readonly AdditionalWearable: typeof AdditionalWearable
 	readonly Additive: typeof Additive
 	readonly Announcer: typeof Announcer
@@ -18,10 +19,15 @@ declare const Dota2SDK: {
 	readonly CCustomHeroPickRules: typeof CCustomHeroPickRules
 	readonly CGameManager: typeof CGameManager
 	readonly CGameRules: typeof CGameRules
+	readonly CNotificationsSDK: typeof CNotificationsSDK
+	readonly CPanelTree: typeof CPanelTree
 	readonly CPlayerResource: typeof CPlayerResource
+	readonly CThreatSigns: typeof CThreatSigns
 	readonly CTurboHeroPickRules: typeof CTurboHeroPickRules
 	readonly CameraBounds: Nullable<CCameraBounds>
 	readonly CameraSDK: typeof CameraSDK
+	readonly CastPredictor: typeof CastPredictor
+	readonly CastTimeline: typeof CastTimeline
 	readonly CollisionFlag: typeof CollisionFlag
 	readonly CollisionTeam: typeof CollisionTeam
 	readonly CollisionTypes: typeof CollisionTypes
@@ -66,7 +72,13 @@ declare const Dota2SDK: {
 	readonly EDOTASpecialBonusOperation: typeof EDOTASpecialBonusOperation
 	readonly EDOTASpecialBonusStats: typeof EDOTASpecialBonusStats
 	readonly EFontName: typeof EFontName
+	readonly EHitChance: typeof EHitChance
 	readonly EMatchGroupServerStatus: typeof EMatchGroupServerStatus
+	readonly EMotionKind: typeof EMotionKind
+	readonly EMovementConfidence: typeof EMovementConfidence
+	readonly EPredictionDebugLayer: typeof EPredictionDebugLayer
+	readonly EPredictionGoal: typeof EPredictionGoal
+	readonly EPredictionSample: typeof EPredictionSample
 	readonly ERankType: typeof ERankType
 	readonly ERoshanLocation: typeof ERoshanLocation
 	readonly ERoshanSpawnPhase: typeof ERoshanSpawnPhase
@@ -74,6 +86,7 @@ declare const Dota2SDK: {
 	readonly EShareAbility: typeof EShareAbility
 	readonly ESkillShotType: typeof ESkillShotType
 	readonly EStoneFeatherAttribute: typeof EStoneFeatherAttribute
+	readonly EThreatKind: typeof EThreatKind
 	readonly ETormentorLocation: typeof ETormentorLocation
 	readonly ETormentorSpawnPhase: typeof ETormentorSpawnPhase
 	readonly EarthSpiritStone: typeof EarthSpiritStone
@@ -81,6 +94,7 @@ declare const Dota2SDK: {
 	readonly Entity: typeof Entity
 	readonly EntityManager: typeof EntityManager
 	readonly EnvDeferredLight: typeof EnvDeferredLight
+	readonly Escape: typeof Escape
 	readonly EventsSDK: typeof EventsSDK
 	readonly ExecuteOrder: typeof ExecuteOrder
 	readonly FakeUnit: typeof FakeUnit
@@ -101,10 +115,13 @@ declare const Dota2SDK: {
 	readonly GetPositionHeight: (loc: Vector2 | Vector3) => number
 	readonly GridNav: typeof GridNav
 	readonly GridNavCellFlags: typeof GridNavCellFlags
+	readonly HUDPanel: typeof HUDPanel
 	readonly HallOfFame: typeof HallOfFame
 	readonly Hero: typeof Hero
 	readonly HitChance: typeof HitChance
 	readonly ImageData: typeof ImageData
+	readonly IncomingDamage: typeof IncomingDamage
+	readonly IncomingDamageEntry: typeof IncomingDamageEntry
 	readonly InfoPlayerStartBadGuys: typeof InfoPlayerStartBadGuys
 	readonly InfoPlayerStartDota: typeof InfoPlayerStartDota
 	readonly InfoPlayerStartGoodGuys: typeof InfoPlayerStartGoodGuys
@@ -117,6 +134,7 @@ declare const Dota2SDK: {
 	readonly LaneSelectionFlags: typeof LaneSelectionFlags
 	readonly Lantern: typeof Lantern
 	readonly LifeState: typeof LifeState
+	readonly LinearMotion: typeof LinearMotion
 	readonly LinearProjectile: typeof LinearProjectile
 	readonly LocalPlayer: typeof LocalPlayer
 	readonly LotusPool: typeof LotusPool
@@ -130,19 +148,26 @@ declare const Dota2SDK: {
 	readonly MinibossSpawner: typeof MinibossSpawner
 	readonly MinimapSDK: typeof MinimapSDK
 	readonly Modifier: typeof Modifier
+	readonly Motion: typeof Motion
 	readonly MoveType: typeof MoveType
+	readonly MovementPrediction: typeof MovementPrediction
+	readonly NavGrid: typeof NavGrid
 	readonly NeutralItemStash: typeof NeutralItemStash
 	readonly NeutralSpawnBox: typeof NeutralSpawnBox
 	readonly NeutralSpawner: typeof NeutralSpawner
 	readonly NeutralSpawnerBox: typeof NeutralSpawnerBox
 	readonly NeutralSpawnerType: typeof NeutralSpawnerType
 	readonly NeutralSpawners: NeutralSpawnerBox[]
+	readonly NotificationChannel: typeof NotificationChannel
+	readonly NotificationsSDK: typeof NotificationsSDK
 	readonly Outpost: typeof Outpost
 	readonly PARTICLE_RENDER: typeof PARTICLE_RENDER
 	readonly PARTICLE_RENDER_NAME: typeof PARTICLE_RENDER_NAME
+	readonly PanoramaWindow: typeof PanoramaWindow
 	readonly Particle: typeof Particle
 	readonly ParticleAttachment: typeof ParticleAttachment
 	readonly ParticlesSDK: typeof ParticlesSDK
+	readonly Path: typeof Path
 	readonly PathData: typeof PathData
 	readonly PathfinderSDK: typeof PathfinderSDK
 	readonly PhysicalItem: typeof PhysicalItem
@@ -156,9 +181,17 @@ declare const Dota2SDK: {
 	readonly PlayerResource: typeof PlayerResource
 	readonly PlayerTeamData: typeof PlayerTeamData
 	readonly PowerTreadsAttribute: typeof PowerTreadsAttribute
+	readonly PredictionDebug: typeof PredictionDebug
+	readonly PredictionInput: typeof PredictionInput
+	readonly PredictionOutput: typeof PredictionOutput
+	readonly PredictionSDK: typeof PredictionSDK
+	readonly PredictionTelemetry: typeof PredictionTelemetry
+	readonly PredictionTuning: typeof PredictionTuning
 	readonly ProjectileManager: typeof ProjectileManager
+	readonly ProjectileParticle: (...paths: string[]) => (constructor: Constructor<IThreatAbility>) => void
 	readonly QuickBuySlot: typeof QuickBuySlot
 	readonly RagdollManager: typeof RagdollManager
+	readonly ReachableRegion: typeof ReachableRegion
 	readonly RenderMode: typeof RenderMode
 	readonly RendererSDK: typeof RendererSDK
 	readonly Roshan: typeof Roshan
@@ -174,6 +207,7 @@ declare const Dota2SDK: {
 	readonly SOType: typeof SOType
 	readonly SPELL_DISPELLABLE_TYPES: typeof SPELL_DISPELLABLE_TYPES
 	readonly SPELL_IMMUNITY_TYPES: typeof SPELL_IMMUNITY_TYPES
+	readonly SampledShapeTimeline: typeof SampledShapeTimeline
 	readonly SetMenuScale: (value: number) => void
 	readonly Shop: typeof Shop
 	readonly Shrine: typeof Shrine
@@ -182,16 +216,27 @@ declare const Dota2SDK: {
 	readonly SkillShotType: typeof SkillShotType
 	readonly SpeechBubbleManager: typeof SpeechBubbleManager
 	readonly SpiritBear: typeof SpiritBear
+	readonly SpreadingShapeTimeline: typeof SpreadingShapeTimeline
+	readonly StaticShapeTimeline: typeof StaticShapeTimeline
 	readonly StockInfo: typeof StockInfo
 	readonly Team: typeof Team
 	readonly TeamData: typeof TeamData
 	readonly TechiesMines: typeof TechiesMines
+	readonly TeleportMotion: typeof TeleportMotion
 	readonly TempTree: typeof TempTree
 	readonly Thinker: typeof Thinker
+	readonly Threat: typeof Threat
+	readonly ThreatModifier: (...names: string[]) => (constructor: Constructor<IThreatAbility>) => void
+	readonly ThreatParticle: (path: string, roles?: IParticleRoles) => (constructor: Constructor<IThreatAbility>) => void
+	readonly ThreatSign: typeof ThreatSign
+	readonly ThreatSigns: typeof ThreatSigns
+	readonly ThreatStore: typeof ThreatStore
+	readonly ThreatUnit: (...names: string[]) => (constructor: Constructor<IThreatAbility>) => void
 	readonly TickSleeper: typeof TickSleeper
 	readonly TonemapController2: typeof TonemapController2
 	readonly Tower: typeof Tower
 	readonly TrackingProjectile: typeof TrackingProjectile
+	readonly TravellingShapeTimeline: typeof TravellingShapeTimeline
 	readonly Tree: typeof Tree
 	readonly TurboHeroPickRules: Nullable<CTurboHeroPickRules>
 	readonly TwinGate: typeof TwinGate
@@ -199,11 +244,13 @@ declare const Dota2SDK: {
 	readonly Unit: typeof Unit
 	readonly UnitData: typeof UnitData
 	readonly UnitPortalData: typeof UnitPortalData
+	readonly UnitPrediction: typeof UnitPrediction
 	readonly VambraceAttribute: typeof VambraceAttribute
 	readonly WardObserver: typeof WardObserver
 	readonly WardSpawner: typeof WardSpawner
 	readonly WardTrueSight: typeof WardTrueSight
 	readonly Wearable: typeof Wearable
+	readonly WearableData: typeof WearableData
 	readonly World: typeof World
 	readonly WorldPolygon: typeof WorldPolygon
 	readonly XPFountain: typeof XPFountain
@@ -2606,7 +2653,6 @@ declare const Dota2SDK: {
 	readonly modifier_item_hyperstone: typeof modifier_item_hyperstone
 	readonly modifier_item_illusionsts_cape: typeof modifier_item_illusionsts_cape
 	readonly modifier_item_illusionsts_cape_aura: typeof modifier_item_illusionsts_cape_aura
-	readonly modifier_item_imbue_choice: typeof modifier_item_imbue_choice
 	readonly modifier_item_imp_claw: typeof modifier_item_imp_claw
 	readonly modifier_item_infused_raindrop: typeof modifier_item_infused_raindrop
 	readonly modifier_item_invisibility_edge: typeof modifier_item_invisibility_edge

@@ -6,4 +6,6 @@ declare class kez_echo_slash extends Ability implements INuke {
 	public GetBaseCastRangeForLevel(level: number): number
 	public GetRawDamage(target: Unit): number
 	public GetDamage(target: Unit): number
+	/** The slash covers its line at once. */
+	public get SkillShotType(): ESkillShotType
 }

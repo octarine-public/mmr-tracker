@@ -146,6 +146,13 @@ declare class Entity implements INativeEntity {
 	public UpdatePositions(parentTransform?: Matrix3x4): void
 	public CannotUseItem(_item: Item): boolean
 	public toString(): string
+	/**
+	 * Recomputes the networked position from the body fields the game last sent, for after
+	 * something else wrote it: a respawn point put on a hero the game keeps networking, a unit
+	 * back in sight. The fields only reach their handlers when they change, so a standing unit
+	 * would keep the written position until it moves.
+	 */
+	public RefreshPositionFromFields(): void
 	public SetPosition(position: Vector3): void
 	public SetAngles(qAngle: QAngle): void
 }

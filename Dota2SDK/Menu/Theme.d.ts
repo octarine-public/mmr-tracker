@@ -61,6 +61,11 @@ declare namespace MenuSDK {
 		public get FontScale(): number
 		public get AccentHex(): string
 		public get AccentSurface(): string
+		/**
+		 * {@link AccentSurface} as glass: the popover glass tinted the same way, keeping its own
+		 * transparency, for a floating accent surface that blurs what stands behind it.
+		 */
+		public get AccentGlass(): string
 		public AccentAlpha(alpha: number): string
 		/**
 		 * The theme's glass blur at a fraction of its full strength, as a `backdrop-filter`

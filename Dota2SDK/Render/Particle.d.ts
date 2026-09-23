@@ -1,8 +1,16 @@
 // AUTO-GENERATED - do not edit.
 type ControlPointParam = [number, ControlPoint]
 type ControlPoint = boolean | number | Entity | Vector3 | Vector2 | Color | number[]
+/**
+ * What a particle needs of the manager that made it: the book it enters itself in and takes
+ * itself out of. Named here rather than taken from the manager so the manager can hold the
+ * particle without the particle holding the manager back.
+ */
+interface IParticleOwner {
+	readonly AllParticles: Map<any, Particle>
+}
 declare class Particle {
-	public readonly Parent: ParticlesSDK
+	public readonly Parent: IParticleOwner
 	public readonly Key: any
 	public readonly Path: string
 	public readonly Attachment: ParticleAttachment
@@ -10,7 +18,7 @@ declare class Particle {
 	public IsValid: boolean
 	public IsHidden: boolean
 	public readonly ControlPoints: Map<number, Vector3>
-	constructor(Parent: ParticlesSDK, Key: any, Path: string, Attachment: ParticleAttachment, AttachedTo: Entity, ...controlPoints: ControlPointParam[])
+	constructor(Parent: IParticleOwner, Key: any, Path: string, Attachment: ParticleAttachment, AttachedTo: Entity, ...controlPoints: ControlPointParam[])
 	public SetControlPoint(id: number, param: ControlPoint): void
 	/**
 	 * @param points rest params (index as number, point as Vector)

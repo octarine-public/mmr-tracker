@@ -1,5 +1,8 @@
 // AUTO-GENERATED - do not edit.
 declare namespace MenuSDK {
+	/** The picture an option carries, and the gap between it and the name it belongs to. */
+	const OptionIconDp = 20
+	const OptionIconGapDp = 8
 	function WidestValueDp(entry: PanelEntry): number
 	type PanelEntry = DropdownEntry | MultiSelectEntry
 	/**

@@ -4,4 +4,5 @@ declare class huskar_inner_fire extends Ability implements INuke {
 	public GetBaseAOERadiusForLevel(level: number): number
 	public GetBaseDamageForLevel(level: number): number
 	public GetBaseManaCostForLevel(level: number): number
+	public get AppliesUnitState(): bigint
 }

@@ -5,4 +5,5 @@ declare class weaver_shukuchi extends Ability implements INuke {
 	public GetBaseAOERadiusForLevel(level: number): number
 	public GetBaseDamageForLevel(level: number): number
 	public GetBaseSpeedForLevel(level: number): number
+	public GetBaseActivationDelayForLevel(level: number): number
 }

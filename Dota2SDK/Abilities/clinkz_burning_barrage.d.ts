@@ -6,4 +6,6 @@ declare class clinkz_burning_barrage extends Ability implements INuke {
 	public GetDamage(target: Unit): number
 	public GetBaseAOERadiusForLevel(level: number): number
 	public GetBaseSpeedForLevel(_level: number): number
+	public GetBaseCastRangeForLevel(level: number): number
+	public GetBaseRangeForLevel(level: number): number
 }

@@ -6,4 +6,5 @@ declare class storm_spirit_ball_lightning extends Ability {
 	public PercentTravelCost(level?: number): number
 	public GetBaseAOERadiusForLevel(level: number): number
 	public GetBaseSpeedForLevel(level: number): number
+	public get CastRange(): number
 }

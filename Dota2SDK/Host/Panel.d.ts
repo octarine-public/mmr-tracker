@@ -23,8 +23,10 @@ declare class Panel {
 	 * takes part in no layout. Panels that are not laid out report an offset of FLT_MAX and a
 	 * zero size.
 	 *
-	 * A CSS `ui-scale` transform is invisible here: a panel collapsed by an animation still
-	 * reports its full layout rectangle.
+	 * The CSS `ui-scale` is already in the rectangle: it takes part in layout, and the panel's
+	 * children are laid out in the same scaled pixels. A paint-time `transform` or
+	 * `pre-transform-scale2d` is invisible here: a panel an animation shrinks or slides that way
+	 * still reports its untransformed layout rectangle.
 	 * @example
 	 * const rect = panel.Rect
 	 * if (rect !== undefined) {

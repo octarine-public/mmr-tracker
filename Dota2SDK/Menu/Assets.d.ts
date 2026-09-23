@@ -8,6 +8,8 @@ declare namespace MenuSDK {
 	 */
 	/** Vector sources render through the svg element; panorama ships them as vsvg containers. */
 	function AssetElementTag(src: string): "svg" | "img"
+	/** Returns a previously prepared raster source without creating or retaining a new asset. */
+	function PeekSizedAsset(path: string, width: number, height: number, radius?: number): string
 	/**
 	 * A source for `path` resampled to the pixel size it will be drawn at, or `path` itself where that
 	 * cannot help. Mip selection lands only on a power-of-two level and rounds toward the smaller one,
@@ -19,9 +21,11 @@ declare namespace MenuSDK {
 	 * dp — pass them through {@link DpToPx} first. Every source taken here is handed back to
 	 * {@link ReleaseSizedAsset} when the element drawing it goes away or asks for another size.
 	 *
+	 * Radius is in screen pixels and defaults to zero. Rounded sources bake coverage into their
+	 * alpha; draw them without another rounded clip. Hosts predating radius support keep square art.
 	 * Hosts predating the function keep the raw path, which the mip chain still covers.
 	 */
-	function RegisterSizedAsset(path: string, width: number, height: number): string
+	function RegisterSizedAsset(path: string, width: number, height: number, radius?: number): string
 	/** Hands back a source taken from {@link RegisterSizedAsset}. A raw path is ignored. */
 	function ReleaseSizedAsset(source: string): void
 	function ResolveAsset(path: string, mode?: AssetMode): string

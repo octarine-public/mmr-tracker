@@ -8,4 +8,5 @@ declare class lina_dragon_slave extends Ability implements INuke {
 	public GetCastRangeForLevel(level: number): number
 	public GetBaseAOERadiusForLevel(level: number): number
 	public GetRawDamage(target: Unit): number
+	public get AbilityBehaviorMask(): DOTA_ABILITY_BEHAVIOR
 }

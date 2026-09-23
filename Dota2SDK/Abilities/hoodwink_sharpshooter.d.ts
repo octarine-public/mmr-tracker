@@ -5,4 +5,6 @@ declare class hoodwink_sharpshooter extends Ability implements INuke {
 	public GetBaseAOERadiusForLevel(level: number): number
 	public GetBaseSpeedForLevel(level: number): number
 	public GetRawDamage(_target: Unit): number
+	public get Range(): number
+	public GetBaseActivationDelayForLevel(level: number): number
 }

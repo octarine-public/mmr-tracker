@@ -31,7 +31,12 @@ declare class CMinimapSDK {
 	public DrawLineArrow(start: Vector3, end: Vector3, color?: Color, width?: number, arrowLength?: number, rotationDeg?: number): void
 	public DeletePing(uid: any): void
 	public SendPing(location: Vector2, type?: PingType, directPing?: boolean, target?: Entity): void
-	public WorldToMinimap(pos: Vector3): Vector2
-	public MinimapToWorld(pos: Vector2): Vector3
+	/**
+	 * Where a world position lands on the minimap, or undefined while the game lays out no
+	 * minimap — there is then nothing to put it on.
+	 */
+	public WorldToMinimap(pos: Vector3): Nullable<Vector2>
+	/** The world position under a minimap point, or undefined while it is not laid out. */
+	public MinimapToWorld(pos: Vector2): Nullable<Vector3>
 }
 declare const MinimapSDK: CMinimapSDK

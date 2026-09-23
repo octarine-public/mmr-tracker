@@ -100,6 +100,13 @@ declare namespace MenuSDK {
 	function HostMeasureText(text: string, font: string, sizePx: number, weight: number, italic?: boolean): Nullable<[number, number]>
 	/** Image size in px, cached like HostMeasureText. */
 	function HostImageSize(path: string): Nullable<[number, number]>
+	/**
+	 * Whether the host has a source decoded and in hand, asked afresh every time: a sized copy is
+	 * cut in the background after it is minted, and this is what says the cut is done. Nothing is
+	 * cached and no measure miss is noted - the answer is expected to change, and the next frame is
+	 * the time to ask again. A host that cannot say is taken at its word that the source is ready.
+	 */
+	function HostImageReady(path: string): boolean
 	function HostInGame(): boolean
 	function HostInputCaptured(): boolean
 	/** Seconds on the match clock; see {@link MenuHost.gameTime}. */
@@ -213,6 +220,8 @@ declare namespace MenuSDK {
 		Clip?(): Nullable<string>
 		/** The elements drawn over the stage, as structure — the frame pass positions them. */
 		Stage(): React.ReactNode
+		/** Whether stage elements may extend beyond the preview. Defaults to hidden. */
+		readonly Overflow?: "visible" | "hidden"
 		Header?(): React.ReactNode
 		Footer?(): React.ReactNode
 		/** Frame pass over the stage, in its own pixels. */

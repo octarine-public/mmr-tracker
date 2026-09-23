@@ -5,4 +5,5 @@ declare class invoker_sun_strike extends invoker_spell_extends implements INuke 
 	public GetBaseDamageForLevel(level: number): number
 	public GetBaseAOERadiusForLevel(level: number): number
 	public GetBaseActivationDelayForLevel(level: number): number
+	public get CastRange(): number
 }

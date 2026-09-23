@@ -87,6 +87,8 @@ interface RmlStyle {
 	backdropFilter?: string | ThemeTokenRef
 	filter?: string
 	decorator?: string
+	/** Alpha mask over the element and everything in it, e.g. a `linear-gradient(...)`; `none` lifts it. */
+	maskImage?: string
 	drag?: "none" | "drag" | "drag-drop" | "block" | "clone"
 }
 

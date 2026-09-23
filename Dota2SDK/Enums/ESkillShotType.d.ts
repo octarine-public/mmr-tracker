@@ -6,5 +6,6 @@ declare const enum ESkillShotType {
 	Line = 3,
 	Circle = 4,
 	Cone = 5,
-	Arc = 6
+	Arc = 6,
+	Vector = 7
 }

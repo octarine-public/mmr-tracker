@@ -34,6 +34,11 @@ declare class Item extends Ability {
 	public get IsNeutralDrop(): boolean
 	public get Purchaser(): Nullable<Hero>
 	public get TexturePath(): string
+	/**
+	 * The charge count the game writes on the inventory slot: `CurrentCharges` for every item
+	 * but the ward dispenser, which shows the count of the ward it places next.
+	 */
+	public get DisplayCharges(): number
 	public get Cooldown(): number
 	public get IsReady(): boolean
 	public get CanBeUsable(): boolean
@@ -62,4 +67,5 @@ declare class Item extends Ability {
 	 * Owner.CanBeCastedWhileSilenced
 	 */
 	public CanBeCasted(bonusMana?: number): boolean
+	public CanBeCastedAt(time: number): boolean
 }

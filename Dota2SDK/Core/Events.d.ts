@@ -187,6 +187,16 @@ interface EventsMap {
 	UnitPortalChanged: [model: UnitPortalData]
 	UnitPortalDestroyed: [model: UnitPortalData]
 	StockInfoChanged: [stock: StockInfo]
+	/**
+	 * Emitted in PreDraw when a HUD panel read during the previous frame came out at a
+	 * different place or size — the HUD was rebuilt, the selection changed, the window was
+	 * resized, or the player moved a setting.
+	 *
+	 * Only panels something actually read are watched, so a script that never asks about the
+	 * shop is never woken by it. Ask a single panel with `HUDPanel.HasChanged` when you need to
+	 * know which one moved.
+	 */
+	GUIChanged: []
 }
 
 interface NativeEventsMap {

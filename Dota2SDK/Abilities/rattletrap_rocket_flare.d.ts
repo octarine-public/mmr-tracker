@@ -5,4 +5,5 @@ declare class rattletrap_rocket_flare extends Ability implements INuke {
 	public GetBaseDamageForLevel(level: number): number
 	public GetBaseSpeedForLevel(level: number): number
 	public GetMaxDurationForLevel(level: number): number
+	public get CastRange(): number
 }

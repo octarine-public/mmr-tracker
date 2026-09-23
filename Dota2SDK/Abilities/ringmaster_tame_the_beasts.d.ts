@@ -6,4 +6,5 @@ declare class ringmaster_tame_the_beasts extends Ability implements INuke {
 	public GetMultiplier(level?: number): number
 	public GetBaseAOERadiusForLevel(level: number): number
 	public GetBaseMinAOERadiusForLevel(level: number): number
+	public get AppliesUnitState(): bigint
 }

@@ -1,9 +1,10 @@
 // AUTO-GENERATED - do not edit.
 declare namespace MenuSDK {
 	/**
-	 * Which stack a panel stands in. The world and the cards are layer documents of their own and
-	 * the cards are stacked over the world, so a card is never covered by something anchored to the
-	 * world — not even by another package's overlays, which build the same layers.
+	 * Which stack a panel stands in. The world, the cards and the menu's own panels are layer
+	 * documents of their own, stacked in that order, so a card is never covered by something
+	 * anchored to the world and the menu's panels by neither — not even by another package's
+	 * overlays, which build the same layers.
 	 *
 	 * @example
 	 * RegisterPanel("rune-markers", () => <Markers />, EPanelLayer.World)
@@ -15,11 +16,23 @@ declare namespace MenuSDK {
 		Screen = 1,
 		/**
 		 * Part of the menu rather than of the HUD — the preview card and anything else that only
-		 * stands while the menu is open. It shares the cards' layer, so the world never covers it
-		 * either, but it wears the menu's theme instead of the one the panels are dressed in.
+		 * stands while the menu is open. It stands in a layer of its own over every package's cards
+		 * and under the menu chrome, so it goes where the menu goes: nothing another script put on
+		 * the screen can cover it, and the window it docks to stays the one thing that can. It wears
+		 * the menu's theme instead of the one the panels are dressed in.
 		 */
 		Menu = 2
 	}
+	/**
+	 * Where the menu's own panels stand in the menu stack: the preview card and its stage, which open
+	 * a stacking context of their own for the glass they lay under their bands.
+	 */
+	const MenuPanelZ = 10
+	/**
+	 * Where a drawing surface on the menu's layer stands: one over the menu's own panels, so what
+	 * a preview paints on it shows over its stage rather than under the card's glass.
+	 */
+	const MenuSurfaceZ: number
 	function MountPanels(): void
 	/** Registers a panel in one of the host's stacks; returns the handle that takes it back out. */
 	function RegisterPanel(key: string, render: () => React.ReactNode, layer?: EPanelLayer): () => void

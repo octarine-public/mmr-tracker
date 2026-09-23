@@ -5,4 +5,7 @@ declare class medusa_gorgon_grasp extends Ability implements INuke {
 	public GetMaxDurationForLevel(level: number): number
 	public GetBaseActivationDelayForLevel(level: number): number
 	public GetBaseAOERadiusForLevel(level: number): number
+	public get AppliesUnitState(): bigint
+	/** The grasp lands along its whole line after the delay. */
+	public get SkillShotType(): ESkillShotType
 }

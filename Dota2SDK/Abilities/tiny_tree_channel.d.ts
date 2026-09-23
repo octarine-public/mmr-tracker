@@ -5,4 +5,5 @@ declare class tiny_tree_channel extends Ability {
 	public GetBaseAOERadiusForLevel(level: number): number
 	public GetRawDamage(target: Unit): number
 	public GetDamage(target: Unit): number
+	public get TriggersSpellBlock(): boolean
 }

@@ -74,6 +74,15 @@ declare namespace MenuSDK {
 		public set Hint(value: string)
 		/** Whether the window is off the screen regardless of what the host would allow. */
 		public get IsHidden(): boolean
+		/**
+		 * Claims the entrance for a card that just mounted: true the first time since the window came
+		 * onto the screen, false for a card the menu rebuilt in place - a theme, a scale or a server
+		 * change tears every tree down and mounts it again, and a window that never left has nothing
+		 * to enter.
+		 */
+		public TakeEntrance(): boolean
+		/** The window has left the screen for real, so its next card enters again. */
+		public NoteOffScreen(): void
 		/** Where this window stands in the stack of overlay cards, for its element's z-index. */
 		public get StackOrder(): number
 		/** Takes the window off the screen or puts it back, e.g. from a toggle's listener. */

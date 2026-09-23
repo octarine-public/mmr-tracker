@@ -6,4 +6,5 @@ declare class pangolier_swashbuckle extends Ability implements INuke {
 	public GetBaseAOERadiusForLevel(level: number): number
 	public GetBaseSpeedForLevel(level: number): number
 	public GetRawDamage(target: Unit): number
+	public get Range(): number
 }

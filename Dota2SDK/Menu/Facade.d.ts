@@ -317,6 +317,15 @@ declare namespace MenuSDK {
 		 * players.SetOptions(["Automatic", ...sources])
 		 */
 		public SetOptions(values: string[]): Dropdown
+		/**
+		 * Rides an image on each option, given in the order the options were, so a list of things with
+		 * faces is picked from by the face. An option whose entry is empty keeps its name alone.
+		 * @example
+		 * hero.SetOptionIcons(names.map(name => `${PathData.HeroIconsPath}/${name}_png.vtex_c`))
+		 */
+		public SetOptionIcons(icons: readonly string[]): Dropdown
+		/** The images riding the options, or nothing where the list is names alone. */
+		public get optionIcons(): string[]
 		public OnValue(callback: (caller: Dropdown) => void): Dropdown
 		/** Runs the value listeners without a value having changed. */
 		public TriggerOnValueChangedCBs(): Dropdown
@@ -771,6 +780,9 @@ declare namespace MenuSDK {
 		public set FilterGroup(value: Nullable<number>)
 		public get IconTint(): boolean
 		public set IconTint(value: boolean)
+		/** Width-to-height ratio of this node's icon in navigation rows; `1` keeps the square default. */
+		public get IconAspectRatio(): number
+		public set IconAspectRatio(value: number)
 		public get IconGrayScale(): boolean
 		public set IconGrayScale(value: boolean)
 		public get TextColor(): Nullable<Color>

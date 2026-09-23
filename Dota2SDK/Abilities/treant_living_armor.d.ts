@@ -8,4 +8,6 @@ declare class treant_living_armor extends Ability implements IHealthRestore<Unit
 	public GetHealthRestore(_target: Unit): number
 	public GetMaxDurationForLevel(level: number): number
 	public IsHealthRestore(): this is IHealthRestore<Unit>
+	public GetBaseAOERadiusForLevel(_level: number): number
+	public get CastRange(): number
 }

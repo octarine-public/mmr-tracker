@@ -4,4 +4,5 @@ declare class kunkka_torrent extends Ability {
 	public GetBaseActivationDelayForLevel(level: number): number
 	public GetBaseDamageForLevel(level: number): number
 	public GetCastDelay(_unit?: Unit | Vector3, _movement?: boolean, _directionalMovement?: boolean, _currentTurnRate?: boolean): number
+	public get AppliesUnitState(): bigint
 }

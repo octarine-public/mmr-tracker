@@ -59,6 +59,11 @@ declare class CDotaGameState extends CGameState {
 	public get CanDrawOverlays(): boolean
 	public GetLatency(flow?: Flow): number
 	public GetAvgLatency(flow?: Flow): number
+	/**
+	 * Seconds between an order leaving the client and the server acting on it, from the outgoing
+	 * latency; one tick on a listen server, where attacks measured on the demo map land exactly a
+	 * tick after the order is processed.
+	 */
 	public GetInputLag(latency: number): number
 }
 declare const GameState: CDotaGameState

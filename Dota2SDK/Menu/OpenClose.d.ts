@@ -20,6 +20,16 @@ declare namespace MenuSDK {
 		readonly blur: (t: number) => number
 	}
 	const OpenEffects: OpenEffect[]
+	/**
+	 * The open effect the menu is set to, for a surface that comes in on the window's own terms
+	 * without standing inside it - a HUD card that opens the way the menu does.
+	 *
+	 * @example
+	 * surface.Fade(ActiveOpenEffect().opacity(t))
+	 */
+	function ActiveOpenEffect(): OpenEffect
+	/** How long the menu's open motion runs at the designed pace, in ms. */
+	function OpenDuration(): number
 	/** True while the closing animation still needs the window mounted. */
 	function MenuMotionHolds(): boolean
 	/**

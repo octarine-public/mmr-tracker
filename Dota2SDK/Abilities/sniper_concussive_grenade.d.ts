@@ -5,4 +5,5 @@ declare class sniper_concussive_grenade extends Ability implements INuke {
 	public GetBaseAOERadiusForLevel(level: number): number
 	public GetBaseDamageForLevel(level: number): number
 	public GetBaseSpeedForLevel(_level: number): number
+	public get AppliesUnitState(): bigint
 }

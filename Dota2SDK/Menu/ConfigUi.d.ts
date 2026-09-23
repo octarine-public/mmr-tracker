@@ -40,12 +40,10 @@ declare namespace MenuSDK {
 	}>
 	/**
 	 * «a · b · c» fact line: dim, one row, separators drawn between non-empty parts.
-	 * `base` is the resting fill of the surface behind the line; a part that does not
-	 * fit dissolves into it instead of cutting off.
+	 * A part that does not fit fades out instead of cutting off.
 	 */
 	function Meta(props: {
 		items: MetaItem[]
-		base?: StyleColor
 		style?: RmlStyle
 	}): React.ReactElement | null
 	/** Section header above a list or panel: quiet title, count, right-side controls. */

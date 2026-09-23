@@ -52,6 +52,15 @@ declare namespace MenuSDK {
 		readonly dx?: number
 		readonly dy?: number
 		readonly duration?: number
+		/**
+		 * Ramps the theme's glass blur along with the fade, for a surface that frosts what stands
+		 * behind it. A backdrop filter does not answer to an element's own opacity, so a glass panel
+		 * popped in without this holds a frosted rectangle at full strength from its first frame and
+		 * then snaps away with the element. The element seeds `backdropFilter: "none"` in the style
+		 * React writes and carries the raster `border-radius` the filter is cut by; the fill it wears
+		 * is the one element in.
+		 */
+		readonly blur?: boolean
 	}
 	function PopIn(target: {
 		current: Nullable<HTMLElement>

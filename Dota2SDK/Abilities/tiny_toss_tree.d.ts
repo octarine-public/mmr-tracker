@@ -6,4 +6,6 @@ declare class tiny_toss_tree extends Ability implements INuke {
 	public GetBaseAOERadiusForLevel(level: number): number
 	public GetRawDamage(target: Unit): number
 	public GetDamage(target: Unit): number
+	public get TriggersSpellBlock(): boolean
+	public get CastRange(): number
 }

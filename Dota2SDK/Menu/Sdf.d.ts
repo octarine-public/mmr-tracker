@@ -82,6 +82,20 @@ declare namespace MenuSDK {
 	 * share. Palette-reactive, so re-apply it on render like every SDF fragment.
 	 */
 	function SdfPopoverTheme(radius: number): RmlStyle
+	/**
+	 * The same surface as glass: {@link SdfPopoverTheme}'s rim over the theme's own menu glass
+	 * instead of an opaque read of it, so the panel keeps whatever transparency the palette asks
+	 * for. A decorator cannot filter what stands behind it, and an unshaped backdrop filter frosts
+	 * a square, so the box around the fill carries the blur and the raster `border-radius` that
+	 * shapes it - the fill is the one element in, exactly as the driver flyout and the sub-settings
+	 * panel build it. Palette-reactive like every SDF fragment.
+	 *
+	 * @example
+	 * <div style={{ borderRadius: Radius * Theme.RadiusScale, backdropFilter: Tokens.GlassBlur }}>
+	 * 	<div style={SdfPopoverGlass(Radius)}>{children}</div>
+	 * </div>
+	 */
+	function SdfPopoverGlass(radius: number): RmlStyle
 	/** SdfRounded with live theme palette colors, resolved at call time. */
 	function SdfRoundedTheme(radius: number, fill: keyof IThemePalette, borderW?: number, borderColor?: keyof IThemePalette): RmlStyle
 }

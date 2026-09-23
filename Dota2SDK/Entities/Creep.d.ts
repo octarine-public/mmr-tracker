@@ -14,5 +14,7 @@ declare class Creep extends Unit {
 	public get RingRadius(): number
 	public get HealthBarSize(): Vector2
 	public get HealthBarPositionCorrection(): Vector2
+	/** A lane creep heads for the next corner of its lane; anything else follows its orders. */
+	protected get MovementDestination(): Nullable<Vector3>
 	public TryAssignLane(): void
 }

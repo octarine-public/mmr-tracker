@@ -5,4 +5,5 @@ declare class vengefulspirit_magic_missile extends Ability implements INuke {
 	public GetBaseSpeedForLevel(level: number): number
 	public GetBaseDamageForLevel(level: number): number
 	public GetRawDamage(target: Unit): number
+	public get AppliesUnitState(): bigint
 }

@@ -1,5 +1,5 @@
 // AUTO-GENERATED - do not edit.
-declare class Ability extends Entity {
+declare class Ability extends Entity implements IPredictionProfile {
 	public readonly AbilityData: AbilityData
 	public readonly AnimTime: number
 	public readonly IsInIndefiniteCooldown: boolean
@@ -28,7 +28,8 @@ declare class Ability extends Entity {
 	public AbilityChargeRestoreTimeRemaining: number
 	/** @deprecated use by index */
 	public AbilitySlot: EAbilitySlot
-	public Prediction: Nullable<any>
+	/** Profile version of this ability; grows with level, scepter, shard, facet and talents. */
+	public readonly Prediction: AbilityPrediction
 	/** @private NOTE: this is internal field, use IsInAbilityPhase */
 	public IsInAbilityPhase_: boolean
 	public IsInAbilityPhaseChangeTime: number
@@ -40,7 +41,53 @@ declare class Ability extends Entity {
 	public CooldownRestoreTime: number
 	/**@deprecated */
 	public readonly ProjectilePath: Nullable<string>
-	public get PredictionSkillShotType(): ESkillShotType
+	/**
+	 * The shape prediction places for the ability, read from its behavior, radius and speed at
+	 * the moment of the call: a vector cast is `Vector`, a point cast with a radius is `Line`
+	 * when it travels, `Cone` when it widens, `Circle` otherwise, a no-target cast with a radius
+	 * is `AreaOfEffect`, and unit targets, passives and attacks are `None`. A class overrides
+	 * this only for a shape the behavior cannot tell, such as an arc.
+	 */
+	public get SkillShotType(): ESkillShotType
+	/** Radius of the shape: the width of a line, the radius of a circle or an area of effect. */
+	public get Radius(): number
+	/**
+	 * Distance the effect travels from the caster: the flight distance a directional ability or
+	 * its class names, the cast range otherwise.
+	 */
+	public get Range(): number
+	/** Which units the projectile stops at on its way; `None` for one that flies through everything or has none. */
+	public get CollisionFlags(): CollisionFlag
+	/** Whose units the projectile collides with. */
+	public get CollisionTeam(): CollisionTeam
+	/** The unit states the ability puts on what it hits, as a `modifierstate` mask; zero when it applies none. */
+	public get AppliesUnitState(): bigint
+	/**
+	 * Whether the projectile hits with a flat front as wide as the effect rather than a round
+	 * head: a wave reaches a unit when its front line passes it, a bolt when its head touches it.
+	 */
+	public get FlatFront(): boolean
+	/**
+	 * Units the hitting front runs ahead of the projectile the game reports; zero for one that
+	 * hits where it is. A wave that widens harms from its leading edge, which stands its end
+	 * radius ahead of that point: measured on the demo, Breathe Fire hit a unit 597 and 425
+	 * away with its reported point 247 and 294 short of it, a tick either side of its 250
+	 * unit end radius.
+	 */
+	public get FrontLead(): number
+	public get IsDodgeableProjectile(): boolean
+	/** Whether the target's status resistance shortens the ability's durations; off for the few the game exempts. */
+	public get IsAffectedByStatusResistance(): boolean
+	/** Whether casting at an enemy unit is eaten by Linken's Sphere or Lotus Orb: a targeted, non-attack ability aimed at enemy heroes or units. */
+	public get TriggersSpellBlock(): boolean
+	/** Seconds the cast animation holds the caster after the cast point; zero without animation data. */
+	public get CastBackswing(): number
+	/** Whether a cast `CastPredicted` sent is still before its cast point, where a stop order can take it back. */
+	public get IsCastPending(): boolean
+	/** A prediction the class runs instead of the core, built from the same primitives; `undefined` by default. */
+	public get PredictionStrategy(): Nullable<IPredictionStrategy>
+	/** Seconds the ability's effect lasts on `target`: the base duration, cut by the target's status resistance where the game applies it. */
+	public GetAppliedDuration(target: Unit): number
 	public get ProjectileAttachment(): string
 	public get CastDelay(): number
 	public get IsInvisibility(): boolean
@@ -66,6 +113,7 @@ declare class Ability extends Entity {
 	public get IsInnate(): boolean
 	public get IsDispellable(): boolean
 	public get IsInnateHidden(): boolean
+	/** Radius the shape ends with: the wide end of a cone when the class names it, the radius otherwise. */
 	public get EndRadius(): number
 	public get CastPoint(): number
 	public get ActivationDelay(): number
@@ -136,18 +184,96 @@ declare class Ability extends Entity {
 	public GetBaseHealthCostForLevel(level: number): number
 	public GetCastRangeForLevel(level: number): number
 	public GetBaseCastRangeForLevel(level: number): number
+	/** Delay between the cast point and the effect; a class names the key value it comes from. */
 	public GetBaseActivationDelayForLevel(_level: number): number
+	/** Projectile speed; a class names the key value it comes from. */
 	public GetBaseSpeedForLevel(_level: number): number
+	/** Radius of the shape; a class names the key value it comes from, and without one the ability has no shape. */
 	public GetBaseAOERadiusForLevel(_level: number): number
 	public GetBaseMinAOERadiusForLevel(_level: number): number
+	/** Flight distance of the effect when it is not the cast range; a class names the key value it comes from. */
+	public GetBaseRangeForLevel(_level: number): number
 	public GetBaseChannelTimeForLevel(level: number): number
 	public GetCastDelay(unit?: Unit | Vector3, movement?: boolean, directionalMovement?: boolean, currentTurnRate?: boolean): number
 	public GetHitTime(unit: Unit | Vector3, movement?: boolean, directionalMovement?: boolean, currentTurnRate?: boolean): number
 	/**
+	 * How a cast at `target` issued now plays out, stretch by stretch; see `CastTimeline`. The
+	 * approach walks the grid to the nearest point in cast range, the turn follows the caster's
+	 * turn data, and a unit target is aimed at where it will be when the effect lands.
+	 * @example
+	 * const timeline = ability.GetCastTimeline(enemy)
+	 * const landsAt = GameState.RawGameTime + timeline.HitTime
+	 */
+	public GetCastTimeline(target: Unit | Vector3, options?: ICastTimelineOptions, out?: CastTimeline): CastTimeline
+	/**
+	 * Whether the ability can be cast at the game time `time`: levelled and usable, off cooldown
+	 * and with a charge by then, enough mana by the owner's regeneration, and no stun, hex,
+	 * silence or root known to last past it that the ability does not ignore.
+	 */
+	public CanBeCastedAt(time: number): boolean
+	/**
+	 * Whether the ability may be aimed at `unit` right now: its target team, type and flags,
+	 * and the unit's immunities. Whether the effect still affects the unit when it lands is
+	 * `CanHitAt`.
+	 */
+	public CanTarget(unit: Unit): boolean
+	/**
+	 * Whether the effect landing at the game time `time` affects `target`: alive, not
+	 * invulnerable or immune by then, and not behind a spell block it would trigger.
+	 */
+	public CanHitAt(target: Unit, time: number): boolean
+	/** The prediction's timeline: `GetCastTimeline` at `target` into `out`. */
+	public Timeline(target: IPredictionTarget | Vector3, out: CastTimeline): CastTimeline
+	/** Seconds the effect needs from `from` to `to`: the projectile flight rounded up to a tick, zero without one. */
+	public GetTravelTime(from: Vector3, to: Vector3): number
+	/** Where the effect really lands for the placement in `output`; the target's predicted position by default. */
+	public GetHitPosition(output: PredictionOutput): Vector3
+	/**
+	 * The shape the placement in `output` covers over time, from the profile: a line as a
+	 * capsule with a running front, a cone as a trapezoid that widens as its front runs, a
+	 * circle and an area as discs, a vector cast as a rectangle from the cast point along its
+	 * direction. A cone with no speed of its own appears whole.
+	 */
+	public GetShapeTimeline(input: PredictionInput, output: PredictionOutput): IShapeTimeline
+	/** Changes the prediction's input before the core runs; nothing by default. */
+	public ModifyInput(_input: PredictionInput): void
+	/** Changes the prediction's output after the core ran; nothing by default. */
+	public ModifyOutput(_output: PredictionOutput): void
+	/**
+	 * Predicts one cast. The mode follows the ability's profile of this moment: a unit target
+	 * gets its timeline and hit check, a point cast with a shape gets the shape placed on where
+	 * the target will be, an area around the caster asks who will be inside. Without a target
+	 * the best placement over every unit in reach is found.
+	 * @example
+	 * const output = hook.Predict(enemy)
+	 * if (output.HitChance >= EHitChance.High) {
+	 * 	hook.UseAbility(output.CastPosition)
+	 * }
+	 */
+	public Predict(target?: Unit | Vector3, options?: IPredictOptions, out?: PredictionOutput): PredictionOutput
+	/**
+	 * Predicts and casts when the ability can be cast now and the prediction is good enough:
+	 * `HitChance` at least `MinHitChance` and the shape covering at least `MinTargets` units.
+	 * Returns the prediction when the order went out, `undefined` when it did not. Called again
+	 * while the cast is still before its cast point, it sends no new order: it predicts afresh
+	 * and takes the cast back with a stop order when the target has left what the cast covers,
+	 * so a caller that calls it every tick guards its own casts.
+	 * @example
+	 * if (hook.CastPredicted(enemy, { MinHitChance: EHitChance.High }) !== undefined) {
+	 * 	return
+	 * }
+	 */
+	public CastPredicted(target?: Unit | Vector3, options?: IPredictOptions): Nullable<PredictionOutput>
+	/**
 	 * @description Returns the raw damage of the ability without any amplification
 	 */
 	public GetRawDamage(_target: Unit): number
-	public GetDamage(target: Unit): number
+	/**
+	 * Damage the ability deals to `target` after its armor, resistances, amplification and
+	 * blocks. Inside a sequence, `context` says the shields and barriers are already spent, so
+	 * they are not taken off again.
+	 */
+	public GetDamage(target: Unit, context?: IDamageContext): number
 	public UseAbility(target?: Vector3 | Entity, checkAutoCast?: boolean, checkToggled?: boolean, queue?: boolean, showEffects?: boolean): void | undefined
 	public UpgradeAbility(): void | undefined
 	public PingAbility(): void | undefined

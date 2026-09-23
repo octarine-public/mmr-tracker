@@ -3,7 +3,6 @@ declare class item_soul_ring extends Item implements IHealthCost, IManaRestore<U
 	public readonly RestoresAlly = false
 	public readonly RestoresSelf = true
 	public readonly InstantRestore = true
-	public get HealthCost(): number
 	public GetManaRestore(_target: Unit): number
 	public IsHealthCost(): this is IHealthCost
 	public IsManaRestore(): this is IManaRestore<Unit>

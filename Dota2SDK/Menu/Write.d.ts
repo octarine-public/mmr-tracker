@@ -44,16 +44,30 @@ declare namespace MenuSDK {
 	 * not hold reads soft however well the chain was built; a source minted for that box is cut once,
 	 * straight to it, and an element that only moved re-mints nothing.
 	 *
-	 * Sizes are in whole screen pixels, not dp. An empty path clears the element. What the source was
+	 * Sizes and radius are in screen pixels, not dp. Radius defaults to zero and is baked into
+	 * raster artwork; the element keeps no second rounded clip. Sources that cannot be baked keep
+	 * their radius on the element. An empty path clears the element. What the source was
 	 * minted from rides the element, so the one it replaces is handed back only once the new one is
 	 * registered - a host counts the holders of a source, and dropping the last one first would free
 	 * artwork the element is still drawing. An element the document lets go of is passed to
 	 * {@link ReleaseSizedArt}.
 	 *
+	 * The host cuts a copy in the background after it is minted, and an element that loads it
+	 * before it is cut is painted with nothing, or with a plain colour, and never asks again. So the
+	 * element takes a copy only once the host has it decoded, and keeps what it showed until then,
+	 * nothing where it showed nothing: {@link SettleSizedArt} lands the copy at the end of the frame
+	 * it is ready, whether or not the element is written again.
+	 *
 	 * @example
 	 * WriteSizedArt(icon, ability.TexturePath, size, size)
 	 */
-	function WriteSizedArt(element: HTMLElement, path: string, width: number, height: number): void
+	function WriteSizedArt(element: HTMLElement, path: string, width: number, height: number, radius?: number): void
+	/**
+	 * Lands the copies the host has cut on the elements waiting for them, once a frame after everything
+	 * has drawn: an element written once and then left alone would otherwise wait for ever. An element
+	 * the document has let go of in the meantime hands its copy back instead of being written.
+	 */
+	function SettleSizedArt(): void
 	/**
 	 * Hands the source an element took from {@link WriteSizedArt} back to the host, for an element the
 	 * document has let go of. An element still standing keeps its own until its artwork or its box

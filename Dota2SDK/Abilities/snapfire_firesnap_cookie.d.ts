@@ -6,4 +6,5 @@ declare class snapfire_firesnap_cookie extends Ability {
 	public GetBaseAOERadiusForLevel(level: number): number
 	public GetBaseDamageForLevel(level: number): number
 	public GetCastDelay(unit?: Unit | Vector3, movement?: boolean, directionalMovement?: boolean, currentTurnRate?: boolean): number
+	public get AppliesUnitState(): bigint
 }

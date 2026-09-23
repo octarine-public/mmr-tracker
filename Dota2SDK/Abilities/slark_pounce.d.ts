@@ -9,4 +9,7 @@ declare class slark_pounce extends Ability {
 	public GetBaseAOERadiusForLevel(level: number): number
 	public GetBaseCastRangeForLevel(level: number): number
 	public GetHitTime(unit: Unit | Vector3, movement?: boolean, directionalMovement?: boolean, currentTurnRate?: boolean): number
+	public get CollisionFlags(): CollisionFlag
+	public get CollisionTeam(): CollisionTeam
+	public get CastRange(): number
 }

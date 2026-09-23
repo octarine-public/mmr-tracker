@@ -9,4 +9,5 @@ declare class techies_suicide extends Ability implements INuke {
 	public GetBaseDamageForLevel(level: number): number
 	public GetBaseActivationDelayForLevel(level: number): number
 	public GetRawDamage(target: Unit): number
+	public get AppliesUnitState(): bigint
 }

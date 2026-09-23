@@ -5,4 +5,5 @@ declare class brewmaster_cinder_brew extends Ability implements INuke {
 	public GetBaseAOERadiusForLevel(level: number): number
 	public GetBaseDamageForLevel(level: number): number
 	public GetBaseSpeedForLevel(level: number): number
+	public GetBaseActivationDelayForLevel(_level: number): number
 }

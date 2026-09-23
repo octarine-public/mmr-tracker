@@ -4,4 +4,5 @@ declare class sniper_assassinate extends Ability implements INuke {
 	public IsNuke(): this is INuke
 	public GetBaseSpeedForLevel(level: number): number
 	public GetBaseCastPointForLevel(level: number): number
+	public get AppliesUnitState(): bigint
 }

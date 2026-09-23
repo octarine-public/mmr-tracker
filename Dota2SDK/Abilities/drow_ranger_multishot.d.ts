@@ -8,4 +8,6 @@ declare class drow_ranger_multishot extends Ability implements INuke {
 	public GetBaseSpeedForLevel(level: number): number
 	public GetBaseAOERadiusForLevel(level: number): number
 	public GetBaseDamageForLevel(level: number): number
+	public get CastRange(): number
+	public get Range(): number
 }

@@ -4,4 +4,5 @@ declare class pangolier_gyroshell extends Ability {
 	public get HitRadius(): number
 	public GetBaseAOERadiusForLevel(level: number): number
 	public GetBaseSpeedForLevel(level: number): number
+	public GetMaxDurationForLevel(level: number): number
 }

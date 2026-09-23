@@ -7,4 +7,5 @@ declare class troll_warlord_whirling_axes_ranged extends Ability implements INuk
 	public GetBaseSpeedForLevel(level: number): number
 	public GetBaseAOERadiusForLevel(level: number): number
 	public GetBaseDamageForLevel(level: number): number
+	public get AbilityBehaviorMask(): DOTA_ABILITY_BEHAVIOR
 }

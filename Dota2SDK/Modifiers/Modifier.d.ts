@@ -42,6 +42,8 @@ declare class Modifier {
 	public Parent: Nullable<Unit>
 	public Ability: Nullable<Ability>
 	public Caster: Nullable<Unit>
+	/** The displacement the modifier carries its bearer through while it lasts, made by `CreateMotion` when the modifier appears. */
+	public Motion: Nullable<Motion>
 	public AuraOwner: Nullable<Unit>
 	public IsValid: boolean
 	public HasVisualShield: boolean
@@ -59,6 +61,11 @@ declare class Modifier {
 	public get DieTime(): number
 	public get ElapsedTime(): number
 	public get RemainingTime(): number
+	/**
+	 * Seconds the modifier still has at the game time `time`: zero once it has expired,
+	 * `Infinity` for one without a duration.
+	 */
+	public RemainingAt(time: number): number
 	public get DDModifierID(): Nullable<number>
 	public get vStart(): Vector4
 	public get vEnd(): Vector4
@@ -68,6 +75,21 @@ declare class Modifier {
 	public Update(force?: boolean): void
 	public GetTexturePath(): string
 	public IsEnemy(ent?: Entity): boolean
+	/**
+	 * Whether the modifier keeps its bearer alive through `damageType` right now, the way
+	 * Shallow Grave, Borrowed Time or a ready Reincarnation do.
+	 */
+	public PreventsDeath(_damageType: DAMAGE_TYPES): boolean
+	/** Centre a leash holds its bearer around, such as Slark or the arena; `undefined` for a modifier that is no leash. */
+	/**
+	 * The displacement the modifier carries its bearer through, made once when the modifier
+	 * appears: a push, a pull or a dash with its start, end and timing; `undefined` for one that
+	 * moves nothing. The movement prediction of the bearer follows it while it lasts.
+	 */
+	public CreateMotion(): Nullable<Motion>
+	public get LeashAnchor(): Nullable<Vector3>
+	/** Distance from `LeashAnchor` the bearer cannot leave; zero for a modifier that is no leash. */
+	public get LeashRadius(): number
 	public IsBuff(): this is IBuff
 	public IsDebuff(): this is IDebuff
 	public IsDisable(): this is IDisable

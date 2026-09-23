@@ -224,14 +224,13 @@ declare namespace MenuSDK {
 		children?: React.ReactNode
 	}): React.ReactElement
 	/**
-	 * Single-line label that hides overflow behind a fading edge instead of a hard cut.
-	 * The fade is an overlay running from transparent into `base` — the resting fill of
-	 * the surface behind the label — and it appears only when the text is measured to
-	 * actually overflow; text that fits keeps a clean edge.
+	 * Single-line label whose overflow fades out through the text itself instead of ending at a
+	 * hard cut: the renderer dissolves the glyphs into the clipped edge over a stretch that grows
+	 * with how far the text runs past it, so a letter cut by a pixel loses only its last pixels
+	 * softly and one cut in half melts away. Nothing is painted over the text and no layer is
+	 * composited; text that fits keeps a clean edge.
 	 */
 	function FadeLabel(props: {
-		/** Resting background behind the clipped edge; the overlay dissolves into it. */
-		base: StyleColor
 		/** Ref to the clipping element, for callers that also measure or hint from it. */
 		labelRef?: React.RefObject<HTMLElement>
 		className?: string
@@ -241,7 +240,7 @@ declare namespace MenuSDK {
 		children?: React.ReactNode
 	}): React.ReactElement
 	/**
-	 * Single-line label that hides overflow behind a fading edge and, while `active`, scrolls the line
+	 * Single-line label whose overflow fades out through the text and, while `active`, scrolls the line
 	 * so the whole of it can be read where it stands: it waits at its head, travels far enough to bring
 	 * the tail in, waits there and comes back, for as long as the row asks. A line that fits is left
 	 * alone and costs nothing — the row it sits in is what says when to read, so a preset row scrolls
@@ -249,30 +248,17 @@ declare namespace MenuSDK {
 	 *
 	 * The travel is one transform written by a tween, so nothing around the label lays out again while
 	 * it reads, and it is snapped to whole screen pixels — a line resting between two of them is what
-	 * makes glyphs shimmer as they move. Both edges carry a scrim dissolving into `base`, the resting
-	 * fill of the surface behind the label, and they follow the travel: the head's comes up as the line
-	 * leaves, the tail's goes out as it arrives. A surface that lights up under the pointer names what
-	 * it reads as then in `litBase` and says so with `lit`: the scrims cross to it at the pace the
-	 * hover fill rises, so they never stand out as a block of the resting colour over a lit row.
+	 * makes glyphs shimmer as they move. The renderer dissolves the glyphs themselves into both edges,
+	 * over a stretch that grows with how far the line runs past each one, so the surface behind the
+	 * label shows through whatever it is painted at the moment, and the fades follow the travel: the
+	 * head's comes up as the line leaves, the tail's goes out as it arrives.
 	 *
 	 * @example
-	 * <ScrollLabel
-	 *     base={Theme.ValueOf("WindowBg")}
-	 *     litBase={overHex(Theme.ValueOf("WindowBg"), Theme.ValueOf("NavRowHover"))}
-	 *     lit={hovered}
-	 *     active={hovered}
-	 *     style={{ flex: "0 1 auto" }}
-	 * >
+	 * <ScrollLabel active={hovered} style={{ flex: "0 1 auto" }}>
 	 *     {name}
 	 * </ScrollLabel>
 	 */
 	function ScrollLabel(props: {
-		/** Resting background behind the clipped edges; the scrims dissolve into it. */
-		base: StyleColor
-		/** What the background reads as while `lit`; the scrims dissolve into this one then. */
-		litBase?: StyleColor
-		/** Whether the surface behind the label is showing its hover fill. */
-		lit?: boolean
 		/** Scrolls a line that does not fit while true, and sends it home when it goes false. */
 		active: boolean
 		className?: string
@@ -282,6 +268,8 @@ declare namespace MenuSDK {
 	function Icon(props: {
 		path: string
 		size?: number
+		width?: number
+		height?: number
 		tint?: StyleColor
 		round?: number
 		className?: string

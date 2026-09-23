@@ -8,12 +8,33 @@ declare namespace MenuSDK {
 		readonly message: string
 		/** How many seconds the notification stays visible. Defaults to 4; zero keeps it visible. */
 		readonly duration?: number
-		/** Image set on the card's chip, such as a hero portrait. */
+		/**
+		 * Image set on the card's chip, such as a hero portrait. Under {@link SetNotificationStrip} it
+		 * is the emblem set whole in the art strip instead, on a wash of the accent.
+		 */
 		readonly titleIcon?: string
-		/** Full-size images shown side by side in place of the title chip. Takes precedence over titleIcon. */
+		/**
+		 * Full-size images shown side by side in place of the title chip, or sharing the art strip
+		 * under {@link SetNotificationStrip}. Takes precedence over titleIcon.
+		 */
 		readonly titleIcons?: readonly string[]
-		/** Color multiplied into the title icon; omitted to preserve the source artwork. */
+		/**
+		 * Color multiplied into the title icon; omitted to preserve the source artwork. In the art
+		 * strip a vector glyph left untinted wears the accent.
+		 */
 		readonly titleIconColor?: Color
+		/**
+		 * Hero art laid down the card's left edge at full height and melting into the glass: the
+		 * cover layout, which takes the place of the title chips. Kept rectangular, so a face keeps
+		 * the framing its artwork gave it instead of what a circle leaves of it.
+		 */
+		readonly portrait?: string
+		/**
+		 * A small image on the portrait's lower right corner, in an item icon's own proportions and
+		 * drawn whole: the scroll a teleport was cast with, the item that was picked up. Only drawn
+		 * on the art strip, which a portrait brings and {@link SetNotificationStrip} gives every card.
+		 */
+		readonly badge?: string
 		/** Image shown beside the message, such as a rune or ability icon. */
 		readonly messageIcon?: string
 		/**
@@ -67,6 +88,16 @@ declare namespace MenuSDK {
 	 * ])
 	 */
 	function SetNotificationSamples(next: () => readonly INotificationSample[]): void
+	/**
+	 * Gives every card the art strip a portrait card has, for a game whose cards should all share
+	 * that one layout: a card without a portrait carries its title icons there as emblems on a wash
+	 * of the accent, or the notification bell when it names none, and its title, message and bar
+	 * stand where a portrait card has them. Left off, such a card keeps its round chips.
+	 *
+	 * @example
+	 * SetNotificationStrip(true)
+	 */
+	function SetNotificationStrip(enabled: boolean): void
 	const Notifications: INotifications
 	/**
 	 * Joins the notifications to the host's frame and input. The bootstrap calls it once the menu

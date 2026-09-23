@@ -6,4 +6,6 @@ declare class zuus_cloud extends Ability implements INuke {
 	public GetMaxDurationForLevel(level: number): number
 	public GetBaseDamageForLevel(_level: number): number
 	public GetRawDamage(target: Unit): number
+	public get AppliesUnitState(): bigint
+	public get CastRange(): number
 }

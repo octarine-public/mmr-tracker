@@ -4,4 +4,5 @@ declare class centaur_double_edge extends Ability implements INuke {
 	public GetRawDamage(target: Unit): number
 	public GetBaseAOERadiusForLevel(level: number): number
 	public GetBaseDamageForLevel(level: number): number
+	public get CastRange(): number
 }
