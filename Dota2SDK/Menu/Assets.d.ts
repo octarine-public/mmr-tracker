@@ -3,6 +3,13 @@ declare namespace MenuSDK {
 	type AssetMode = "raster" | "vector"
 	function SetAssetResolver(next: (path: string) => string): void
 	/**
+	 * Registers the host's rule for art whose shape is its alpha alone. A game's ability icons are
+	 * such silhouettes, and the colour under them is whatever each source file held, black in a few
+	 * and white in most; a path the rule claims is loaded white on alpha, so every one of them reads
+	 * the same and takes a tint the same way.
+	 */
+	function SetMonochromeArt(next: (path: string) => boolean): void
+	/**
 	 * Element tag for a resolved asset: <svg> (SVG plugin) rasterizes the vector
 	 * source at the exact display size, <img> decodes a raster texture.
 	 */

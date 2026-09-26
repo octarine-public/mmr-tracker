@@ -156,6 +156,11 @@ declare interface Camera {
 
 declare function SendToConsole(command: string): void
 /**
+ * Runs the command through the game's own console, as if typed there.
+ * @returns false when the engine client could not be resolved
+ */
+declare function SendToConsole2(command: string): boolean
+/**
  * @param path pass empty to read from confings/../settings.json
  */
 declare function readConfig(): Promise<string>
@@ -542,4 +547,27 @@ declare namespace Chams {
 
 	function RemoveEntity(customId: number): void
 	function ClearEntities(): void
+}
+
+/**
+ * The local team's fog of war, read straight out of the game's own visibility grid. Only X and Y
+ * of a position are looked at: the grid is flat, height is already baked into it.
+ *
+ * Every call answers `false` / `0` before the map has loaded.
+ */
+declare namespace FogOfWar {
+	/**
+	 * Whether any grid tile within `radius` of the point is visible. `radius` of 1 or less tests
+	 * the single tile under the point, which is the plain "is this spot in fog" question.
+	 * @example
+	 * FogOfWar.IsPointVisible(enemy.Position)
+	 * FogOfWar.IsPointVisible(wardSpot, 300)
+	 */
+	function IsPointVisible(position: Vector3, radius?: number): boolean
+
+	/** Whether any grid tile inside the rectangle the two corners span is visible; they may come in either order. */
+	function IsBoxVisible(mins: Vector3, maxs: Vector3): boolean
+
+	/** How visible the tile under the point is, from 0 in fog to 1 in full vision; the game treats above 0.2 as seen. */
+	function GetVisibilityDegree(position: Vector3): number
 }

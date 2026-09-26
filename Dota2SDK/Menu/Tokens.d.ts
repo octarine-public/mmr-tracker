@@ -5,6 +5,7 @@ declare namespace MenuSDK {
 		AccentMuted: string
 		AccentSurface: string
 		PopoverBg: string
+		WindowBlur: string
 		AccentA6: string
 		AccentA15: string
 		AccentA25: string

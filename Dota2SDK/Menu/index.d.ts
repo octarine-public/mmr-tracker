@@ -92,34 +92,6 @@ declare namespace MenuSDK {
 		divider: boolean
 		nested?: boolean
 	}): React.ReactElement
-	function TextField(props: {
-		entry: TextEntry
-		style?: RmlStyle
-		radius?: number
-		leadIcon?: string
-		placeholder?: string
-		/**
-		 * Laid-out width of the field in dp. A placeholder that does not fit the remaining room is
-		 * shortened with an ellipsis while retaining the field's own wording.
-		 */
-		width?: number
-		/**
-		 * Drops the field's own chrome — the surface fill, border, focus ring and horizontal
-		 * padding — so typing starts where the host lays the field out. For hosts that draw
-		 * the surroundings themselves, like the search modal's input row.
-		 */
-		bare?: boolean
-		/**
-		 * Paints the border in the danger tone while the entered value is known to be rejected —
-		 * a share code the server refused. The host derives it from the current text, so the
-		 * tint clears as soon as the value is edited.
-		 */
-		invalid?: boolean
-		/** The longest text the field takes: what is typed past it is cut and the field snaps back. */
-		maxLength?: number
-		autoFocus?: boolean
-		onKeyDown?: (event: Event) => boolean
-	}): React.ReactElement
 	function TextInputRow(props: {
 		entry: TextEntry
 		divider: boolean

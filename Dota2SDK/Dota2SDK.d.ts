@@ -17,6 +17,7 @@ declare const Dota2SDK: {
 	readonly Building: typeof Building
 	readonly CCameraBounds: typeof CCameraBounds
 	readonly CCustomHeroPickRules: typeof CCustomHeroPickRules
+	readonly CDotaSafeMode: typeof CDotaSafeMode
 	readonly CGameManager: typeof CGameManager
 	readonly CGameRules: typeof CGameRules
 	readonly CNotificationsSDK: typeof CNotificationsSDK
@@ -67,6 +68,7 @@ declare const Dota2SDK: {
 	readonly DotaMap: typeof DotaMap
 	readonly DotaNetworkedParticle: typeof DotaNetworkedParticle
 	readonly DotaParticles: typeof DotaParticles
+	readonly DotaSafeMode: typeof DotaSafeMode
 	readonly EAbilitySlot: typeof EAbilitySlot
 	readonly EBlinkType: typeof EBlinkType
 	readonly EDOTASpecialBonusOperation: typeof EDOTASpecialBonusOperation

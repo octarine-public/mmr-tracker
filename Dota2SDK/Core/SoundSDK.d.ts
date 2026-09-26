@@ -35,7 +35,8 @@ declare class CSoundSDK {
 	 *
 	 * @param origin names the script in the engine's parser errors and keys its events, so
 	 * registering the same origin again replaces exactly what it registered before
-	 * @returns whether every event the script declares was registered
+	 * @returns whether the script was taken. Its events are registered before any sound requested
+	 * after this call plays; a script that does not parse is reported in the log instead
 	 * @example
 	 * const script = fread("soundevents/octarine/test.vsndevts", false)!
 	 * SoundSDK.RegisterSoundEvents(script, "octarine/test")
@@ -47,7 +48,7 @@ declare class CSoundSDK {
 	 * Registering the same origin again already replaces them, so this is for taking them away
 	 * for good — a script unloading, or a feature the user turned off.
 	 *
-	 * @returns whether that origin had anything registered
+	 * @returns whether a script was taken under that origin and not dropped since
 	 * @example
 	 * SoundSDK.UnregisterSoundEvents("octarine/test")
 	 */

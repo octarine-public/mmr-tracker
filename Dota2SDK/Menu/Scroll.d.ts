@@ -6,6 +6,16 @@ declare namespace MenuSDK {
 		public ScrollBy(deltaPx: number): void
 		public ScrollTo(offsetPx: number): void
 		/**
+		 * Keeps the area scrolling at `speedDp` dp a second, positive towards the end, until told
+		 * otherwise — for a drag held against the area's edge, which has to go on scrolling while the
+		 * pointer stands still. `onStep` hears every step, so whatever the drag carries can keep its
+		 * place under the pointer. A speed of 0 stops it.
+		 *
+		 * @example
+		 * scroller.Drift(pointerY > bottom - Edge ? 400 : 0, () => follow())
+		 */
+		public Drift(speedDp: number, onStep?: () => void): void
+		/**
 		 * Puts the offset back where an area was left, as soon as there is content to scroll
 		 * through: a freshly mounted area has not been laid out yet, so placing it right away
 		 * would clamp it to the top. The attempt gives up once the content settles shorter than

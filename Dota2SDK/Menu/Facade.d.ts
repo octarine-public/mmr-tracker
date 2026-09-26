@@ -832,6 +832,12 @@ declare namespace MenuSDK {
 		 */
 		public get DisabledNotice(): Nullable<DisabledNotice>
 		public set DisabledNotice(value: Nullable<DisabledNotice>)
+		/**
+		 * Draws the node's body instead of its rows: the whole page of a page node, the body of the
+		 * card a section node stands as, or the panel of a node opened from a settings gear
+		 * ({@link AddSubSettings}). The rows stay declared and saved as usual, so a custom body can
+		 * still lay any of them out through `RenderControl`.
+		 */
 		public get CustomPage(): Nullable<() => React.ReactNode>
 		public set CustomPage(value: Nullable<() => React.ReactNode>)
 		/**

@@ -15,6 +15,12 @@ declare namespace MenuSDK {
 		readonly resolveAsset?: (path: string) => string
 		readonly resolveImage?: (value: string) => string
 		/**
+		 * Whether `path` is art whose shape is its alpha alone, to be loaded white on alpha. A game's
+		 * ability icons are such silhouettes, and the colour under them is whatever each source file
+		 * held; a host that does not answer loads every image as it is.
+		 */
+		readonly monochromeArt?: (path: string) => boolean
+		/**
 		 * The hero behind an ability name, where the name is a hero's own ability rather than an
 		 * item: the hero's data name — {@link MenuHost.resolveImage} turns it into their portrait —
 		 * and the number of the button that casts it, 1 to 4. A window's sidebar shows it as a

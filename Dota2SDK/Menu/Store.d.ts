@@ -71,6 +71,11 @@ declare namespace MenuSDK {
 	 */
 	function CopyPresetSettings(entry: PresetsEntry, fromIndex: number, toIndex: number): void
 	function RemovePreset(entry: PresetsEntry, index: number): void
+	/**
+	 * Moves a preset to another place in the list. The base preset stays first, so neither index may
+	 * be 0, and the selection stays on the preset it was on wherever that one lands.
+	 */
+	function MovePreset(entry: PresetsEntry, from: number, to: number): void
 	/** Renames a preset; an empty name or one another preset already carries is ignored. */
 	function RenamePreset(entry: PresetsEntry, index: number, name: string): void
 	/**
@@ -338,6 +343,12 @@ declare namespace MenuSDK {
 	function ReleaseEntryDriver(entry: DriverHolder, driver: EntryDriver): void
 	function SetFocusedText(entry: Nullable<TextEntry>): void
 	function FocusedText(): Nullable<TextEntry>
+	/**
+	 * A detached text entry that stands for a raw `<input>` owned by no menu row. Hand it to
+	 * {@link SetFocusedText} while the input holds focus: the host routes key presses (Enter,
+	 * Escape, Backspace, arrows) to the document only while some text field counts as focused.
+	 */
+	function FocusMarker(): TextEntry
 	function SetPanicMode(value: boolean): void
 	function IsPanicMode(): boolean
 	/**
