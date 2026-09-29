@@ -3,5 +3,13 @@
 	"Key": "Клавиша",
 	"Tracker": "Трекер",
 	"MMR Tracker": "Трекер MMR",
-	"Key turn on/off panel": "Клавиша вкл/выкл панели"
+	"Key turn on/off panel": "Клавиша вкл/выкл панели",
+	"Games in history": "Игр в истории",
+	"How many recent ranked games\nthe panel lists when opened": "Сколько последних рейтинговых игр\nпоказывает раскрытая панель",
+	"Recent games": "Последние игры",
+	"Ranked match": "Рейтинговая игра",
+	"No ranked games yet": "Пока нет рейтинговых игр",
+	"min ago": "мин назад",
+	"h ago": "ч назад",
+	"d ago": "дн. назад"
 }

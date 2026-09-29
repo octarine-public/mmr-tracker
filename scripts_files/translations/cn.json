@@ -3,5 +3,13 @@
 	"Key": "按键",
 	"Tracker": "追踪器",
 	"MMR Tracker": "MMR 追踪器",
-	"Key turn on/off panel": "开关面板的按键"
+	"Key turn on/off panel": "开关面板的按键",
+	"Games in history": "历史场次",
+	"How many recent ranked games\nthe panel lists when opened": "展开面板时列出的\n最近天梯比赛场数",
+	"Recent games": "最近的比赛",
+	"Ranked match": "天梯比赛",
+	"No ranked games yet": "暂无天梯比赛",
+	"min ago": "分钟前",
+	"h ago": "小时前",
+	"d ago": "天前"
 }
