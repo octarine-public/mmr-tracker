@@ -64,6 +64,10 @@ declare namespace MenuSDK {
 	const DefaultGlowSize = 10
 	/** How much of the accent a glow keeps by default. */
 	const DefaultGlowStrength = 0.35
+	/** Seconds one turn of the walking color takes by default. */
+	const DefaultGlowSpeed = 6
+	/** How far the walking color is from grey by default. */
+	const DefaultGlowSaturation = 0.8
 	/**
 	 * The range the walking light's speed, in seconds per turn, and its saturation are held to: what
 	 * the controls offer, and what a stored or shared theme is read into.
@@ -71,6 +75,16 @@ declare namespace MenuSDK {
 	const GlowStyleRange: {
 		readonly speed: readonly [1, 30]
 		readonly saturation: readonly [0.2, 1]
+	}
+	/** What the glow lights with, beyond the reach and strength the seeds carry. */
+	interface IThemeGlowStyle {
+		mode: EGlowColor
+		/** The color {@link EGlowColor.Custom} lights with. */
+		color: string
+		/** Seconds one turn of the walking color takes. */
+		speed: number
+		/** How far the walking color is from grey, 0 to 1. */
+		saturation: number
 	}
 	/**
 	 * What a quad has to reach past the shape it carves for a halo `width` wide to fit outside it:

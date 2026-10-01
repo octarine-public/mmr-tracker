@@ -122,6 +122,16 @@ declare namespace MenuSDK {
 		public Clip(text: string, maxWidth: number, size: number, weight?: number, family?: string): string
 		public Left(x: number, centerY: number, text: string, size: number, color: Color, weight?: number, effect?: EHudTextEffect, family?: string, effectOpacity?: number): number
 		/**
+		 * A line held to a box `width` px wide instead of clipped to a prefix: what does not fit is cut
+		 * by the box itself and its glyphs dissolve into the edge they are cut at, the way the menu's
+		 * labels end. `offset` scrolls the line that many px towards its tail, and the head dissolves
+		 * into the other edge as it leaves. {@link HudMarquee} drives the offset for a line that is read
+		 * by travelling it.
+		 *
+		 * @returns how far the line runs past its box, in px, and so the furthest `offset` can take it
+		 */
+		public Fit(x: number, centerY: number, width: number, text: string, offset: number, size: number, color: Color, weight?: number, effect?: EHudTextEffect): number
+		/**
 		 * Centred inside a box the caller already sized - a chip, a cell - rather than at a computed
 		 * offset. Widths here are measured with the digits replaced by zeroes so a counter does not
 		 * reflow, and a zero is wider than a one: left-aligning inside that slack piles it all on one
@@ -136,6 +146,31 @@ declare namespace MenuSDK {
 		public Right(rightX: number, centerY: number, text: string, size: number, color: Color, weight?: number, effect?: EHudTextEffect, family?: string, effectOpacity?: number): number
 	}
 	const HudText: CHudText
+	/**
+	 * One line of a card that is read by travelling it when it does not fit, as the menu's own labels
+	 * are: at rest it is cut at its box and dissolves into the edge, and while `reading` it waits at
+	 * its head, travels far enough to bring the tail in, waits there and comes back, then slides home
+	 * once the reading stops. Held by whatever draws the line, one per line, because the travel
+	 * outlives the frame it is drawn in; a line whose text changes starts again from its head.
+	 *
+	 * @example
+	 * private readonly title = new HudMarquee()
+	 * this.title.Left(x, centerY, width, track.title, 12, HudColors.title, HudBold, hovered)
+	 * this.title.EndFrame()
+	 */
+	class HudMarquee {
+		public Left(x: number, centerY: number, width: number, text: string, size: number, color: Color, weight: number, reading: boolean, effect?: EHudTextEffect): void
+		/**
+		 * Closes the frame for this line, once a frame after the card is drawn, whether or not it
+		 * was. A line that was not drawn since the last call is not being read: its travel stops and
+		 * it goes back to its head, so a hidden card leaves nothing running behind it.
+		 *
+		 * @example
+		 * this.DrawCard()
+		 * this.title.EndFrame()
+		 */
+		public EndFrame(): void
+	}
 	interface HudHeaderValue {
 		text: string
 		color: Color

@@ -3,7 +3,11 @@ declare namespace MenuSDK {
 	/** The picture an option carries, and the gap between it and the name it belongs to. */
 	const OptionIconDp = 20
 	const OptionIconGapDp = 8
-	function WidestValueDp(entry: PanelEntry): number
+	/**
+	 * Width of the widest value `entry` offers, in dp, as text in `role` sets it: the list in the
+	 * panel is set like the menu, the value in the trigger like the settings row it stands in.
+	 */
+	function WidestValueDp(entry: PanelEntry, role?: EFontRole): number
 	type PanelEntry = DropdownEntry | MultiSelectEntry
 	/**
 	 * The pickers riding the options that are picked right now, in the order the list holds them.

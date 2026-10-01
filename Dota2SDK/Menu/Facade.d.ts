@@ -88,6 +88,9 @@ declare namespace MenuSDK {
 		/** "toggle" applies the value on every press, "hold" drives it only while the key is down. */
 		public get Mode(): HotkeyMode
 		public set Mode(value: HotkeyMode)
+		/** Whether this hotkey blocks game input. Off by default; saved with the hotkey. */
+		public get ClaimsKey(): boolean
+		public set ClaimsKey(value: boolean)
 		/**
 		 * Value the hotkey drives the entry to while active. A slider's value is
 		 * clamped and rounded like the slider itself; dropdown and multiselect
@@ -102,6 +105,11 @@ declare namespace MenuSDK {
 		 * apart in a listing.
 		 */
 		public get ValueName(): string
+		/**
+		 * {@link ValueName} in the menu's language: the slider's suffix, the dropdown's option and
+		 * the multiselect's options translated the way the menu shows them.
+		 */
+		public get LocalizedValueName(): string
 		/** When this hotkey appears in the on-screen hotkeys panel. */
 		public get Visibility(): HotkeyVisibility
 		public set Visibility(value: HotkeyVisibility)
@@ -435,13 +443,11 @@ declare namespace MenuSDK {
 		public get ActivatesInMenu(): boolean
 		public set ActivatesInMenu(value: boolean)
 		/**
-		 * Whether a press this bind answers is taken from the game. On by default: a bind is
-		 * usually put on a key precisely so the game stops seeing it. Turn it off for a bind that
-		 * shadows one of the game's own, so both act on the same press.
+		 * Whether a press this bind answers is taken from the game. Off by default; enable it
+		 * to reserve this key for the menu action. Saved with the bind.
 		 * @example
-		 * // a scoreboard on Tab, alongside the game's
-		 * this.HoldKey = tree.AddKeybind("Hold Key", "Tab")
-		 * this.HoldKey.ClaimsKey = false
+		 * this.HoldKey = tree.AddKeybind("Hold Key", "F3")
+		 * this.HoldKey.ClaimsKey = true
 		 */
 		public get ClaimsKey(): boolean
 		public set ClaimsKey(value: boolean)
@@ -604,12 +610,31 @@ declare namespace MenuSDK {
 	class ShortDescription extends Handle<DescriptionEntry> {
 		public get Selected(): boolean
 		public set Selected(value: boolean)
+		/**
+		 * Puts a button at the end of the note and makes the whole row press it: for a note that
+		 * says what is missing and can set it right on the spot. `undefined` takes the button away.
+		 * @example
+		 * const note = node.AddShortDescription("Required humanizer")
+		 * note.SetAction("Enable", () => Humanizer.RequestEnable())
+		 */
+		public SetAction(label: Nullable<string>, run?: () => void): ShortDescription
 	}
 	class ImageSelector extends Handle<ImagesEntry> {
 		public get Variant(): ImageVariant
 		public set Variant(value: ImageVariant)
 		public get Draggable(): boolean
 		public set Draggable(value: boolean)
+		/**
+		 * A switch at the end of the row's title line, for a selection that is itself something to
+		 * turn on and off. The toggle gives up a row of its own: it flips from the title, takes its
+		 * hotkeys and rules from the row's context menu, and is listed under the row's name. While
+		 * it is off the tiles go grey, the way a page's rows do under its {@link Node.Gate}.
+		 * @example
+		 * const items = node.AddImageSelector("Pick up items", names)
+		 * items.HeaderControl = node.AddToggle("Pick up items state", true)
+		 */
+		public get HeaderControl(): Nullable<Toggle>
+		public set HeaderControl(value: Nullable<Toggle>)
 		/** Moves a tile to another slot, exactly like a user drag would. */
 		public MoveImage(from: number, to: number): void
 		public IsDefault(): boolean
@@ -813,10 +838,10 @@ declare namespace MenuSDK {
 		public set HeaderControl(value: Nullable<AnyHandle>)
 		/**
 		 * Toggle that gates this page: while it is off everything under it paints with a muted
-		 * accent instead of the live one — switches stay on and keep their values, they simply
-		 * stop reading as running. Nothing is locked and no label loses contrast, so the page
-		 * is as easy to read and to set up as a working one. The gate itself keeps the accent:
-		 * it is the switch that turns the page back on.
+		 * accent instead of the live one, and the art of image selector tiles goes grey — switches
+		 * stay on and keep their values, they simply stop reading as running. Nothing is locked
+		 * and no label loses contrast, so the page is as easy to read and to set up as a working
+		 * one. The gate itself keeps the accent: it is the switch that turns the page back on.
 		 * @example
 		 * const general = page.AddNode("General")
 		 * this.State = general.AddToggle("State", false)

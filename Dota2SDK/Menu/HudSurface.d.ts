@@ -97,6 +97,14 @@ declare namespace MenuSDK {
 		 * somewhere would mint another one and hold it for the session.
 		 */
 		effectOpacity?: number
+		/** How far the run is scrolled inside its box, in px, for a line read by travelling it. */
+		scroll?: number
+		/**
+		 * How far the glyphs dissolve into the box's left and right edges, in dp, for a line the box
+		 * cuts rather than one clipped to a prefix. Both default to 0, a hard edge.
+		 */
+		fadeHead?: number
+		fadeTail?: number
 	}
 	/**
 	 * What a run of text is cut against the thing behind it with. A card carries its own glass and
@@ -113,6 +121,27 @@ declare namespace MenuSDK {
 	}
 	/** Names of the glyph effects, in the order a dropdown offering them lists them. */
 	const HudTextEffectNames: string[]
+	/** Where a surface stands what it draws on the screen's pixel grid. */
+	const enum EHudPlacement {
+		/**
+		 * On whole pixels and at whole-pixel sizes: art is drawn texel for pixel, and a marker standing
+		 * on something the game itself draws on whole pixels - a health bar - moves in step with it.
+		 */
+		Pixel = 0,
+		/**
+		 * At the fraction of a pixel it was asked for, through each element's transform, which RmlUi
+		 * does not round: an icon gliding across the minimap moves smoothly instead of a pixel at a
+		 * time.
+		 *
+		 * A sprite frame (an image with a source rectangle) is cut out of its sheet by the host at the
+		 * frame's own resolution and scaled to the exact size asked for by the same transform, so the
+		 * GPU takes one bilinear sample of the frame a pixel - the way the game draws its own minimap
+		 * icons, crisp at any size and position. Everything else keeps a whole-pixel size, centred on
+		 * the box that was asked for - and so does a sprite on a host without
+		 * `RegisterSizedImageRegion`.
+		 */
+		Subpixel = 1
+	}
 	/** An image the surface paints this frame. */
 	interface IHudImage {
 		readonly kind: "image"
@@ -229,7 +258,7 @@ declare namespace MenuSDK {
 		 * the window's own motion; one on a HUD layer is bound by whoever owns it.
 		 */
 		public MenuBound: boolean
-		constructor(key: string, layer: EPanelLayer)
+		constructor(key: string, layer: EPanelLayer, placement?: EHudPlacement)
 		/**
 		 * The theme this surface's colours resolve against, which its layer decides: what is anchored
 		 * to the world wears the world's theme, what stands on the screen wears the panels' one.
@@ -277,6 +306,12 @@ declare namespace MenuSDK {
 		 * directly.
 		 */
 		public Order(index: number): void
+		/**
+		 * Whether what the surface shows was drawn in the host's retained pass, and so stands until
+		 * the next one rather than being wiped by a frame that does not draw it.
+		 * @see MenuHost.onRetainedPass
+		 */
+		public get Retained(): boolean
 		public Open(): void
 		/**
 		 * A frame opens at its first command rather than on a call, so a caller drawing from more than
@@ -304,6 +339,14 @@ declare namespace MenuSDK {
 		public Destroy(): void
 		/** One tick has finished drawing: flush what was pushed, or wipe a surface that drew nothing. */
 		public Tick(): void
+		/**
+		 * Ends the host frame for this surface, which {@link EndHudFrame} does for every one: wiped
+		 * while the host keeps overlays down, left as it stands on a frame without a retained pass if
+		 * that is where it was drawn, and ticked otherwise.
+		 */
+		public EndFrame_(shown: boolean, retainedPass: boolean): void
+		/** Whether what the surface shows has frosted glass on it, which needs the backdrop captured. */
+		public get Frosted_(): boolean
 	}
 	/**
 	 * How many HUD frames have ended so far. A surface that notes the frame it last drew in can tell
@@ -314,8 +357,11 @@ declare namespace MenuSDK {
 	 * The surface a panel draws into, created on first use in the layer it belongs to and kept for
 	 * the session. A surface anchored to the screen goes into `Screen`, which the host stacks over
 	 * every world layer it hosts — a marker over a unit can then never cover a card.
+	 *
+	 * The placement is the surface's for life: a key asked for again gets the surface it was first
+	 * made with, whatever is asked for the second time.
 	 */
-	function HudSurfaceOf(key: string, layer: EPanelLayer): CHudSurface
+	function HudSurfaceOf(key: string, layer: EPanelLayer, placement?: EHudPlacement): CHudSurface
 	/**
 	 * Drops the surface `key` was drawing on, if it ever drew: the caller has nothing left to put on
 	 * it and nobody should tick it again. A key handed to {@link HudSurfaceOf} afterwards opens a
@@ -333,6 +379,19 @@ declare namespace MenuSDK {
 	 * forgetting to ask.
 	 */
 	function EndHudFrame(): void
+	/**
+	 * The host's retained pass begins: a surface opened from here until {@link EndRetainedHudPass}
+	 * keeps what it draws until the next pass. Wired to {@link MenuHost.onRetainedPass}.
+	 */
+	function BeginRetainedHudPass(): void
+	/** The host's retained pass is over; see {@link BeginRetainedHudPass}. */
+	function EndRetainedHudPass(): void
+	/**
+	 * Asks the host to run its retained pass on the next frame, for a surface drawn in it that the
+	 * user is moving by hand - a panel in a drag, a hover easing in - which the pass's own rate would
+	 * make visibly step. A host without a retained pass draws every frame anyway.
+	 */
+	function RequestRetainedHudPass(): void
 	/**
 	 * How much of full opacity everything drawn onto the active surface keeps right now, 0 to 1.
 	 * {@link CHudCard.Frame} sets it from the card's own alpha so the readings on the glass fade with

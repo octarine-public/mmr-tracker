@@ -79,7 +79,10 @@ declare class CLowerHUD extends CHUDSection {
 	public get Buffs(): Nullable<Rectangle>
 	/** The debuff row above the HUD. */
 	public get Debuffs(): Nullable<Rectangle>
-	/** Re-derives the union rectangles the section owns. */
+	/**
+	 * Re-derives the union rectangles the section owns, and counts the ability and backpack slots
+	 * while the reading is open, so the first script to ask sees them.
+	 */
 	public Refresh(): void
 	public DebugDraw(): void
 }

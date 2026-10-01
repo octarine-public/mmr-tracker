@@ -19,6 +19,7 @@ declare const Source2SDK: {
 	readonly GetNameByConstructor: (constructor: Constructor<INativeEntity>) => Nullable<string>
 	readonly InputManager: CInputManager
 	readonly InputMessage: typeof InputMessage
+	readonly InvalidateDraw2D: () => void
 	readonly MainThread: typeof MainThread
 	readonly NativeEvents: EventEmitter<NativeEventsMap>
 	readonly NetworkedParticle: typeof NetworkedParticle

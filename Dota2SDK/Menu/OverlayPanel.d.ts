@@ -14,6 +14,7 @@ declare namespace MenuSDK {
 		public readonly SetupEntry: Entry
 		protected readonly x: Slider
 		protected readonly y: Slider
+		protected readonly scale: Slider
 		/**
 		 * The panel's place is carried by the hand that drags it, so the two sliders holding it stay
 		 * out of the page: they are where the place is kept and read back from a config, not how it
@@ -22,9 +23,11 @@ declare namespace MenuSDK {
 		 * The size can be carried the same way, by a panel that offers a corner to pull, but its
 		 * slider stays on the page: aiming at a corner is not the only way anyone should be able to
 		 * resize a card. Sizes use whole percentages by default; pass `1` as `scalePrecision` for
-		 * tenths of a percent.
+		 * tenths of a percent. `defaultScale` is the size, in percent, the panel starts at.
+		 * @example
+		 * new MenuSDK.OverlayMenu(node, 0, 309, 0, 82)
 		 */
-		constructor(node: Node, defaultX: number, defaultY: number, scalePrecision?: number)
+		constructor(node: Node, defaultX: number, defaultY: number, scalePrecision?: number, defaultScale?: number)
 		public get Scale(): number
 		/** Held to the range the slider offers, so a pulled corner cannot leave it unreachable. */
 		public set Scale(next: number)

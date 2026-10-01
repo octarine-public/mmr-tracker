@@ -20,7 +20,11 @@ declare namespace MenuSDK {
 	/** A control a part of Safe mode holds, as the Safe mode window lists it. */
 	interface ISafeModeFeature {
 		readonly entry: Entry
-		/** What gives the feature away, shown under its name: the convars it writes, say. */
+		/**
+		 * What gives the feature away or why the part holds it, shown under its name: the convars it
+		 * writes, say. Localized, so a localization key reads in the user's language and a key with no
+		 * translation - a convar name - reads as it is.
+		 */
 		readonly detail: string
 	}
 	/** How a game introduces a part of Safe mode. See {@link CSafeMode.AddGroup}. */

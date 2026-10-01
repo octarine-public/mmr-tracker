@@ -38,9 +38,9 @@ declare namespace MenuSDK {
 	 */
 	function OnPaletteChanged(listener: (scope: EThemeScope) => void): void
 	/**
-	 * Runs the listener whenever a scope's radius or text scale moves. A scaled metric is baked in
-	 * when the style value is written, so the tree that changed has to be rebuilt rather than
-	 * re-rendered - the listener is told which scope moved.
+	 * Runs the listener whenever a scope's radius, control roundness or text scale moves. A scaled
+	 * metric is baked in when the style value is written, so the tree that changed has to be rebuilt
+	 * rather than re-rendered - the listener is told which scope moved.
 	 */
 	function OnMetricsChanged(listener: (scope: EThemeScope) => void): void
 	function ScaleMetric(property: string, value: number): number
@@ -58,6 +58,12 @@ declare namespace MenuSDK {
 		 */
 		public get Glow(): IThemeGlow
 		public get RadiusScale(): number
+		/** Whether the theme draws its controls fully round, whatever its corner scale. */
+		public get RoundControls(): boolean
+		/**
+		 * How large text is drawn against the size a style asks for: the theme's text size times the
+		 * size of the family the scope draws in ({@link FamilySize}).
+		 */
 		public get FontScale(): number
 		public get AccentHex(): string
 		public get AccentSurface(): string
@@ -129,7 +135,14 @@ declare namespace MenuSDK {
 		public SetMetrics(values: {
 			radius?: number
 			font?: number
+			roundControls?: boolean
 		}, scope?: EThemeScope): void
+		/**
+		 * Re-reads the family every scope draws its text in, and rebuilds each scope whose family is
+		 * drawn at another size than before, as any metric change does: a size is baked into a style
+		 * when it is written. Call it whenever a face moves - a family picked, a language switched.
+		 */
+		public RefreshFamilySizes(): void
 	}
 	const Theme: CTheme
 }

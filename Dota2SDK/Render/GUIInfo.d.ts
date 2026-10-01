@@ -54,17 +54,22 @@ declare class CGUIInfo {
 	 * const buffs = GUIInfo.Find("buffs")
 	 */
 	public Find(id: string): HUDPanel
+	/** Draws the debug overlay from what the last reading found. */
+	public OnDraw(): void
 	/**
-	 * Reads the HUD out of the game once a frame, and draws the debug overlay from what was read.
+	 * Reads the HUD out of the game once a `Draw2D` pass.
 	 *
 	 * The reading is queued onto the main thread rather than done here. Panorama reads take no
 	 * lock on the native side and scripts run on their own thread, so a panel read while the
 	 * game is part-way through its own layout can be caught being destroyed; inside a
-	 * main-thread session the game main thread is parked and cannot be. The session is drained
-	 * asynchronously, so every rectangle a script reads is the one measured a frame earlier —
-	 * far less than the HUD takes to move anywhere.
+	 * main-thread session the game main thread is parked and cannot be. Parked is the cost: the
+	 * game waits out the whole reading, and whatever the script thread still has queued before
+	 * it - a server tick's worth of work on the frames that carry one. The pass runs at the tick
+	 * rate on frames without a tick, so the main thread is parked a few dozen times a second,
+	 * never behind a tick. The session is drained asynchronously, so every rectangle a script
+	 * reads was measured a pass earlier — far less than the HUD takes to move anywhere.
 	 */
-	public OnDraw(): void
+	public OnDraw2D(): void
 	/** Drops every cached panel; the next read looks them up in the game's tree again. */
 	public Invalidate(): void
 	public DebugDraw(): void

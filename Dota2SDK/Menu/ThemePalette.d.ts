@@ -27,6 +27,10 @@ declare namespace MenuSDK {
 		TextControl: string
 		TextDisabled: string
 		TextTooltip: string
+		/** Title over a card of settings on a page. */
+		TextHeading: string
+		/** The value a settings row shows beside its label: a slider's number, a key bind. */
+		TextValue: string
 		SwitchOff: string
 		/**
 		 * Fill of the circle riding a switch track or a slider rail. A light theme keeps it

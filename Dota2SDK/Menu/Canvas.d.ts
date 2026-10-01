@@ -67,12 +67,18 @@ declare namespace MenuSDK {
 	/**
 	 * A script's RmlUi surface in screen pixels. Project world anchors before painting; the surface
 	 * pools DOM elements, updates changed properties, and hides anything omitted from the next frame.
+	 *
+	 * What it draws lands on whole pixels unless it is made with {@link EHudPlacement.Subpixel}, for
+	 * markers that glide - icons crossing the minimap - rather than stand on something the game draws;
+	 * there a sprite frame is also scaled from its own texels, the way the game draws minimap icons.
 	 * @example
 	 * const canvas = new Canvas("cooldowns")
 	 * canvas.Image(ability.TexturePath, position, size, { radius: 4 })
+	 * @example
+	 * const minimap = new Canvas("minimap-icons", EPanelLayer.World, EHudPlacement.Subpixel)
 	 */
 	class Canvas {
-		constructor(key: string, layer?: EPanelLayer)
+		constructor(key: string, layer?: EPanelLayer, placement?: EHudPlacement)
 		/** Hides the surface immediately. */
 		public Clear(): void
 		/** Paints a rectangular image with optional clipping, tint, rotation and desaturation. */

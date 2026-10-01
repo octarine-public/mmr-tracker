@@ -26,6 +26,10 @@ declare namespace Menu {
 		IsLoadingConfig: boolean
 		DrawMarksNew: boolean
 		DrawMarksNonDefault: boolean
+		KeepOriginalLogoColor: boolean
+		LogoColor: Nullable<string>
+		LogoSecondColor: Nullable<string>
+		WordmarkColor: Nullable<string>
 		HoverAnimation: boolean
 		IntroAnimation: boolean
 		MenuOpenAnimation: boolean
@@ -58,7 +62,7 @@ declare namespace Menu {
 	const Localization: MenuSDK.CLocalization
 	const MenuManager: MenuSDK.CMenuManager
 	const Theme: MenuSDK.CTheme
-	const ThemePresets: Map<string, MenuSDK.IThemeSeeds>
+	const ThemePresets: readonly MenuSDK.IThemePreset[]
 	const DefaultSeeds: MenuSDK.IThemeSeeds
 	const PaletteGroups: MenuSDK.IPaletteGroup[]
 	const PaletteTokenNames: Record<MenuSDK.PaletteColorToken, string>

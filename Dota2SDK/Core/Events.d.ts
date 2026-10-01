@@ -2,6 +2,13 @@
 interface EventsMap {
 	Draw: []
 	PreDraw: []
+	/**
+	 * A draw pass at the server's tick rate rather than the frame rate, on a frame that is not
+	 * carrying a server tick, just before `PreDraw`. What an overlay draws here stays on screen
+	 * until its next pass: a reading that only changes with the game state costs a tick's worth
+	 * of work instead of a frame's, and none of it lands on the frames a tick already makes slow.
+	 */
+	Draw2D: []
 	PreDataUpdate: []
 	PostDataUpdate: [dt: number]
 	GameStarted: []

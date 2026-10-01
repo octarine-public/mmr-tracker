@@ -26,6 +26,19 @@ declare namespace MenuSDK {
 		IsLoadingConfig: boolean
 		DrawMarksNew: boolean
 		DrawMarksNonDefault: boolean
+		KeepOriginalLogoColor: boolean
+		/**
+		 * The color the logo is tinted with instead of the accent, or nothing while it follows the
+		 * accent. {@link MenuFlags.KeepOriginalLogoColor} draws the original artwork over it.
+		 */
+		LogoColor: Nullable<string>
+		/**
+		 * The color of the three pieces beside the logo's arrow, which makes the logo two-colored, or
+		 * nothing while they wear {@link MenuFlags.LogoColor} with the arrow.
+		 */
+		LogoSecondColor: Nullable<string>
+		/** The color the name beside the logo is set in, or nothing while it follows the theme. */
+		WordmarkColor: Nullable<string>
 		HoverAnimation: boolean
 		IntroAnimation: boolean
 		MenuOpenAnimation: boolean

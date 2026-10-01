@@ -26,6 +26,8 @@ declare class SectorGraph {
 	public PortalEdge: Uint8Array
 	/** Cell at the midpoint of each portal, on the sector's own edge. */
 	public PortalMid: Int32Array
+	/** The cost per changed step axis the portal costs were walked with. */
+	public get DirectionCost(): number
 	/** Sector index of a cell. */
 	public SectorOf(cell: number): number
 	/** The portal of `sector` on `edge` that contains the cell `(x, y)`, or `NoPortal`. */
@@ -44,4 +46,13 @@ declare class SectorGraph {
 	 * `directionCost` is what the server adds per axis whose step direction changes.
 	 */
 	public Build(width: number, height: number, passable: Uint8Array, directionCost: number, minX: number, minY: number): void
+	/**
+	 * Brings the graph up to date after `cells` of the `passable` grid it was built from changed,
+	 * rebuilding only the sectors that read them: the sector a cell lies in, and the neighbour
+	 * whose edge portals look across at it. The result is the one a whole {@link Build} gives.
+	 * A `directionCost` other than the one the graph was built with rebuilds every sector.
+	 * @example
+	 * sectors.Update(open, [treeCell], ConVarsSDK.GetInt(DirectionCostConvar, 1))
+	 */
+	public Update(passable: Uint8Array, cells: readonly number[], directionCost: number): void
 }

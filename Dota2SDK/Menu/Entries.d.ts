@@ -70,11 +70,20 @@ declare namespace MenuSDK {
 	 * another row, or a settings row of its own.
 	 */
 	function IsPageNode(entry: Entry): entry is NodeEntry
+	/** The switch an entry wears on its own row: the one at the end of an image selector's title. */
+	function RowSwitchOf(entry: Entry): Nullable<ToggleEntry>
 	/**
-	 * Whether the entry sits under a switch that is off — a page's {@link NodeEntry.gate} or the
-	 * header control of a card above it. Nothing is locked and no value is lost; the accent goes
-	 * muted so the block reads as set up but not running, and stays as easy to read and to change
-	 * as a live one. The switch itself is never inert — it is what turns the block back on.
+	 * What an entry stands for where it is shown away from its row — a hotkey, a timed rule, a
+	 * reveal: the row hosting it, or the card or page whose header switch it is, and the entry
+	 * itself otherwise. A header switch is usually called "State", which says nothing out there.
+	 */
+	function ListedEntryOf(entry: Entry): Entry
+	/**
+	 * Whether the entry sits under a switch that is off — a page's {@link NodeEntry.gate}, the
+	 * header control of a card above it, or the switch on its own row. Nothing is locked and no
+	 * value is lost; the accent goes muted so the block reads as set up but not running, and stays
+	 * as easy to read and to change as a live one. The switch itself is never inert — it is what
+	 * turns the block back on.
 	 */
 	function IsEntryInert(entry: Entry): boolean
 	/** Whether Safe mode pins the entry to a value of its choosing. */
@@ -145,10 +154,17 @@ declare namespace MenuSDK {
 		customPage?: () => React.ReactNode
 		backAction?: () => boolean
 	}
+	/** A button a note carries at its end, which a click anywhere on the note presses too. */
+	interface DescriptionAction {
+		/** The button's label, a localization key. */
+		readonly label: string
+		readonly run: () => void
+	}
 	interface DescriptionEntry extends EntryCommon {
 		readonly kind: "description"
 		selected: boolean
 		header?: boolean
+		action?: DescriptionAction
 	}
 	/** How a hotkey drives its entry: apply on every press, or follow the key while it is held. */
 	type HotkeyMode = "toggle" | "hold"
@@ -179,6 +195,8 @@ declare namespace MenuSDK {
 		mode: HotkeyMode
 		/** When this hotkey appears in the on-screen hotkeys panel. */
 		visibility: HotkeyVisibility
+		/** Whether this hotkey blocks its key from reaching the game. Off by default. */
+		claimsKey: boolean
 	}
 	/** Which side of its threshold a logic rule holds its value on. */
 	type LogicWhen = "after" | "before"
@@ -346,9 +364,8 @@ declare namespace MenuSDK {
 		active: boolean
 		activatesInMenu: boolean
 		/**
-		 * Whether a press this bind answers is taken from the game. On by default: a bind is
-		 * usually put on a key precisely so the game stops seeing it. A bind that shadows one of
-		 * the game's own - a scoreboard on Tab - turns it off, and both act on the same press.
+		 * Whether a press this bind answers is taken from the game. Off by default so the
+		 * menu action and the game's action can both respond to the same press.
 		 */
 		claimsKey: boolean
 		/**
@@ -489,6 +506,11 @@ declare namespace MenuSDK {
 		 * in the row and hands the rest to a modal, so a hundred-value picker stays one row tall.
 		 */
 		catalogue: readonly CatalogueSection[]
+		/**
+		 * The switch standing at the end of the row's title line, which runs what the tiles choose
+		 * for. It is hosted by the row and has none of its own.
+		 */
+		headerControl?: ToggleEntry
 		listeners: ((entry: ImagesEntry) => void)[]
 	}
 	/** One preset of a preset selector: its display name and the catalogue values it claims. */

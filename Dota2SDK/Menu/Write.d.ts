@@ -21,6 +21,12 @@ declare namespace MenuSDK {
 	/** Writes a ready-made value when it differs from the last one written. */
 	function WriteStyle(element: HTMLElement, name: string, value: string): void
 	/**
+	 * Scrolls the element's content `value` px to the left when that differs from the last scroll
+	 * written. RmlUi holds it inside the overflow the content has at the time, so a run whose text
+	 * is being replaced is scrolled from 0.
+	 */
+	function WriteScrollLeft(element: HTMLElement, value: number): void
+	/**
 	 * Shows or hides an absolutely positioned element; `display` is what showing means for it.
 	 * Hiding writes `visibility` alone and leaves `display` in place: visibility does not dirty
 	 * layout, so a marker that flaps with projection costs no document reformat — only its
@@ -28,10 +34,17 @@ declare namespace MenuSDK {
 	 */
 	function WriteShown(element: HTMLElement, shown: boolean, display?: string): void
 	/**
-	 * Places an element by one `transform` write, gated on all three numbers together. On hosts
-	 * with the fast path the primitives cross as numbers and skip the transform parser.
+	 * Places an element by one `transform` write, gated on all its numbers together: a translation,
+	 * a rotation about the element's `transform-origin` and a scale about it. On hosts with the fast
+	 * path the primitives cross as numbers and skip the transform parser.
+	 *
+	 * The transform is where RmlUi keeps a fraction of a pixel - it rounds layout offsets and box
+	 * sizes before they draw. A scale other than 1 needs a host with `RegisterSizedImageRegion`; one
+	 * predating it takes the translation and the angle alone.
+	 * @example
+	 * WritePlacement(icon, 10.25, 20.5, 0, 18.6 / 64, 18.6 / 64)
 	 */
-	function WritePlacement(element: HTMLElement, x: number, y: number, angle: number): void
+	function WritePlacement(element: HTMLElement, x: number, y: number, angle: number, scaleX?: number, scaleY?: number): void
 	/**
 	 * Writes text by replacing the element's text node, never by rewriting markup: RmlUi hands a
 	 * removed child back to the caller instead of freeing it, so a readout that ticks every frame
@@ -58,10 +71,15 @@ declare namespace MenuSDK {
 	 * nothing where it showed nothing: {@link SettleSizedArt} lands the copy at the end of the frame
 	 * it is ready, whether or not the element is written again.
 	 *
+	 * A `region` shows only that rectangle of the file, in the file's own pixels, cut out by the host
+	 * and fitted to the box - one sprite of a sheet. Where the host cannot cut it the element is
+	 * cleared rather than showing the whole sheet.
+	 *
 	 * @example
 	 * WriteSizedArt(icon, ability.TexturePath, size, size)
+	 * WriteSizedArt(icon, sheet, 32, 32, 0, { x: 32, y: 0, width: 32, height: 32 })
 	 */
-	function WriteSizedArt(element: HTMLElement, path: string, width: number, height: number, radius?: number): void
+	function WriteSizedArt(element: HTMLElement, path: string, width: number, height: number, radius?: number, region?: ImageRegion): void
 	/**
 	 * Lands the copies the host has cut on the elements waiting for them, once a frame after everything
 	 * has drawn: an element written once and then left alone would otherwise wait for ever. An element

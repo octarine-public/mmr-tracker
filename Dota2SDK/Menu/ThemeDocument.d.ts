@@ -1,15 +1,5 @@
 // AUTO-GENERATED - do not edit.
 declare namespace MenuSDK {
-	/** What the glow lights with, beyond the reach and strength the seeds carry. */
-	interface IThemeGlowStyle {
-		mode: EGlowColor
-		/** The color {@link EGlowColor.Custom} lights with. */
-		color: string
-		/** Seconds one turn of the walking color takes. */
-		speed: number
-		/** How far the walking color is from grey, 0 to 1. */
-		saturation: number
-	}
 	/**
 	 * Everything the Themes tab holds, as one document: the look of the menu and of the surfaces
 	 * outside it. It is what the account wears, what a cloud theme carries and what a preset is
@@ -42,6 +32,11 @@ declare namespace MenuSDK {
 	const DefaultGlowStyle: IThemeGlowStyle
 	function DefaultThemeDocument(): IThemeDocument
 	function CloneThemeDocument(theme: IThemeDocument): IThemeDocument
+	/**
+	 * Whether two documents dress everything alike: the menu's look and its logo, the colors set
+	 * apart, the glow and the surfaces outside the window. A logo color under the original artwork
+	 * draws nothing and does not count.
+	 */
 	function themesEqual(a: IThemeDocument, b: IThemeDocument): boolean
 	/**
 	 * Reads a whole theme off `unknown` - a stored file, a cloud blob - refusing anything without

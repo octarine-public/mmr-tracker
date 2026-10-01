@@ -13,6 +13,11 @@ declare namespace MenuSDK {
 	const RowSurface: React.Context<StyleColor>
 	function MarkColorOf(entry: Entry): string
 	/**
+	 * Answers a click on a locked control: a Safe mode lock offers to release it, any other lock
+	 * takes the click.
+	 */
+	function OfferLockRelease(entry: Entry): void
+	/**
 	 * Folds its content in when the entry turns visible and out when it hides, keeping a hidden
 	 * entry mounted until the fold has run; `VisibleRows` is what lists such an entry meanwhile.
 	 */

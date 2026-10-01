@@ -49,6 +49,15 @@ declare var Particles: Particles
 declare var WorldUtils: WorldUtils
 declare var Camera: Camera
 declare const IS_MINIMAL_CORE: boolean
+/**
+ * Whether the host build carries the debug tooling. A debug build sets it before any script
+ * runs; a release build leaves it unset, so read it through `globalThis`.
+ * @example
+ * if (globalThis.DEBUG_ENABLED === true) {
+ * 	Menu.AddEntry("Debug")
+ * }
+ */
+declare var DEBUG_ENABLED: Nullable<boolean>
 
 declare interface ConVars {
 	Get(convarName: string): Nullable<number | boolean | string | number[]>
@@ -234,6 +243,12 @@ declare function SendMinimapPing(
 declare function WriteUserCmd(): void
 declare function IsShopOpen(): boolean
 declare function GetQueryUnit(): number
+/**
+ * Entity index the game itself has under the cursor: `weaponselect` of its own last user command,
+ * read by the move-message hook before Octarine replaces the command, so it holds with the
+ * humanizer on or off. 0 when there is none.
+ */
+declare function GetGameWeaponSelect(): number
 declare function GetSelectedEntities(): number
 
 declare function GetPathByHash(hash: bigint): Nullable<string>

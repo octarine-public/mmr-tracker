@@ -8,8 +8,6 @@ declare namespace MenuSDK {
 	interface IThemeGalleryHost {
 		/** The theme the menu wears right now, whole. */
 		Current(): IThemeDocument
-		/** Dresses the menu in a snapshot - colors, accent and metrics - keeping the rest of the theme. */
-		Apply(snapshot: IThemeSnapshot): void
 		/** Puts a whole theme on: the menu, its palette overrides and glow, and the surfaces outside it. */
 		Load(theme: IThemeDocument): void
 		/** Rolls a random theme onto the controls, as the Shuffle button on Customization does. */
@@ -17,11 +15,10 @@ declare namespace MenuSDK {
 	}
 	/**
 	 * Builds the theme presets page for {@link Node.CustomPage}: the built-in themes as preview
-	 * blocks, click to apply, plus a block that rolls a random one.
+	 * blocks, narrowed by tone, click to put one on whole, plus a block that rolls a random one.
 	 * @example
 	 * presets.CustomPage = ThemeGalleryPage({
 	 * 	Current: () => this.Document(),
-	 * 	Apply: snapshot => this.LoadSnapshot(snapshot),
 	 * 	Load: theme => this.LoadDocument(theme),
 	 * 	Shuffle: () => this.Shuffle()
 	 * })
@@ -29,8 +26,10 @@ declare namespace MenuSDK {
 	function ThemeGalleryPage(host: IThemeGalleryHost): () => React.ReactNode
 	function ThemeCard(props: {
 		name: string
-		seeds: IThemeSeeds
-		accent: string
+		/** The look the card pictures - colors, accent, corners and typeface - and sets its name in. */
+		theme: IThemeSnapshot
+		/** What the look's glow lights with. Omitted means its accent. */
+		glow?: IThemeGlowStyle
 		active: boolean
 		width: number
 		last: boolean

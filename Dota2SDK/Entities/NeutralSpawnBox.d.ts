@@ -11,7 +11,8 @@ declare class NeutralSpawnBox {
 	public get CampType(): number
 	public get CampName(): string
 	public Includes(vec: Vector3): boolean
-	public Includes2D(vec: Vector2): boolean
+	/** Whether the box holds the point on the ground plane; the height of a `Vector3` is ignored. */
+	public Includes2D(vec: Vector2 | Vector3): boolean
 	public toJSON(): any
 	protected ParseStackData(stackName: string): string
 	protected SetAngleEvil(): void

@@ -25,8 +25,22 @@ declare namespace MenuSDK {
 		Opacity: number
 		/** Corner radius scale as a fraction, 1 = 100%. Omitted means 1. */
 		Radius?: number
+		/**
+		 * Whether the controls - switches, sliders, color swatches and the bar marking the selected
+		 * row - are drawn fully round whatever {@link IThemeSeeds.Radius} says, so a theme of square
+		 * cards can keep round controls. Omitted means they follow the corner scale like everything
+		 * else.
+		 */
+		RoundControls?: boolean
 		/** Text size scale as a fraction, 1 = 100%. Omitted means 1. */
 		TextScale?: number
+		/**
+		 * Whether a settings page sets its card titles and the values its rows show close to
+		 * {@link IThemeSeeds.Text}, the way its labels already are, so only descriptions read dimmed
+		 * there. Navigation, tabs and every other surface keep their graded tiers. Omitted means the
+		 * page is graded like the rest.
+		 */
+		BrightContent?: boolean
 		/** Whether a surface is lit with a glow around it. Omitted means none. */
 		Glow?: boolean
 		/** How far the glow reaches past a surface's edge, in dp. Omitted means the default reach. */
@@ -59,12 +73,64 @@ declare namespace MenuSDK {
 		seeds: IThemeSeeds
 		accent: string
 		font?: IThemeFont
+		/**
+		 * Whether the window logo keeps its original artwork colors. Omitted means it does: only
+		 * `false` tints it, with {@link IThemeSnapshot.logoColor} or the accent.
+		 */
+		keepOriginalLogoColor?: boolean
+		/**
+		 * The color the window logo is tinted with instead of the accent - its arrow alone when
+		 * {@link IThemeSnapshot.logoSecondColor} paints the pieces beside it. Omitted means it follows
+		 * the accent; {@link IThemeSnapshot.keepOriginalLogoColor} draws the original artwork over it.
+		 */
+		logoColor?: string
+		/**
+		 * The color of the three pieces beside the window logo's arrow, which makes the logo
+		 * two-colored. Omitted means the whole logo is one color.
+		 */
+		logoSecondColor?: string
+		/** The color the name beside the window logo is set in. Omitted means it follows the accent. */
+		wordmarkColor?: string
 	}
+	/**
+	 * Carries the logo choice of `from` over to `to`: the original artwork and the colors the logo
+	 * and the name beside it are drawn in. It is the user's own, so it rides along with whatever
+	 * theme is put on rather than being part of the look.
+	 *
+	 * @example
+	 * const menu = { ...preset.theme }
+	 * CarryThemeLogo(worn.menu, menu)
+	 */
+	function CarryThemeLogo(from: IThemeSnapshot, to: IThemeSnapshot): void
 	/** A copy of a snapshot that shares nothing with it, for a store that keeps its own. */
 	function CloneThemeSnapshot(snapshot: IThemeSnapshot): IThemeSnapshot
 	function seedsEqual(a: IThemeSeeds, b: IThemeSeeds): boolean
+	/**
+	 * Whether two snapshots look alike: seeds, accent and typeface. The logo choice is left out - it
+	 * is drawn by the menu alone and compared with the document that carries it.
+	 */
 	function snapshotsEqual(a: IThemeSnapshot, b: IThemeSnapshot): boolean
-	const ThemePresets: Map<string, IThemeSeeds>
+	/**
+	 * A ready-made look: the menu's colors, accent, metrics and typeface, and what its glow lights
+	 * with. It is put on whole - only the user's logo choice and the surfaces that wear a theme of
+	 * their own are kept - so a preset is a finished design rather than a background to repaint.
+	 * The objects are shared: clone a theme before keeping it.
+	 *
+	 * @example
+	 * const onyx = ThemePresets.find(preset => preset.name === "Onyx")
+	 */
+	interface IThemePreset {
+		/** The name the gallery shows; its translation is looked up by it. */
+		readonly name: string
+		readonly theme: IThemeSnapshot
+		/** What the glow lights with. Omitted means the accent, as a fresh theme does. */
+		readonly glow?: IThemeGlowStyle
+	}
+	/**
+	 * The built-in themes, in the order the gallery shows them: the default and its glass twin,
+	 * then dark, glass and light.
+	 */
+	const ThemePresets: readonly IThemePreset[]
 	/**
 	 * What a saved theme says about itself at a glance. Chosen by whoever saved it, the way a cloud
 	 * config carries its play style rather than being guessed from the colors - a theme built on a

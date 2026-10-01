@@ -113,6 +113,13 @@ declare class HTMLElement {
 	public hudArtW_?: number
 	public hudArtH_?: number
 	public hudArtRadius_?: number
+	/** The rectangle of the artwork it was cut from; same owner. */
+	public hudArtRegion_?: {
+		readonly x: number
+		readonly y: number
+		readonly width: number
+		readonly height: number
+	}
 	/** The copy the element waits on while the host cuts it; same owner. */
 	public hudPending_?: string
 	/** The live text node inside the element; owned by `World/Write.ts`. */
@@ -123,8 +130,18 @@ declare class HTMLElement {
 	 * 5 margin-right, 6 margin-top, 7 margin-bottom, 8 font-size.
 	 */
 	public setPropertyPx(id: number, value: number): void
-	/** Sets `transform: translate(x, y) rotate(angle)` in px and degrees, skipping the parser. */
-	public setPlacement(x: number, y: number, angleDeg: number): void
+	/**
+	 * Sets `transform: translate(x, y) rotate(angle) scale(scaleX, scaleY)` in px and degrees,
+	 * skipping the parser. Hosts predating the scale pair take exactly three numbers; the ones with
+	 * `RegisterSizedImageRegion` take five.
+	 */
+	public setPlacement(
+		x: number,
+		y: number,
+		angleDeg: number,
+		scaleX?: number,
+		scaleY?: number
+	): void
 	public destroy(): void
 }
 
@@ -303,6 +320,32 @@ declare function FreeImageBlob(source: string): void
  */
 declare function RegisterSizedImage(
 	path: string,
+	width: number,
+	height: number,
+	radius?: number,
+	monochrome?: boolean
+): string
+/**
+ * Mints an image source for a rectangle of a file - one sprite of a sheet - cut out and resampled
+ * on its own to the pixel size it will be drawn at, the way {@link RegisterSizedImage} does for a
+ * whole file. Nothing around the rectangle bleeds into its edge, and only the rows under it are
+ * decoded. Feature-detect: hosts predating it have no such function, and a host that has it also
+ * takes the scale pair of `setPlacement`.
+ *
+ * The rectangle is in the file's own whole pixels; one reaching past the file fails the load and
+ * draws nothing. Sizes, radius and `monochrome` are those of {@link RegisterSizedImage}, and the
+ * rectangle is part of the cache key. Freed with {@link FreeSizedImage}.
+ * Returns `""` when the path, rectangle, size, or radius is unusable.
+ * @example
+ * const src = RegisterSizedImageRegion(sheet, 32, 0, 32, 32, 32, 32)
+ * element.setAttribute("src", src)
+ */
+declare function RegisterSizedImageRegion(
+	path: string,
+	x: number,
+	y: number,
+	regionWidth: number,
+	regionHeight: number,
 	width: number,
 	height: number,
 	radius?: number,

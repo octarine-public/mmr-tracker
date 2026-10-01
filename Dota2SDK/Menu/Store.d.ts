@@ -127,6 +127,8 @@ declare namespace MenuSDK {
 	function RemoveEntryHotkey(entry: DriverHolder, hotkey: EntryHotkey): void
 	function SetEntryHotkeyBind(hotkey: EntryHotkey, bind: number): void
 	function SetEntryHotkeyMode(hotkey: EntryHotkey, mode: HotkeyMode): void
+	/** Sets whether this hotkey blocks game input on subsequent presses. */
+	function SetEntryHotkeyClaimsKey(hotkey: EntryHotkey, value: boolean): void
 	/**
 	 * Stores the value a driver — a hotkey or a logic rule — holds its entry at. A slider's value
 	 * is clamped and rounded like the slider itself; dropdown and multiselect values must name
@@ -182,6 +184,8 @@ declare namespace MenuSDK {
 	function SetMultiSelectValues(entry: MultiSelectEntry, values: string[]): void
 	/** Sets the saved hotkeys-panel visibility preference without changing key handling. */
 	function SetKeybindHotkeysHidden(entry: KeybindEntry, hidden: boolean): void
+	/** Saves whether this bind blocks game input, without changing an ongoing press. */
+	function SetKeybindClaimsKey(entry: KeybindEntry, value: boolean): void
 	function SetKeybindValue(entry: KeybindEntry, key: number): void
 	/**
 	 * What a picker is showing right now: the colour it holds, or the live one it

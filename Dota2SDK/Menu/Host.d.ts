@@ -2,6 +2,17 @@
 declare namespace MenuSDK {
 	interface MenuHost {
 		readonly onFrame?: (tick: () => void) => void
+		/**
+		 * The host's retained draw pass, run at a tick's rate rather than every frame: `begin` goes
+		 * before the first listener of a pass and `end` after the last, both before the frame's own
+		 * tick. A HUD surface drawn between the two keeps what it drew until the next pass, where one
+		 * drawn every frame is wiped by any frame that does not draw it. The pass is for what stands on
+		 * the screen; anything placed from a world position is drawn every frame, or it trails the
+		 * camera. A host without one has every surface drawn per frame.
+		 */
+		readonly onRetainedPass?: (begin: () => void, end: () => void) => void
+		/** Runs the retained pass on the next frame, for what a user is moving by hand. */
+		readonly requestRetainedPass?: () => void
 		readonly onTeardown?: (teardown: () => void) => void
 		readonly onServerInfo?: (handler: () => void) => void
 		readonly onKeyDown?: (handler: (code: number) => boolean) => void

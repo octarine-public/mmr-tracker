@@ -1,6 +1,10 @@
 // AUTO-GENERATED - do not edit.
 declare namespace MenuSDK {
-	function RevealEntry(entry: Entry): void
+	/**
+	 * Opens the way to an entry's row and flashes it. A switch without a row of its own is revealed
+	 * where it stands: on the row hosting it, or on the card or page it heads.
+	 */
+	function RevealEntry(target: Entry): void
 	function NodeDepth(node: NodeEntry): number
 	function HasNodeChildren(node: NodeEntry): boolean
 	function HasVisibleControls(node: NodeEntry): boolean

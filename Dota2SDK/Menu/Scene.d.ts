@@ -250,6 +250,12 @@ declare namespace MenuSDK {
 		 */
 		public SetOverrideMaterial(material: Nullable<string>): void
 		/**
+		 * Keeps the model's own look drawn under the override material, the way a chams style that keeps
+		 * the original does in game. Held like the material itself, so a model that reloads keeps it;
+		 * call it every frame, it only reaches the instance when it changes.
+		 */
+		public SetKeepOriginal(keep: boolean): void
+		/**
 		 * Overrides one parameter of whatever the model draws with, for this instance alone. Mints
 		 * nothing, so it is the right home for anything that moves — a color picker above all.
 		 *

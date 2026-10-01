@@ -9,7 +9,7 @@
 declare class CDotaSafeMode {
 	/**
 	 * Valve's server-side anti-cheat, which lines the orders a game sends up with the cursor and
-	 * camera they came with. Holds the humanizer on.
+	 * camera they came with. Holds the humanizer off.
 	 */
 	public readonly ServerAntiCheat: MenuSDK.CSafeModeGroup
 	/** Features that write the game's console variables, which the server can read. */

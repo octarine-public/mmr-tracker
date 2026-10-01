@@ -30,6 +30,8 @@ declare namespace MenuSDK {
 		readonly disabled: boolean
 		readonly run?: () => void
 		readonly trailing?: ContextMenuTrailing
+		/** Displays a switch with this state. Running the row keeps the menu open to show the change. */
+		readonly checked?: boolean
 		readonly flyout?: (anchor: ScreenRect) => void
 		readonly hover?: boolean
 		readonly open?: boolean

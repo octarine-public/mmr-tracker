@@ -11,7 +11,7 @@ declare namespace MenuSDK {
 	function DpToPx(value: number): number
 	function ElementScreenRect(element: HTMLElement): ScreenRect
 	function ClampToScreen(x: number, y: number, w: number, h: number, marginPx?: number): [number, number]
-	function MeasureTextDp(text: string, sizeDp: number, weight?: number): [number, number]
+	function MeasureTextDp(text: string, sizeDp: number, weight?: number, role?: EFontRole): [number, number]
 	/**
 	 * Text size at a font size already in screen pixels, in `family` or the theme's own face, outside
 	 * the font-scale setting — for callers that write `font-size` in px themselves and need the width

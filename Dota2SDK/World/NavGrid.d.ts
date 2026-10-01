@@ -2,8 +2,9 @@
 /**
  * The passability layer path queries run on: the static grid, trees, and the cells units stand
  * in, plus the clearance of every cell (its distance to the nearest impassable cell, in cells)
- * so a hull is a threshold test rather than a dilation per query. Rebuilds itself lazily when the
- * map or a tree changes.
+ * so a hull is a threshold test rather than a dilation per query. Builds itself lazily when the
+ * map loads; a tree that falls or grows back updates only the clearance rows and the sectors its
+ * cells reach, so a tree event costs a millisecond rather than a whole rebuild.
  */
 declare class NavGrid {
 	/** Grows whenever passability changes, units included; a path computed under an older version may be stale. */

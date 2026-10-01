@@ -36,6 +36,8 @@ declare class CPreGame extends CHUDSection {
 	public get TeamPicker(): Nullable<Rectangle>
 	/** The lane-selection minimap under the hero grid. */
 	public get Minimap(): Nullable<Rectangle>
+	/** Counts both rosters while the reading is open, so the first script to ask sees them. */
+	public Refresh(): void
 	public get RadiantPlayers(): Nullable<Rectangle>[]
 	public get DirePlayers(): Nullable<Rectangle>[]
 	public get RadiantPlayersHeroImages(): Nullable<Rectangle>[]
