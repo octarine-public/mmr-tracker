@@ -1,12 +1,9 @@
-import { MMRChangedType } from "./enum"
-import { IGame } from "./history"
+import { HeaderPainter } from "./header"
+import { IGame, ISummary, SessionLength, Summarize } from "./history"
 import { MenuManager } from "./menu"
+import { Palette, RefreshPalette, SignColor } from "./palette"
 import { Paths } from "./paths"
 
-const PANEL_HEIGHT = 34
-const ICON = 18
-const FONT = 13
-const RATING_RESERVE = "0000"
 /** The arrow at the header's right end that opens the history, and the gap before it. */
 const CHEVRON = 14
 const CHEVRON_GAP = 12
@@ -50,29 +47,28 @@ interface IRow {
 
 export class GUIHelper {
 	private rating = -1
-	private remainder = -1
-	private mmrType = MMRChangedType.None
 	private pressed = false
 	/** Where the fold was last sent, or nothing before the config has said where it stands. */
 	private foldTarget: Nullable<number>
-
-	private label = ""
-	private reserve = ""
-	private change = ""
-	private labelDirty = true
-	private labelVersion = -1
 
 	private games: readonly IGame[] = []
 	private rowCount = 0
 	private rowsDirty = true
 	private rowsMinute = -1
 	private rowsVersion = -1
+	private rowsListed = -1
+	private rowsSession = false
+	private rowsGap = -1
+	/** The games the panel counts, all of a session or the listed ones of the history. */
+	private counted = 0
+	private readonly summary: ISummary = { wins: 0, losses: 0, total: 0 }
 	private title = ""
 	private empty = ""
 	private total = ""
 	private totalSign = 0
 	private pillWidth = 0
 	private readonly rows: IRow[] = []
+	private readonly header = new HeaderPainter()
 	/**
 	 * The history's measured text, kept until the rows are worded again or the size, family or
 	 * weight floor they are measured in moves; retried each frame while the host cannot measure.
@@ -100,7 +96,6 @@ export class GUIHelper {
 	/** How far the history stands open, 0 to 1: read at draw time, the tween only carries it. */
 	private readonly fold = new MenuSDK.Tween(0, () => undefined)
 
-	private readonly stats = `${Paths.Images}/stats.svg`
 	private readonly up = `${Paths.Images}/arrow-up.svg`
 	private readonly down = `${Paths.Images}/arrow-down.svg`
 	private readonly arrow = `${Paths.Images}/chevron-down.svg`
@@ -126,7 +121,9 @@ export class GUIHelper {
 		this.panel = new MenuSDK.OverlayPanel(
 			menu.Overlay,
 			"hud-mmr-tracker",
-			MenuSDK.EPanelLife.Standalone
+			// The host gate hides a panel on the dashboard opened over a match; the tracker
+			// decides itself, by the UI state, that it stands on the main menu only.
+			MenuSDK.EPanelLife.Always
 		)
 	}
 
@@ -140,24 +137,19 @@ export class GUIHelper {
 			return
 		}
 		MenuSDK.setHudScale(this.panel.Scale)
-		this.refreshLabel()
+		RefreshPalette()
 		this.refreshRows()
 		const width = Math.max(this.headerWidth(), this.historyWidth())
-		const height = MenuSDK.hudH(PANEL_HEIGHT) + this.historyHeight() * this.presence()
+		const height =
+			MenuSDK.hudH(this.header.Height(this.menu.Style.SelectedID)) +
+			this.historyHeight() * this.presence()
 		this.size.SetVector(Math.round(width), Math.round(height))
 		this.panel.Draw(this.size, this.drawContent)
 	}
 
-	public SetRating(newValue: number, oldValue: number): void {
-		const rem = newValue - oldValue
-		this.rating = newValue
-		this.remainder = newValue === rem ? -1 : rem
-		this.labelDirty = true
-		if (this.remainder === -1) {
-			this.mmrType = MMRChangedType.None
-			return
-		}
-		this.mmrType = newValue < oldValue ? MMRChangedType.Subtract : MMRChangedType.Add
+	public SetRating(rating: number): void {
+		this.rating = rating
+		this.rowsDirty = true
 	}
 
 	/** The recent games, newest first. The panel keeps the array and rewords it on each call. */
@@ -214,21 +206,10 @@ export class GUIHelper {
 	}
 
 	private headerWidth(): number {
-		const bold = MenuSDK.HudBold
-		let width =
-			MenuSDK.hudW(MenuSDK.HudCard.Pad) * 2 +
-			MenuSDK.hudW(ICON) +
-			MenuSDK.hudW(MenuSDK.HudHeaderGap) +
-			Math.max(
-				MenuSDK.HudText.Width(this.label, FONT, bold),
-				MenuSDK.HudText.Width(this.reserve, FONT, bold)
-			) +
-			MenuSDK.hudW(CHEVRON_GAP) +
-			MenuSDK.hudW(CHEVRON)
-		if (this.remainder !== -1) {
-			width += MenuSDK.hudW(4) + MenuSDK.HudText.Width(this.change, FONT, bold)
-		}
-		return width
+		return (
+			this.header.Width(this.menu.Style.SelectedID) +
+			MenuSDK.hudW(CHEVRON_GAP + CHEVRON + MenuSDK.HudCard.Pad)
+		)
 	}
 
 	/** Wide enough for the longest name and the widest change, and never narrower than a row reads at. */
@@ -321,40 +302,11 @@ export class GUIHelper {
 
 	/** The rating line with the arrow at its right end. Answers where the header stops. */
 	private drawHeader(box: Rectangle): number {
+		const style = this.menu.Style.SelectedID
 		const pad = MenuSDK.hudW(MenuSDK.HudCard.Pad),
-			icon = MenuSDK.hudW(ICON),
-			height = MenuSDK.hudH(PANEL_HEIGHT),
+			height = MenuSDK.hudH(this.header.Height(style)),
 			centerY = box.y + height / 2
-
-		this.iconPos.SetVector(box.x + pad, centerY - icon / 2)
-		this.iconSize.SetVector(icon, icon)
-		MenuSDK.HudCard.Image(
-			this.iconPath(),
-			this.iconPos,
-			this.iconSize,
-			this.iconColor()
-		)
-
-		let x = box.x + pad + icon + MenuSDK.hudW(MenuSDK.HudHeaderGap)
-		x += MenuSDK.HudText.Left(
-			x,
-			centerY,
-			this.label,
-			FONT,
-			MenuSDK.HudColors.title,
-			MenuSDK.HudBold
-		)
-		if (this.remainder !== -1) {
-			const gained = this.mmrType === MMRChangedType.Add
-			MenuSDK.HudText.Left(
-				x + MenuSDK.hudW(4),
-				centerY,
-				this.change,
-				FONT,
-				gained ? MenuSDK.HudColors.ok : MenuSDK.HudColors.kill,
-				MenuSDK.HudBold
-			)
-		}
+		this.header.Draw(style, box.x, box.y)
 
 		const chevron = MenuSDK.hudW(CHEVRON)
 		const right = box.pos2.x
@@ -366,7 +318,7 @@ export class GUIHelper {
 			this.arrow,
 			this.iconPos,
 			this.iconSize,
-			this.overChevron() ? MenuSDK.HudColors.accent : MenuSDK.HudColors.sub,
+			this.overChevron() ? Palette.icon : Palette.muted,
 			MenuSDK.hudAlpha(),
 			0,
 			180 * this.fold.Value
@@ -392,7 +344,7 @@ export class GUIHelper {
 			sectionY,
 			this.title,
 			SUB_FONT,
-			MenuSDK.HudColors.sub,
+			Palette.muted,
 			MenuSDK.HudBold
 		)
 		let y = top + section
@@ -404,7 +356,7 @@ export class GUIHelper {
 					y + line / 2,
 					this.empty,
 					SUB_FONT,
-					MenuSDK.HudColors.faint,
+					Palette.faint,
 					SUB_WEIGHT
 				)
 			}
@@ -415,11 +367,7 @@ export class GUIHelper {
 			sectionY,
 			this.total,
 			SUB_FONT,
-			this.totalSign > 0
-				? MenuSDK.HudColors.ok
-				: this.totalSign < 0
-					? MenuSDK.HudColors.kill
-					: MenuSDK.HudColors.sub,
+			SignColor(this.totalSign),
 			MenuSDK.HudBold
 		)
 		const height = MenuSDK.hudH(ROW_HEIGHT)
@@ -433,7 +381,7 @@ export class GUIHelper {
 	}
 
 	private drawRow(row: IRow, left: number, right: number, centerY: number): void {
-		const tint = row.gained ? MenuSDK.HudColors.ok : MenuSDK.HudColors.kill
+		const tint = row.gained ? Palette.gain : Palette.loss
 		const portraitW = MenuSDK.hudW(PORTRAIT_W)
 		const portraitH = MenuSDK.hudH(PORTRAIT_H)
 		this.iconPos.SetVector(left, centerY - portraitH / 2)
@@ -504,7 +452,7 @@ export class GUIHelper {
 			centerY - offset,
 			MenuSDK.HudText.Clip(row.name, room, NAME_FONT, MenuSDK.HudBold),
 			NAME_FONT,
-			MenuSDK.HudColors.body,
+			Palette.title,
 			MenuSDK.HudBold
 		)
 		MenuSDK.HudText.Left(
@@ -512,45 +460,39 @@ export class GUIHelper {
 			centerY + offset,
 			MenuSDK.HudText.Clip(row.sub, room, SUB_FONT, SUB_WEIGHT),
 			SUB_FONT,
-			MenuSDK.HudColors.sub,
+			Palette.muted,
 			SUB_WEIGHT
 		)
-	}
-
-	private refreshLabel(): void {
-		const version = Menu.Localization.Version
-		if (!this.labelDirty && version === this.labelVersion) {
-			return
-		}
-		this.labelDirty = false
-		this.labelVersion = version
-		const tracker = Menu.Localization.Localize("Tracker")
-		const shown = this.rating === -1 ? 0 : this.rating
-		this.label = `${tracker}: ${shown}${this.remainder === -1 ? " MMR" : ""}`
-		this.reserve = `${tracker}: ${RATING_RESERVE} MMR`
-		this.change = `(${signed(this.remainder)} MMR)`
 	}
 
 	private refreshRows(): void {
 		const now = Date.now()
 		const minute = Math.floor(now / MINUTE)
 		const version = Menu.Localization.Version
-		const count = Math.min(this.games.length, this.menu.History.value)
+		const session = this.menu.IsSession
+		const gap = this.menu.SessionGap
+		const listed = Math.min(this.games.length, this.menu.History.value)
 		if (
 			!this.rowsDirty &&
-			count === this.rowCount &&
+			listed === this.rowsListed &&
 			minute === this.rowsMinute &&
-			version === this.rowsVersion
+			version === this.rowsVersion &&
+			session === this.rowsSession &&
+			gap === this.rowsGap
 		) {
 			return
 		}
 		this.rowsDirty = false
-		this.rowCount = count
+		this.rowsListed = listed
 		this.rowsMinute = minute
 		this.rowsVersion = version
+		this.rowsSession = session
+		this.rowsGap = gap
 		this.widthsDirty = true
+		this.counted = session ? SessionLength(this.games, now, gap) : listed
+		const count = Math.min(this.counted, listed)
+		this.rowCount = count
 
-		let total = 0
 		for (let i = 0; i < count; i++) {
 			const game = this.games[i]
 			let row = this.rows[i]
@@ -569,12 +511,31 @@ export class GUIHelper {
 			row.sub = `${ago(game.at, now)} · ${game.rating} MMR`
 			row.delta = signed(game.delta)
 			row.gained = game.delta >= 0
-			total += game.delta
 		}
-		this.title = Menu.Localization.Localize("Recent games")
-		this.empty = Menu.Localization.Localize("No ranked games yet")
+		const { wins, losses, total } = Summarize(this.games, this.counted, this.summary)
+		const localize = (name: string) => Menu.Localization.Localize(name)
+		this.title = localize(session ? "Session" : "Recent games")
+		this.empty = localize(
+			session ? "No ranked games this session" : "No ranked games yet"
+		)
 		this.total = `${signed(total)} MMR`
 		this.totalSign = Math.sign(total)
+
+		const header = this.header
+		header.Rating = (this.rating === -1 ? 0 : this.rating).toString()
+		header.WinCount = wins.toString()
+		header.LossCount = losses.toString()
+		header.Wins = `${wins}${localize("W")}`
+		header.Losses = `${losses}${localize("L")}`
+		header.Total = signed(total)
+		header.TotalSign = this.totalSign
+		header.Caption = localize(session ? "Session" : "Game history")
+		header.SegmentCaption = header.Caption.toUpperCase()
+		header.RatingCaption = localize("Rating").toUpperCase()
+		header.TotalCaption = localize("Total").toUpperCase()
+		header.NoGames = localize("No games")
+		header.Counted = this.counted
+		header.Games = this.games
 	}
 
 	/** Whether the cursor stands on the arrow of the panel that owns it. */
@@ -585,27 +546,7 @@ export class GUIHelper {
 		)
 	}
 
-	private iconPath(): string {
-		switch (this.mmrType) {
-			case MMRChangedType.Add:
-				return this.up
-			case MMRChangedType.Subtract:
-				return this.down
-			default:
-				return this.stats
-		}
-	}
 
-	private iconColor(): Color {
-		switch (this.mmrType) {
-			case MMRChangedType.Add:
-				return MenuSDK.HudColors.ok
-			case MMRChangedType.Subtract:
-				return MenuSDK.HudColors.kill
-			default:
-				return MenuSDK.HudColors.accent
-		}
-	}
 }
 
 function signed(value: number): string {

@@ -42,12 +42,13 @@ new (class CMMRTracker {
 		return this.menu.State.value
 	}
 
-	protected get InGameUIState() {
-		return GameState.UIState === DOTAGameUIState.DOTA_GAME_UI_DOTA_INGAME
+	/** The dashboard, whether or not a match is running behind it. */
+	protected get IsMainMenu() {
+		return GameState.UIState === DOTAGameUIState.DOTA_GAME_UI_STATE_DASHBOARD
 	}
 
 	public Draw() {
-		if (this.State && !this.InGameUIState) {
+		if (this.State && this.IsMainMenu) {
 			this.gui.Draw()
 		} else {
 			this.gui.Reset()
@@ -76,7 +77,7 @@ new (class CMMRTracker {
 				return
 			}
 			if (record.rating !== undefined) {
-				this.gui.SetRating(record.rating, 0)
+				this.gui.SetRating(record.rating)
 				this.oldRating = record.rating
 			}
 			this.games = record.games.slice(0, MaxGames)
@@ -103,7 +104,7 @@ new (class CMMRTracker {
 		}
 		if (this.loaded === undefined) {
 			this.pending = rankValue
-			this.gui.SetRating(rankValue, 0)
+			this.gui.SetRating(rankValue)
 			return
 		}
 		void this.loaded.then(() => this.setRating(rankValue))
@@ -152,7 +153,7 @@ new (class CMMRTracker {
 			return
 		}
 		const previous = this.oldRating
-		this.gui.SetRating(rating, previous)
+		this.gui.SetRating(rating)
 		this.oldRating = rating
 		const account = this.account
 		if (account === undefined) {
@@ -205,6 +206,6 @@ new (class CMMRTracker {
 		if (key !== VMouseKeys.MK_LBUTTON && key !== VMouseKeys.MK_RBUTTON) {
 			return false
 		}
-		return !this.InGameUIState
+		return this.IsMainMenu
 	}
 })()
