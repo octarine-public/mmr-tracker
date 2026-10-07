@@ -128,8 +128,8 @@ export class GUIHelper {
 	}
 
 	/**
-	 * The card is as wide open as shut, so the arrow never moves and no row is clipped while
-	 * the card grows around it.
+	 * Shut, the card is as wide as its header; it widens to the history together with the fold,
+	 * so no empty room stands beside the rating while the games are hidden.
 	 */
 	public Draw(): void {
 		if (!this.menu.IsToggled || (this.rating === -1 && !this.menu.IsOpen)) {
@@ -139,10 +139,12 @@ export class GUIHelper {
 		MenuSDK.setHudScale(this.panel.Scale)
 		RefreshPalette()
 		this.refreshRows()
-		const width = Math.max(this.headerWidth(), this.historyWidth())
+		const presence = this.presence()
+		const header = this.headerWidth()
+		const width = header + Math.max(0, this.historyWidth() - header) * presence
 		const height =
 			MenuSDK.hudH(this.header.Height(this.menu.Style.SelectedID)) +
-			this.historyHeight() * this.presence()
+			this.historyHeight() * presence
 		this.size.SetVector(Math.round(width), Math.round(height))
 		this.panel.Draw(this.size, this.drawContent)
 	}
@@ -212,12 +214,18 @@ export class GUIHelper {
 		)
 	}
 
-	/** Wide enough for the longest name and the widest change, and never narrower than a row reads at. */
+	/**
+	 * Wide enough for the longest name and the widest change, and never narrower than a row reads
+	 * at; with no games, only as wide as the line saying so.
+	 */
 	private historyWidth(): number {
 		this.measureHistory()
 		const pad = MenuSDK.hudW(MenuSDK.HudCard.Pad)
 		const gap = MenuSDK.hudW(TEXT_GAP)
 		this.pillWidth = Math.round(this.deltaWidth + MenuSDK.hudW(DELTA_PAD) * 2)
+		if (this.rowCount === 0) {
+			return pad * 2 + Math.max(this.titleWidth, this.emptyWidth)
+		}
 		const rows =
 			pad * 2 +
 			MenuSDK.hudW(PORTRAIT_W) +
@@ -226,13 +234,7 @@ export class GUIHelper {
 			gap +
 			this.pillWidth
 		const section = pad * 2 + this.titleWidth + gap + this.totalWidth
-		const empty = pad * 2 + this.emptyWidth
-		return Math.max(
-			MenuSDK.hudW(BODY_MIN_WIDTH),
-			rows,
-			section,
-			this.rowCount === 0 ? empty : 0
-		)
+		return Math.max(MenuSDK.hudW(BODY_MIN_WIDTH), rows, section)
 	}
 
 	private measureHistory(): void {
