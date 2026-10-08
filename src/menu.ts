@@ -8,6 +8,12 @@ export const enum ETrackMode {
 	History
 }
 
+/** Which way the history unfolds from the rating. */
+export const enum EOpenDirection {
+	Up,
+	Down
+}
+
 const HOUR = 60 * 60 * 1000
 
 export class MenuManager {
@@ -18,22 +24,31 @@ export class MenuManager {
 	public readonly Mode: Menu.Dropdown
 	public readonly SessionBreak: Menu.Slider
 	public readonly History: Menu.Slider
+	public readonly Direction: Menu.Dropdown
 	/**
-	 * Whether the recent games stand open under the rating. Kept off the page: the panel's own
+	 * Whether the recent games stand open beside the rating. Kept off the page: the panel's own
 	 * arrow flips it, and it only lives here so an opened history stays open after a restart.
 	 */
 	public readonly Expanded: Menu.Toggle
 	public readonly Overlay: MenuSDK.OverlayMenu
 
 	private readonly tree: Menu.Node
-	private readonly baseNode = Menu.AddEntry("Visual")
+	/**
+	 * The Overwolf section, shared with the Overwolf script: the tracker is one of the pages
+	 * in its side column, after the Overwolf panel's own (priority 1).
+	 */
+	private readonly baseNode = Menu.AddEntry(
+		"Overwolf",
+		PathData.WrapperMenuPath + "/icons/info.svg"
+	)
 	private readonly nodeIcon = `${Paths.MenuIcons}/review.svg`
 
 	constructor() {
-		this.tree = this.baseNode.AddNode("MMR Tracker", this.nodeIcon)
+		this.tree = this.baseNode.AddNode("MMR Tracker", this.nodeIcon, "", -1, 1)
 		this.tree.SortNodes = false
 		this.State = this.tree.AddToggle("State", true)
 		this.tree.HeaderControl = this.State
+		this.tree.Gate = this.State
 		this.ToggleKey = this.tree.AddKeybind("Key", "None", "Key turn on/off panel")
 		this.ToggleKey.IconPath = MenuSDK.MenuIcons.Keyboard
 		this.Overlay = new MenuSDK.OverlayMenu(this.tree, 31, 951)
@@ -69,6 +84,13 @@ export class MenuManager {
 			"How many recent ranked games\nthe panel lists when opened"
 		)
 		this.History.IconPath = MenuSDK.MenuIcons.History
+		this.Direction = this.tree.AddDropdown(
+			"Open direction",
+			["Up", "Down"],
+			EOpenDirection.Up,
+			"Which way the recent games unfold\nfrom the rating"
+		)
+		this.Direction.IconPath = MenuSDK.MenuIcons.ChevronsUpDown
 		this.Expanded = this.tree.AddToggle("Expanded", false)
 		this.Expanded.IsHidden = true
 		this.Mode.OnValue(() => (this.SessionBreak.IsHidden = !this.IsSession))
@@ -88,12 +110,16 @@ export class MenuManager {
 		return this.Mode.SelectedID === ETrackMode.Session
 	}
 
+	public get OpensUp(): boolean {
+		return this.Direction.SelectedID === EOpenDirection.Up
+	}
+
 	/** The break, in ms, that ends a session. */
 	public get SessionGap(): number {
 		return this.SessionBreak.value * HOUR
 	}
 
 	public get IsOpen(): boolean {
-		return MenuSDK.MenuManager.IsOpen && this.tree.IsOpen
+		return MenuSDK.MenuManager.IsOpen && this.tree.IsActivePage
 	}
 }

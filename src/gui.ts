@@ -45,9 +45,43 @@ interface IRow {
 	gained: boolean
 }
 
+/**
+ * The menu's place as the panel sees it. The menu keeps where the rating line stands; the panel is
+ * told where its top edge is, which a history opened upward lifts above that line, so the rating
+ * stays put while the games unfold over it and a drag still stores the line's place.
+ */
+class HeaderAnchor implements MenuSDK.IOverlayMenu {
+	/** How far, in px, the card's top stands above the rating line this frame. */
+	public Lift = 0
+	public readonly SetupEntry: MenuSDK.Entry
+	private readonly stored = new Vector2()
+
+	constructor(private readonly overlay: MenuSDK.OverlayMenu) {
+		this.SetupEntry = overlay.SetupEntry
+	}
+
+	public get Scale(): number {
+		return this.overlay.Scale
+	}
+
+	public get Position(): Vector2 {
+		const position = this.overlay.Position
+		position.y -= this.Lift
+		return position
+	}
+
+	/** Given in layout units, the way the panel stores a drag. */
+	public set Position(position: Vector2) {
+		this.stored.SetVector(position.x, position.y + MenuSDK.ToLayoutUnits(this.Lift))
+		this.overlay.Position = this.stored
+	}
+}
+
 export class GUIHelper {
 	private rating = -1
 	private pressed = false
+	/** Whether the history unfolds above the rating this frame. */
+	private opensUp = false
 	/** Where the fold was last sent, or nothing before the config has said where it stands. */
 	private foldTarget: Nullable<number>
 
@@ -92,6 +126,7 @@ export class GUIHelper {
 	private readonly chevron = new Rectangle()
 	private readonly iconPos = new Vector2()
 	private readonly iconSize = new Vector2()
+	private readonly anchor: HeaderAnchor
 	private readonly panel: MenuSDK.OverlayPanel
 	/** How far the history stands open, 0 to 1: read at draw time, the tween only carries it. */
 	private readonly fold = new MenuSDK.Tween(0, () => undefined)
@@ -106,20 +141,23 @@ export class GUIHelper {
 		box.pos2.SetVector(origin.x + this.size.x, origin.y + this.size.y)
 		MenuSDK.HudCard.Frame(box)
 
-		const bottom = this.drawHeader(box)
+		const height = MenuSDK.hudH(this.header.Height(this.menu.Style.SelectedID))
+		const top = this.opensUp ? box.pos2.y - height : box.y
+		this.drawHeader(box, top, height)
 		const presence = this.fold.Value
 		if (presence <= 0) {
 			return
 		}
 		const alpha = MenuSDK.HudAlphaScale()
 		MenuSDK.SetHudAlphaScale(alpha * presence)
-		this.drawHistory(box, bottom)
+		this.drawHistory(box, top, top + height)
 		MenuSDK.SetHudAlphaScale(alpha)
 	}
 
 	constructor(private readonly menu: MenuManager) {
+		this.anchor = new HeaderAnchor(menu.Overlay)
 		this.panel = new MenuSDK.OverlayPanel(
-			menu.Overlay,
+			this.anchor,
 			"hud-mmr-tracker",
 			// The host gate hides a panel on the dashboard opened over a match; the tracker
 			// decides itself, by the UI state, that it stands on the main menu only.
@@ -129,7 +167,8 @@ export class GUIHelper {
 
 	/**
 	 * Shut, the card is as wide as its header; it widens to the history together with the fold,
-	 * so no empty room stands beside the rating while the games are hidden.
+	 * so no empty room stands beside the rating while the games are hidden. Opened upward, the card
+	 * grows over the rating line instead of under it.
 	 */
 	public Draw(): void {
 		if (!this.menu.IsToggled || (this.rating === -1 && !this.menu.IsOpen)) {
@@ -142,10 +181,13 @@ export class GUIHelper {
 		const presence = this.presence()
 		const header = this.headerWidth()
 		const width = header + Math.max(0, this.historyWidth() - header) * presence
-		const height =
-			MenuSDK.hudH(this.header.Height(this.menu.Style.SelectedID)) +
-			this.historyHeight() * presence
-		this.size.SetVector(Math.round(width), Math.round(height))
+		const line = MenuSDK.hudH(this.header.Height(this.menu.Style.SelectedID))
+		this.size.SetVector(
+			Math.round(width),
+			Math.round(line + this.historyHeight() * presence)
+		)
+		this.opensUp = this.menu.OpensUp
+		this.anchor.Lift = this.opensUp ? this.size.y - line : 0
 		this.panel.Draw(this.size, this.drawContent)
 	}
 
@@ -302,18 +344,19 @@ export class GUIHelper {
 		return MenuSDK.hudH(SECTION_HEIGHT) + rows + MenuSDK.hudH(BODY_BOTTOM)
 	}
 
-	/** The rating line with the arrow at its right end. Answers where the header stops. */
-	private drawHeader(box: Rectangle): number {
-		const style = this.menu.Style.SelectedID
+	/**
+	 * The rating line with the arrow at its right end, `height` tall from `top`. The arrow points
+	 * the way the history would go, and back once it is open.
+	 */
+	private drawHeader(box: Rectangle, top: number, height: number): void {
 		const pad = MenuSDK.hudW(MenuSDK.HudCard.Pad),
-			height = MenuSDK.hudH(this.header.Height(style)),
-			centerY = box.y + height / 2
-		this.header.Draw(style, box.x, box.y)
+			centerY = top + height / 2
+		this.header.Draw(this.menu.Style.SelectedID, box.x, top)
 
 		const chevron = MenuSDK.hudW(CHEVRON)
 		const right = box.pos2.x
-		this.chevron.pos1.SetVector(right - chevron - pad * 2, box.y)
-		this.chevron.pos2.SetVector(right, box.y + height)
+		this.chevron.pos1.SetVector(right - chevron - pad * 2, top)
+		this.chevron.pos2.SetVector(right, top + height)
 		this.iconPos.SetVector(right - pad - chevron, centerY - chevron / 2)
 		this.iconSize.SetVector(chevron, chevron)
 		MenuSDK.HudCard.Image(
@@ -323,36 +366,44 @@ export class GUIHelper {
 			this.overChevron() ? Palette.icon : Palette.muted,
 			MenuSDK.hudAlpha(),
 			0,
-			180 * this.fold.Value
+			180 * (this.opensUp ? 1 - this.fold.Value : this.fold.Value)
 		)
-		return box.y + height
 	}
 
 	/**
-	 * The recent games under the header, cut to the height the card has opened to: a row stands
-	 * only once the card has room for all of it, so the list fills in as the card grows.
+	 * The recent games beside the header, cut to the room the card has opened to: a line stands
+	 * only once the card has room for all of it, so the list fills in as the card grows. Opened
+	 * upward, the list is laid out to end on the header's top edge and is revealed from there.
 	 */
-	private drawHistory(box: Rectangle, top: number): void {
+	private drawHistory(box: Rectangle, headerTop: number, headerBottom: number): void {
 		const pad = MenuSDK.hudW(MenuSDK.HudCard.Pad)
 		const left = box.x + pad
 		const right = box.pos2.x - pad
-		const bottom = box.pos2.y
-		MenuSDK.HudCard.Separator(left, top, right - left)
+		const up = this.opensUp
+		const ceiling = up ? box.y : headerBottom
+		const floor = up ? headerTop : box.pos2.y
+		const top = up
+			? headerTop - this.historyHeight() + MenuSDK.hudH(BODY_BOTTOM)
+			: headerBottom
+		MenuSDK.HudCard.Separator(left, up ? headerTop : headerBottom, right - left)
 
 		const section = MenuSDK.hudH(SECTION_HEIGHT)
 		const sectionY = top + section / 2
-		MenuSDK.HudText.Left(
-			left,
-			sectionY,
-			this.title,
-			SUB_FONT,
-			Palette.muted,
-			MenuSDK.HudBold
-		)
+		const titled = top >= ceiling
+		if (titled) {
+			MenuSDK.HudText.Left(
+				left,
+				sectionY,
+				this.title,
+				SUB_FONT,
+				Palette.muted,
+				MenuSDK.HudBold
+			)
+		}
 		let y = top + section
 		if (this.rowCount === 0) {
 			const line = MenuSDK.hudH(EMPTY_HEIGHT)
-			if (y + line <= bottom) {
+			if (y >= ceiling && y + line <= floor) {
 				MenuSDK.HudText.Left(
 					left,
 					y + line / 2,
@@ -364,21 +415,25 @@ export class GUIHelper {
 			}
 			return
 		}
-		MenuSDK.HudText.Right(
-			right,
-			sectionY,
-			this.total,
-			SUB_FONT,
-			SignColor(this.totalSign),
-			MenuSDK.HudBold
-		)
+		if (titled) {
+			MenuSDK.HudText.Right(
+				right,
+				sectionY,
+				this.total,
+				SUB_FONT,
+				SignColor(this.totalSign),
+				MenuSDK.HudBold
+			)
+		}
 		const height = MenuSDK.hudH(ROW_HEIGHT)
-		for (let i = 0; i < this.rowCount && y + height <= bottom; i++) {
+		for (let i = 0; i < this.rowCount && y + height <= floor; i++, y += height) {
+			if (y < ceiling) {
+				continue
+			}
 			if (i !== 0) {
 				MenuSDK.HudCard.Separator(left, y, right - left)
 			}
 			this.drawRow(this.rows[i], left, right, y + height / 2)
-			y += height
 		}
 	}
 

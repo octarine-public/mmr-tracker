@@ -31,5 +31,9 @@
 	"Total": "Итог",
 	"No games": "Нет игр",
 	"W": "В",
-	"L": "П"
+	"L": "П",
+	"Open direction": "Направление раскрытия",
+	"Up": "Вверх",
+	"Down": "Вниз",
+	"Which way the recent games unfold\nfrom the rating": "Куда раскрываются последние игры\nот рейтинга"
 }
