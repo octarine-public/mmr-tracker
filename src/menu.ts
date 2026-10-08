@@ -34,16 +34,20 @@ export class MenuManager {
 
 	private readonly tree: Menu.Node
 	/**
-	 * The Overwolf section, shared with the Overwolf script: the tracker is one of the pages
+	 * The Insights section, shared with the Overwolf script: the tracker is one of the pages
 	 * in its side column, after the Overwolf panel's own (priority 1).
 	 */
 	private readonly baseNode = Menu.AddEntry(
-		"Overwolf",
+		"Insights",
 		PathData.WrapperMenuPath + "/icons/info.svg"
 	)
 	private readonly nodeIcon = `${Paths.MenuIcons}/review.svg`
 
 	constructor() {
+		// the page was filed under Visual: a config saved there still lands on it
+		MenuSDK.AddConfigMigration(raw =>
+			MenuSDK.MigrateNodeTab(raw, "Visual", "Insights", "MMR Tracker")
+		)
 		this.tree = this.baseNode.AddNode("MMR Tracker", this.nodeIcon, "", -1, 1)
 		this.tree.SortNodes = false
 		this.State = this.tree.AddToggle("State", true)
