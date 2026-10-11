@@ -77,6 +77,28 @@ class HeaderAnchor implements MenuSDK.IOverlayMenu {
 	}
 }
 
+/** What a frame of the panel is built from, so a frame built from the same can be held instead. */
+class FrameStamp {
+	private readonly values: unknown[] = []
+	private index = 0
+	private same = true
+
+	public get Same() {
+		return this.same
+	}
+	public Begin() {
+		this.index = 0
+		this.same = true
+	}
+	public Put(value: unknown) {
+		if (this.values[this.index] !== value) {
+			this.values[this.index] = value
+			this.same = false
+		}
+		this.index++
+	}
+}
+
 export class GUIHelper {
 	private rating = -1
 	private pressed = false
@@ -93,6 +115,8 @@ export class GUIHelper {
 	private rowsListed = -1
 	private rowsSession = false
 	private rowsGap = -1
+	/** Counts every time the rows and the header are worded again. */
+	private rowsEpoch = 0
 	/** The games the panel counts, all of a session or the listed ones of the history. */
 	private counted = 0
 	private readonly summary: ISummary = { wins: 0, losses: 0, total: 0 }
@@ -130,6 +154,7 @@ export class GUIHelper {
 	private readonly panel: MenuSDK.OverlayPanel
 	/** How far the history stands open, 0 to 1: read at draw time, the tween only carries it. */
 	private readonly fold = new MenuSDK.Tween(0, () => undefined)
+	private readonly stamp = new FrameStamp()
 
 	private readonly up = `${Paths.Images}/arrow-up.svg`
 	private readonly down = `${Paths.Images}/arrow-down.svg`
@@ -188,6 +213,9 @@ export class GUIHelper {
 		)
 		this.opensUp = this.menu.OpensUp
 		this.anchor.Lift = this.opensUp ? this.size.y - line : 0
+		if (this.restamp() && this.panel.Hold(this.size)) {
+			return
+		}
 		this.panel.Draw(this.size, this.drawContent)
 	}
 
@@ -247,6 +275,31 @@ export class GUIHelper {
 			this.foldTarget = target
 		}
 		return this.fold.Value
+	}
+
+	/**
+	 * Writes what this frame is built from and answers whether the last frame was built from the
+	 * same. A frame whose text the host could not measure yet is never the same.
+	 */
+	private restamp(): boolean {
+		const stamp = this.stamp,
+			theme = MenuSDK.Theme
+		stamp.Begin()
+		stamp.Put(this.rowsEpoch)
+		stamp.Put(this.menu.Style.SelectedID)
+		stamp.Put(this.opensUp)
+		stamp.Put(this.fold.Value)
+		stamp.Put(this.size.x)
+		stamp.Put(this.size.y)
+		stamp.Put(this.pillWidth)
+		stamp.Put(this.overChevron())
+		stamp.Put(this.panel.Scale)
+		stamp.Put(MenuSDK.DpToPx(1))
+		stamp.Put(theme.PaletteEpoch)
+		stamp.Put(theme.Glow)
+		stamp.Put(MenuSDK.FontEpoch())
+		stamp.Put(Menu.Localization.Version)
+		return stamp.Same && !this.widthsDirty
 	}
 
 	private headerWidth(): number {
@@ -545,6 +598,7 @@ export class GUIHelper {
 		this.rowsVersion = version
 		this.rowsSession = session
 		this.rowsGap = gap
+		this.rowsEpoch++
 		this.widthsDirty = true
 		this.counted = session ? SessionLength(this.games, now, gap) : listed
 		const count = Math.min(this.counted, listed)
