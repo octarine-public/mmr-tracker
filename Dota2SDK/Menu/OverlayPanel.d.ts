@@ -111,6 +111,21 @@ declare namespace MenuSDK {
 		 * its title bar's height, so a drag inside the content never moves the window.
 		 */
 		public Draw(size: Vector2, content: (origin: Vector2) => void, dragHandleHeight?: number): void
+		/**
+		 * Stands the panel exactly as it was last drawn at `size`, for a caller whose content would
+		 * come out the same this frame: the panel is placed and registered as {@link OverlayPanel.Draw}
+		 * does, and its surface keeps the last frame's elements instead of being drawn again. Answers
+		 * `false`, holding nothing, whenever the frame has to be drawn - the panel may not stand, is
+		 * covered, is in hand or was just put down, its hint is out, the menu is open, it would stand
+		 * anywhere but where the last frame was drawn, or the surface no longer shows the last frame,
+		 * as after a frame the panel was not drawn in - and the caller draws it instead.
+		 *
+		 * @example
+		 * if (!(unchanged && panel.Hold(size))) {
+		 * 	panel.Draw(size, origin => HudCard.Frame(new Rectangle(origin, origin.Add(size))))
+		 * }
+		 */
+		public Hold(size: Vector2): boolean
 		public MouseKeyDown(key?: VMouseKeys): boolean
 		public MouseKeyUp(): boolean
 		public Reset(): void
