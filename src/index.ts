@@ -29,7 +29,7 @@ new (class CMMRTracker {
 	private readonly watcher = new MatchWatcher(match => this.MatchEnded(match))
 
 	constructor() {
-		EventsSDK.on("Draw", this.Draw.bind(this))
+		EventsSDK.on("Draw2D", this.Draw.bind(this))
 		EventsSDK.on("GameEnded", () => this.watcher.GameEnded())
 		EventsSDK.on("SharedObjectChanged", this.SharedObjectChanged.bind(this))
 		EventsSDK.on("PlayerCustomDataUpdated", player => this.watcher.Player(player))
@@ -47,6 +47,10 @@ new (class CMMRTracker {
 		return GameState.UIState === DOTAGameUIState.DOTA_GAME_UI_STATE_DASHBOARD
 	}
 
+	/**
+	 * Runs in the retained HUD pass: the card holds between passes, and a pass that leaves it out
+	 * takes it down.
+	 */
 	public Draw() {
 		if (this.State && this.IsMainMenu) {
 			this.gui.Draw()
