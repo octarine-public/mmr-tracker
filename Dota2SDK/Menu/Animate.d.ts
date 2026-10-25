@@ -5,7 +5,12 @@ declare namespace MenuSDK {
 		Out = 1,
 		Enter = 2,
 		Pop = 3,
-		Linear = 4
+		Linear = 4,
+		/**
+		 * Stands where it starts for the whole run and lands at the end: a value held for a time,
+		 * which is how a highlight or a hint stays on screen for its while with motion switched off.
+		 */
+		Hold = 5
 	}
 	const Duration: {
 		readonly Hover: 150
@@ -26,6 +31,43 @@ declare namespace MenuSDK {
 	 */
 	function SetAnimationSpeed(value: number): void
 	function AnimationSpeed(): number
+	/**
+	 * Switches every motion on the surfaces of `scope` on or off. Off, a {@link Tween} there lands on
+	 * its target the moment it is asked to move and one already under way lands on the next frame,
+	 * while {@link MotionSpan} answers 0, so a surface that times its motion by hand stands still
+	 * with it. The Animations page drives it: "Menu animations" for the menu, "Overlay animations"
+	 * for the panels and the world.
+	 */
+	function SetMotionEnabled(scope: EThemeScope, enabled: boolean): void
+	/** Whether the surfaces of `scope` move, as {@link SetMotionEnabled} last left them. */
+	function MotionEnabled(scope: EThemeScope): boolean
+	/**
+	 * How long a motion designed to take `duration` ms plays on the surfaces of `scope`: the duration
+	 * at the theme's animation speed, or 0 while motion there is switched off. A surface that times
+	 * its motion by hand asks for its span here, so the speed control and the Animations page reach
+	 * it the way they reach a {@link Tween}. A lifetime, a delay or a hold is time rather than motion
+	 * and keeps its own duration.
+	 *
+	 * @example
+	 * const span = MenuSDK.MotionSpan(ENTER_MS, MenuSDK.EThemeScope.World)
+	 * const along = MenuSDK.MotionProgress(now, this.shownAt, span)
+	 */
+	function MotionSpan(duration: number, scope: EThemeScope): number
+	/**
+	 * How far along, 0 to 1, a motion begun at `since` and played over `span` ms stands at `now`. A
+	 * span of 0 - a motion switched off - is already there.
+	 */
+	function MotionProgress(now: number, since: number, span: number): number
+	/**
+	 * The share of a `duration`-long motion that `elapsed` ms cover on the surfaces of `scope`, for a
+	 * value stepped towards its target frame by frame. While motion there is switched off a step
+	 * covers the whole of it.
+	 *
+	 * @example
+	 * const step = MenuSDK.MotionStep(dt, REVEAL_MS, MenuSDK.EThemeScope.Panels)
+	 * this.reveal = Math.min(this.reveal + step, 1)
+	 */
+	function MotionStep(elapsed: number, duration: number, scope: EThemeScope): number
 	class Tween {
 		/**
 		 * A value that eases towards a target, applied at most once per frame. `apply` runs with
@@ -40,7 +82,21 @@ declare namespace MenuSDK {
 		constructor(initial: number, apply: (value: number) => void, scope?: EThemeScope)
 		public get Value(): number
 		public get Running(): boolean
+		/**
+		 * Moves the value to `target` over a motion designed to take `duration` ms, at the theme's
+		 * animation speed; while the tween's scope stands still (see {@link SetMotionEnabled}) it
+		 * lands there at once, `done` included.
+		 */
 		public To(target: number, duration: number, ease?: Ease, done?: () => void): void
+		/**
+		 * Moves the value to `target` over `duration` ms of time rather than of motion: neither the
+		 * animation speed nor a scope standing still shortens it. For a lifetime, a delay, or travel
+		 * paced by a speed of its own - what the user reads off it is how long it takes.
+		 *
+		 * @example
+		 * life.Elapse(0, ToastLife, Ease.Linear, exit)
+		 */
+		public Elapse(target: number, duration: number, ease?: Ease, done?: () => void): void
 		public Set(value: number): void
 		public Cancel(): void
 		public Tick(now: number): void

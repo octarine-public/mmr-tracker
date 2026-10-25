@@ -153,7 +153,11 @@ export class GUIHelper {
 	private readonly anchor: HeaderAnchor
 	private readonly panel: MenuSDK.OverlayPanel
 	/** How far the history stands open, 0 to 1: read at draw time, the tween only carries it. */
-	private readonly fold = new MenuSDK.Tween(0, () => undefined)
+	private readonly fold = new MenuSDK.Tween(
+		0,
+		() => undefined,
+		MenuSDK.EThemeScope.Panels
+	)
 	private readonly stamp = new FrameStamp()
 
 	private readonly up = `${Paths.Images}/arrow-up.svg`
