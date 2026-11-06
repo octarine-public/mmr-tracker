@@ -31,5 +31,10 @@
 	"Total": "合计",
 	"No games": "暂无比赛",
 	"W": "胜",
-	"L": "负"
+	"L": "负",
+	"In match history": "在比赛记录中",
+	"Off": "关闭",
+	"Change": "变化",
+	"Change and rating": "变化和评级",
+	"What the profile's match history shows beside each game:\nhow much rating it gave or took, the rating before and after it, or both": "个人资料的比赛记录中每场比赛旁显示的内容：\n获得或失去的分数、赛前和赛后的评级，或两者"
 }

@@ -26,6 +26,17 @@ export function RefreshPalette(): void {
 	}
 }
 
+/** {@link Base} as the CSS colours the game's own pages take: they stay dark whatever the theme. */
+export const PanoramaColors = {
+	gain: cssColor(Base.gain),
+	loss: cssColor(Base.loss),
+	muted: cssColor(Base.muted)
+} as const
+
+function cssColor(color: Color): string {
+	return `#${[color.r, color.g, color.b].map(c => c.toString(16).padStart(2, "0")).join("")}`
+}
+
 /** Green for a gain, red for a loss, muted for nothing either way. */
 export function SignColor(sign: number): Color {
 	return sign > 0 ? Palette.gain : sign < 0 ? Palette.loss : Palette.muted

@@ -2,6 +2,7 @@ import "./translations"
 
 import { GUIHelper } from "./gui"
 import { IGame, IMatch, MaxGames } from "./history"
+import { HistoryColumn } from "./historyColumn"
 import { MatchWatcher } from "./match"
 import { MenuManager } from "./menu"
 import { RatingStore } from "./storage"
@@ -25,6 +26,7 @@ new (class CMMRTracker {
 	private match: Nullable<IMatch>
 	private readonly menu = new MenuManager()
 	private readonly gui = new GUIHelper(this.menu)
+	private readonly column = new HistoryColumn(this.menu)
 	private readonly store = new RatingStore()
 	private readonly watcher = new MatchWatcher(match => this.MatchEnded(match))
 
@@ -75,7 +77,7 @@ new (class CMMRTracker {
 		this.oldRating = 0
 		this.games = []
 		this.match = undefined
-		this.gui.SetGames(this.games)
+		this.setGames(account)
 		this.loaded = this.store.Load(account).then(record => {
 			if (this.account !== account) {
 				return
@@ -85,7 +87,7 @@ new (class CMMRTracker {
 				this.oldRating = record.rating
 			}
 			this.games = record.games.slice(0, MaxGames)
-			this.gui.SetGames(this.games)
+			this.setGames(account)
 			this.match ??= record.match
 		})
 		const pending = this.pending
@@ -134,7 +136,7 @@ new (class CMMRTracker {
 			return
 		}
 		this.games[index] = { ...recorded, hero: match.hero }
-		this.gui.SetGames(this.games)
+		this.setGames(account)
 		this.store.SaveGames(account, this.games)
 	}
 
@@ -195,12 +197,17 @@ new (class CMMRTracker {
 		if (this.games.length > MaxGames) {
 			this.games.length = MaxGames
 		}
-		this.gui.SetGames(this.games)
+		this.setGames(account)
 		this.store.SaveGames(account, this.games)
 		if (match !== undefined) {
 			this.match = undefined
 			this.store.SaveMatch(account, undefined)
 		}
+	}
+
+	private setGames(account: number) {
+		this.gui.SetGames(this.games)
+		this.column.SetGames(account, this.games)
 	}
 
 	private shouldInput(key: VMouseKeys) {

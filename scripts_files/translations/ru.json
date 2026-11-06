@@ -36,5 +36,10 @@
 	"Open direction": "Направление раскрытия",
 	"Up": "Вверх",
 	"Down": "Вниз",
-	"Which way the recent games unfold\nfrom the rating": "Куда раскрываются последние игры\nот рейтинга"
+	"Which way the recent games unfold\nfrom the rating": "Куда раскрываются последние игры\nот рейтинга",
+	"In match history": "В истории матчей",
+	"Change": "Изменение",
+	"Change and rating": "Изменение и рейтинг",
+	"What the profile's match history shows beside each game:\nhow much rating it gave or took, the rating before and after it, or both": "Что показывать в истории матчей профиля рядом с каждой игрой:\nсколько рейтинга она дала или отняла, рейтинг до и после неё или и то и другое",
+	"Off": "Выкл"
 }

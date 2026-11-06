@@ -14,6 +14,20 @@ export const enum EOpenDirection {
 	Down
 }
 
+/**
+ * What the profile's match history shows beside each tracked game. The history runtime reads the
+ * numbers themselves, so they must stay as they are.
+ */
+export const enum EHistoryShow {
+	Off,
+	/** "+28" */
+	Change,
+	/** "+28 (6407 → 6435)" */
+	ChangeAndRating,
+	/** "6407 → 6435" */
+	Rating
+}
+
 const HOUR = 60 * 60 * 1000
 
 export class MenuManager {
@@ -25,6 +39,8 @@ export class MenuManager {
 	public readonly SessionBreak: Menu.Slider
 	public readonly History: Menu.Slider
 	public readonly Direction: Menu.Dropdown
+	/** What the profile's match history shows beside each tracked game: {@link EHistoryShow}. */
+	public readonly MatchHistory: Menu.Dropdown
 	/**
 	 * Whether the recent games stand open beside the rating. Kept off the page: the panel's own
 	 * arrow flips it, and it only lives here so an opened history stays open after a restart.
@@ -95,6 +111,13 @@ export class MenuManager {
 			"Which way the recent games unfold\nfrom the rating"
 		)
 		this.Direction.IconPath = MenuSDK.MenuIcons.ChevronsUpDown
+		this.MatchHistory = this.tree.AddDropdown(
+			"In match history",
+			["Off", "Change", "Change and rating", "Rating"],
+			EHistoryShow.ChangeAndRating,
+			"What the profile's match history shows beside each game:\nhow much rating it gave or took, the rating before and after it, or both"
+		)
+		this.MatchHistory.IconPath = MenuSDK.MenuIcons.History
 		this.Expanded = this.tree.AddToggle("Expanded", false)
 		this.Expanded.IsHidden = true
 		this.Mode.OnValue(() => (this.SessionBreak.IsHidden = !this.IsSession))
